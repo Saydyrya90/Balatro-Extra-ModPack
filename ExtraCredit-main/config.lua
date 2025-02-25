@@ -1,0 +1,1 @@
+return {["wave1"]=true,["Wave 2"]=true,["wave2"]=true,["Wave 1"]=true,}

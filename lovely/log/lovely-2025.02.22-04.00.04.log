@@ -1,0 +1,493 @@
+INFO - [♥] Lovely 0.7.1
+INFO - [♥] Game directory is at "G:\\Games\\Balatro v1.0.1.n-FULL\\Balatro"
+INFO - [♥] Writing logs to "C:\\Users\\saydy\\AppData\\Roaming\\Balatro\\Mods\\lovely\\log"
+INFO - [♥] Using mod directory at "C:\\Users\\saydy\\AppData\\Roaming\\Balatro\\Mods"
+WARN - [♥] Unknown key `patches.16.?.match_indent` found in patch file at "C:\\Users\\saydy\\AppData\\Roaming\\Balatro\\Mods\\Bunco-main\\lovely.toml", ignoring it
+WARN - [♥] Unknown key `patches.158.?.match_indent` found in patch file at "C:\\Users\\saydy\\AppData\\Roaming\\Balatro\\Mods\\Bunco-main\\lovely.toml", ignoring it
+WARN - [♥] Unknown key `patches.21.?.match_indent` found in patch file at "C:\\Users\\saydy\\AppData\\Roaming\\Balatro\\Mods\\Cryptid-0014b0c8c10b9b5d89e89f91d3d9eaf76e5364f2\\lovely\\code.toml", ignoring it
+WARN - [♥] Unknown key `patches.49.?.match_indent` found in patch file at "C:\\Users\\saydy\\AppData\\Roaming\\Balatro\\Mods\\Talisman\\lovely.toml", ignoring it
+WARN - [♥] Unknown key `patches.52.?.match_indent` found in patch file at "C:\\Users\\saydy\\AppData\\Roaming\\Balatro\\Mods\\Talisman\\lovely.toml", ignoring it
+INFO - [♥] Cleaning up dumps directory at "C:\\Users\\saydy\\AppData\\Roaming\\Balatro\\Mods\\lovely\\dump"
+INFO - [♥] Initialization complete in 29ms
+WARN - [♥] Pattern 'G.ARGS.score_intensity.organ = G.video_organ or G.ARGS.score_intensity.required_score > 0 and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0' on target 'main.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if type(G.GAME.current_round.current_hand.chips) ~= \'number\' or type(G.GAME.current_round.current_hand.mult) ~= \'number\' then' on target 'main.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+INFO - [♥] Applied 15 patches to 'main.lua'
+INFO - [♥] Applied 2 patches to 'engine/string_packer.lua'
+INFO - [♥] Applied 6 patches to 'engine/controller.lua'
+INFO - [♥] Applied 13 patches to 'back.lua'
+WARN - [♥] Pattern 'add_tag(Tag(_context.tag.key))' on target 'tag.lua' for pattern patch from Reverie\lovely.toml resulted in no matches
+INFO - [♥] Applied 18 patches to 'tag.lua'
+INFO - [♥] Applied 3 patches to 'engine/node.lua'
+INFO - [♥] Applied 2 patches to 'engine/moveable.lua'
+INFO - [♥] Applied 2 patches to 'engine/sprite.lua'
+INFO - [♥] Applied 2 patches to 'engine/animatedsprite.lua'
+WARN - [♥] Pattern 'assembled_string = assembled_string..(type(subpart) == \'string\' and subpart or args.vars[tonumber(subpart[1])] or \'ERROR\')' on target 'functions/misc_functions.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+INFO - [♥] Applied 52 patches to 'functions/misc_functions.lua'
+WARN - [♥] Pattern 'for i = 1, 2 do' on target 'game.lua' for pattern patch from Bunco-main\lovely.toml resulted in no matches
+INFO - [♥] Applied 99 patches to 'game.lua'
+INFO - [♥] Applied 4 patches to 'globals.lua'
+INFO - [♥] Applied 6 patches to 'engine/ui.lua'
+WARN - [♥] Pattern '{n=G.UIT.T, config={text = G.GAME.hands[handname].chips, scale = 0.45, colour = G.C.UI.TEXT_LIGHT}},' on target 'functions/UI_definitions.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern '{n=G.UIT.T, config={text = G.GAME.hands[handname].mult, scale = 0.45, colour = G.C.UI.TEXT_LIGHT}}' on target 'functions/UI_definitions.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+INFO - [♥] Applied 106 patches to 'functions/UI_definitions.lua'
+WARN - [♥] Pattern 'ease_to = G.GAME.chips + math.floor(hand_chips * mult) * (e and e.antiscore and -1 or 1),' on target 'functions/state_events.lua' for pattern patch from Cryptid-0014b0c8c10b9b5d89e89f91d3d9eaf76e5364f2\lovely\blind.toml resulted in no matches
+WARN - [♥] Pattern 'for i = 1, #G.jokers.cards do' on target 'functions/state_events.lua' for pattern patch from Cryptid-0014b0c8c10b9b5d89e89f91d3d9eaf76e5364f2\lovely\lib_modifiers.toml resulted in no matches
+WARN - [♥] Pattern 'if reps[j] ~= 1 then' on target 'functions/state_events.lua' for pattern patch from Cryptid-0014b0c8c10b9b5d89e89f91d3d9eaf76e5364f2\lovely\misc.toml resulted in no matches
+WARN - [♥] Pattern 'for i=1, #G.jokers.cards + #G.consumeables.cards do' on target 'functions/state_events.lua' for pattern patch from Cryptid-0014b0c8c10b9b5d89e89f91d3d9eaf76e5364f2\lovely\misc.toml resulted in no matches
+WARN - [♥] Pattern 'local effects = {[1] = {playing_card = G.hand.cards[i]:get_end_of_round_effect()}}' on target 'functions/state_events.lua' for pattern patch from Cryptid-0014b0c8c10b9b5d89e89f91d3d9eaf76e5364f2\lovely\stake.toml resulted in no matches
+WARN - [♥] Pattern 'reset_idol_card()\nreset_mail_rank()\nreset_ancient_card()\nreset_castle_card()\n' on target 'functions/state_events.lua' for pattern patch from ExtraCredit-main\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if effects[ii].card then' on target 'functions/state_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if effects.jokers.Xmult_mod then mult = mod_mult(mult*effects.jokers.Xmult_mod);extras.mult = true  end' on target 'functions/state_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if effect.Xmult_mod then mult = mod_mult(mult*effect.Xmult_mod);extras.mult = true  end' on target 'functions/state_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if effects[ii].message then' on target 'functions/state_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern '--calculate the card edition effects' on target 'functions/state_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if effects[ii].edition.p_dollars_mod then' on target 'functions/state_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if edition_effects.jokers.x_mult_mod then' on target 'functions/state_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'card_eval_status_text(scoring_hand[i], \'extra\', nil, percent, nil, effects[ii].extra)' on target 'functions/state_events.lua' for pattern patch from Cosmos-fork\lovely\no_status.toml resulted in no matches
+WARN - [♥] Pattern 'card_eval_status_text(scoring_hand[i], \'extra\', nil, percent, nil, effects[ii].extra)' on target 'functions/state_events.lua' for pattern patch from Cosmos-fork\lovely\no_status.toml resulted in no matches
+WARN - [♥] Pattern 'if SMODS.has_enhancement(scoring_hand[i], \'m_glass\') and not scoring_hand[i].debuff and pseudorandom(\'glass\') < G.GAME.probabilities.normal/(scoring_hand[i].ability.name == \'Glass Card\' and scoring_hand[i].ability.extra or G.P_CENTERS.m_glass.config.extra) then' on target 'functions/state_events.lua' for pattern patch from Cryptid-0014b0c8c10b9b5d89e89f91d3d9eaf76e5364f2\lovely\Probability.toml resulted in no matches
+WARN - [♥] Pattern 'ease_to = G.GAME.chips + math.floor(hand_chips*mult),' on target 'functions/state_events.lua' for pattern patch from Bunco-main\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'for i=1, #G.jokers.cards + #G.consumeables.cards do' on target 'functions/state_events.lua' for pattern patch from Bunco-main\lovely.toml resulted in no matches
+WARN - [♥] Regex '(?<indent>[\\t ]*)if destroyed then \\n' on target 'functions/state_events.lua' for regex patch from Cryptid-0014b0c8c10b9b5d89e89f91d3d9eaf76e5364f2\lovely\seal.toml resulted in no matches
+INFO - [♥] Applied 104 patches to 'functions/state_events.lua'
+WARN - [♥] Pattern '{n=G.UIT.T, config={text = localize(\'$\')..config.dollars, scale = 1.2*scale, colour = G.C.WHITE, shadow = true, juice = true}}' on target 'functions/common_events.lua' for pattern patch from Cryptid-0014b0c8c10b9b5d89e89f91d3d9eaf76e5364f2\lovely\code.toml resulted in no matches
+WARN - [♥] Pattern 'function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, hide_desc, main_start, main_end)' on target 'functions/common_events.lua' for pattern patch from Cryptid-0014b0c8c10b9b5d89e89f91d3d9eaf76e5364f2\lovely\lib_misc.toml resulted in no matches
+WARN - [♥] Pattern 'elseif v.boss.showdown and (G.GAME.round_resets.ante)%G.GAME.win_ante == 0 and G.GAME.round_resets.ante >= 2 then' on target 'functions/common_events.lua' for pattern patch from Cryptid-0014b0c8c10b9b5d89e89f91d3d9eaf76e5364f2\lovely\stake.toml resulted in no matches
+WARN - [♥] Pattern 'if num_dollars > 60 then' on target 'functions/common_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'func = (function() if eval_func(card) then if not first or first then card:juice_up(0.1, 0.1) end;juice_card_until(card, eval_func, nil, 0.8) end return true end)' on target 'functions/common_events.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'elseif _c.effect == \'Lucky Card\' then loc_vars = {G.GAME.probabilities.normal, cfg.mult, 5, cfg.p_dollars, 15}' on target 'functions/common_events.lua' for pattern patch from Cryptid-0014b0c8c10b9b5d89e89f91d3d9eaf76e5364f2\lovely\Probability.toml resulted in no matches
+WARN - [♥] Pattern 'info_queue[#info_queue + 1] = G.P_CENTERS[\'e_\'..v]' on target 'functions/common_events.lua' for pattern patch from Bunco-main\lovely.toml resulted in no matches
+INFO - [♥] Applied 191 patches to 'functions/common_events.lua'
+WARN - [♥] Pattern 'if card.area and (not nc or card.area == G.pack_cards) then card.area:remove_card(card) end\n' on target 'functions/button_callbacks.lua' for pattern patch from smods-main\lovely\better_calc.toml resulted in no matches
+WARN - [♥] Pattern 'if ((G.GAME.dollars-G.GAME.bankrupt_at) - 10 >= 0) and' on target 'functions/button_callbacks.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Regex 'ease_background_colour_blind\\(G.GAME.PACK_INTERRUPT\\)\\n.*\\n.*\\n.*\\n(?<indent>[ \\t]*)for i = 1, #G\\.GAME\\.tags do\\n' on target 'functions/button_callbacks.lua' for regex patch from Reverie\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if #G.hand.highlighted <= 0 or G.GAME.blind.block_play or #G.hand.highlighted > 5 then' on target 'functions/button_callbacks.lua' for pattern patch from Bunco-main\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'add_tag(_tag.config.ref_table)' on target 'functions/button_callbacks.lua' for pattern patch from Bunco-main\lovely.toml resulted in no matches
+INFO - [♥] Applied 85 patches to 'functions/button_callbacks.lua'
+WARN - [♥] Pattern 'if self.ability.name == \'Campfire\' and G.GAME.blind.boss and not (G.GAME.blind.config and G.GAME.blind.config.bonus) and self.ability.x_mult > 1 then' on target 'card.lua' for pattern patch from Cryptid-0014b0c8c10b9b5d89e89f91d3d9eaf76e5364f2\lovely\misc.toml resulted in no matches
+WARN - [♥] Pattern 'if self.ability.name:find(\'Arcana\') then' on target 'card.lua' for pattern patch from Cryptid-0014b0c8c10b9b5d89e89f91d3d9eaf76e5364f2\lovely\misprint.toml resulted in no matches
+WARN - [♥] Pattern 'if self.ability.name == \'The Hermit\' or self.ability.consumeable.hand_type or self.ability.name == \'Temperance\' or self.ability.name == \'Black Hole\' then' on target 'card.lua' for pattern patch from Cryptid-0014b0c8c10b9b5d89e89f91d3d9eaf76e5364f2\lovely\stake.toml resulted in no matches
+WARN - [♥] Pattern 'if self.ability.queue_negative_removal then' on target 'card.lua' for pattern patch from Cryptid-0014b0c8c10b9b5d89e89f91d3d9eaf76e5364f2\lovely\sticker.toml resulted in no matches
+WARN - [♥] Pattern '        loc_vars = { playing_card = not not self.base.colour, value = self.base.value, suit = self.base.suit, colour = self.base.colour,\n                    nominal_chips = self.base.nominal > 0 and self.base.nominal or nil,\n                    bonus_chips = (self.ability.bonus + (self.ability.perma_bonus or 0)) > 0 and (self.ability.bonus + (self.ability.perma_bonus or 0)) or nil,\n' on target 'card.lua' for pattern patch from NeatoJokers-1.0.3\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if G.GAME.blind then G.E_MANAGER:add_event(Event({ func = function() G.GAME.blind:set_blind(nil, true, nil); return true end })) end' on target 'card.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if not initial then G.GAME.blind:debuff_card(self) end' on target 'card.lua' for pattern patch from kcvanilla-2.2.3\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if pseudorandom(\'lucky_money\') < G.GAME.probabilities.normal/15 then' on target 'card.lua' for pattern patch from Cryptid-0014b0c8c10b9b5d89e89f91d3d9eaf76e5364f2\lovely\Probability.toml resulted in no matches
+WARN - [♥] Pattern 'if pseudorandom(\'lucky_mult\') < G.GAME.probabilities.normal/5 then' on target 'card.lua' for pattern patch from Cryptid-0014b0c8c10b9b5d89e89f91d3d9eaf76e5364f2\lovely\Probability.toml resulted in no matches
+WARN - [♥] Pattern 'elseif self.ability.name == \'Business Card\' then loc_vars = {\'\'..(G.GAME and G.GAME.probabilities.normal or 1), self.ability.extra}' on target 'card.lua' for pattern patch from Cryptid-0014b0c8c10b9b5d89e89f91d3d9eaf76e5364f2\lovely\Probability.toml resulted in no matches
+WARN - [♥] Pattern 'pseudorandom(\'business\') < G.GAME.probabilities.normal/self.ability.extra then' on target 'card.lua' for pattern patch from Cryptid-0014b0c8c10b9b5d89e89f91d3d9eaf76e5364f2\lovely\Probability.toml resulted in no matches
+WARN - [♥] Pattern 'if (self.edition and self.edition.negative) or (self.ability.name == \'Antimatter\' and (self.config.center.discovered or self.bypass_discovery_center)) then' on target 'card.lua' for pattern patch from Bunco-main\lovely.toml resulted in no matches
+INFO - [♥] Applied 305 patches to 'card.lua'
+WARN - [♥] Pattern 'table.sort(self.cards, function (a, b) return a.T.x + a.T.w/2 - 100*(a.pinned and a.sort_id or 0) < b.T.x + b.T.w/2 - 100*(b.pinned and b.sort_id or 0) end)' on target 'cardarea.lua' for pattern patch from Cryptid-0014b0c8c10b9b5d89e89f91d3d9eaf76e5364f2\lovely\conveyor.toml resulted in no matches
+WARN - [♥] Pattern 'update_hand_text({immediate = true, nopulse = nil, delay = 0}, {handname=disp_text, level=G.GAME.hands[text].level, mult = G.GAME.hands[text].mult, chips = G.GAME.hands[text].chips})' on target 'cardarea.lua' for pattern patch from Bunco-main\lovely.toml resulted in no matches
+INFO - [♥] Applied 24 patches to 'cardarea.lua'
+INFO - [♥] Applied 35 patches to 'blind.lua'
+INFO - [♥] Applied 2 patches to 'card_character.lua'
+INFO - [♥] Applied 5 patches to 'engine/text.lua'
+INFO - [♥] Applied 2 patches to '=[SMODS _ "src/overrides.lua"]'
+INFO - [G] Failed to connect to the debug server
+INFO - [G] 2025-02-22 04:00:09 :: DEBUG :: DebugConsole :: Steamodded Debug Socket started !
+INFO - [♥] Applied 9 patches to 'engine/sound_manager.lua'
+INFO - [♥] Applied 3 patches to 'engine/save_manager.lua'
+INFO - [♥] Applied 2 patches to 'engine/string_packer.lua'
+INFO - [G] 2025-02-22 04:00:10 :: INFO  :: DefaultLogger :: Valid JSON file found
+INFO - [G] 2025-02-22 04:00:10 :: TRACE :: Loader :: Processing Mod file (Legacy header): Bunco.lua
+INFO - [G] 2025-02-22 04:00:10 :: TRACE :: Loader :: Saving Mod Info: Bunco
+INFO - [G] 2025-02-22 04:00:10 :: INFO  :: DefaultLogger :: Valid JSON file found
+INFO - [G] 2025-02-22 04:00:10 :: TRACE :: Loader :: Processing Mod file (Legacy header): Cryptid.lua
+INFO - [G] 2025-02-22 04:00:10 :: TRACE :: Loader :: Saving Mod Info: Cryptid
+INFO - [G] 2025-02-22 04:00:10 :: INFO  :: DefaultLogger :: Valid JSON file found
+INFO - [G] 2025-02-22 04:00:10 :: TRACE :: Loader :: Processing Mod file (Legacy header): JestersPrivilege.lua
+INFO - [G] 2025-02-22 04:00:10 :: TRACE :: Loader :: Saving Mod Info: JestersPrivilege
+INFO - [G] 2025-02-22 04:00:10 :: INFO  :: DefaultLogger :: Valid JSON file found
+INFO - [G] 2025-02-22 04:00:10 :: INFO  :: DefaultLogger :: Valid JSON file found
+INFO - [G] 2025-02-22 04:00:10 :: TRACE :: Loader :: Processing Mod file (Legacy header): main.lua
+INFO - [G] 2025-02-22 04:00:10 :: TRACE :: Loader :: Saving Mod Info: sdm0sstuff
+INFO - [G] 2025-02-22 04:00:10 :: TRACE :: Loader :: Processing Mod file (Legacy header): steamodded_metadata.lua
+INFO - [G] 2025-02-22 04:00:10 :: TRACE :: Loader :: Saving Mod Info: Talisman
+INFO - [G] 2025-02-22 04:00:10 :: TRACE :: Loader :: Processing Mod file (Legacy header): main.lua
+INFO - [G] 2025-02-22 04:00:10 :: TRACE :: Loader :: Saving Mod Info: unsorted
+INFO - [G] 2025-02-22 04:00:10 :: TRACE :: Loader :: Processing Mod file (Legacy header): DnDJ.lua
+INFO - [G] 2025-02-22 04:00:10 :: TRACE :: Loader :: Saving Mod Info: dndj
+INFO - [G] 2025-02-22 04:00:10 :: INFO  :: DefaultLogger :: Valid JSON file found
+INFO - [G] 2025-02-22 04:00:10 :: ERROR :: Loader :: Found invalid metadata JSON file at C:\Users\saydy\AppData\Roaming\Balatro\Mods/paperback-0.5.1/.vscode/settings.json, ignoring: [SMODS _ "src/loader.lua"]:226: id
+INFO - [G] 2025-02-22 04:00:10 :: INFO  :: DefaultLogger :: Valid JSON file found
+INFO - [G] 2025-02-22 04:00:10 :: WARN  :: Challenge :: Detected duplicate register call on object c_mad_world_1
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: calling_card
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: quick_fix
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: sacrificial_lamb
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: wish_you_were_here
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: stamp
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: solar_system
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: furioso
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: pride_flag
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: pool_table
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: summoning_circle
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: hole_in_one
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: derecho
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: forgery
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: skydiver
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: solemn_lament
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: ghost_cola
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: mismatched_sock
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: shopping_center
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: union_card
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: nachos
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: jester_of_nihil
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: complete_breakfast
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: reference_card
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: crispy_taco
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: soft_taco
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: prince_of_darkness
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: black_rainbows
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: emergency_broadcast
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: triple_moon_goddess
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: wild_prize
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: bicycle
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: grand_strategy
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: great_wave
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: let_it_happen
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: dreamsicle
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: popsicle_stick
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: cakepop
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: pop_stick
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: caramel_apple
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: pointy_stick
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: charred_marshmallow
+INFO - [G] 2025-02-22 04:00:10 :: DEBUG :: Paperback :: Loaded joker: sticky_stick
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: paranoia
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: subterfuge
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: unholy_alliance
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: cherry_blossoms
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: blue_bonnets
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: autumn_leaves
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: evergreens
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: river
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: moribund
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: jimbo_adventure
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: joker_cookie
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: the_world
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: meeple
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: basic_energy
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: coffee
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: cream_liqueur
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: big_misser
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: jestrica
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: epic_sauce
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: find_jimbo
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: champagne
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: apple
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: alert
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: legacy
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: backpack
+INFO - [G] 2025-02-22 04:00:11 :: DEBUG :: Paperback :: Loaded joker: pocket_pair
+INFO - [G] 2025-02-22 04:00:11 :: WARN  :: Atlas :: Detected duplicate register call on object ExtraCredit_ECjokers
+INFO - [G] [CRYPTID] Loading library file ascended.lua
+INFO - [G] [CRYPTID] Loading library file calculate.lua
+INFO - [G] [CRYPTID] Loading library file content.lua
+INFO - [G] [CRYPTID] Loading library file cross-mod.lua
+INFO - [G] [CRYPTID] Loading library file d20.lua
+INFO - [G] [CRYPTID] Loading library file event.lua
+INFO - [G] [CRYPTID] Loading library file gameset.lua
+INFO - [G] [CRYPTID] Loading library file https.lua
+INFO - [G] [CRYPTID] Loading library file misc.lua
+INFO - [G] [CRYPTID] Loading library file misprintize.lua
+INFO - [G] [CRYPTID] Loading library file modifiers.lua
+INFO - [G] 2025-02-22 04:00:11 :: WARN  :: Sticker :: Detected duplicate register call on object perishable
+INFO - [G] 2025-02-22 04:00:11 :: WARN  :: Sticker :: Detected duplicate register call on object pinned
+INFO - [G] 2025-02-22 04:00:11 :: WARN  :: Sticker :: Detected duplicate register call on object eternal
+INFO - [G] 2025-02-22 04:00:11 :: WARN  :: Sticker :: Detected duplicate register call on object rental
+INFO - [G] [CRYPTID] Loading library file notifications.lua
+INFO - [G] [CRYPTID] Loading library file overrides.lua
+INFO - [G] [CRYPTID] Loading file achievement.lua
+INFO - [G] [CRYPTID] Loading file blind.lua
+INFO - [G] [CRYPTID] Loading file challenge.lua
+INFO - [G] [CRYPTID] Loading file code.lua
+INFO - [G] [CRYPTID] Loading file deck.lua
+INFO - [G] [CRYPTID] Loading file enhanced.lua
+INFO - [G] [CRYPTID] Loading file epic.lua
+INFO - [G] [CRYPTID] Loading file exotic.lua
+INFO - [G] [CRYPTID] Loading file joker_display.lua
+INFO - [G] [CRYPTID] Loading file m.lua
+INFO - [G] [CRYPTID] Loading file misc.lua
+INFO - [G] [CRYPTID] Loading file misc_joker.lua
+INFO - [G] [CRYPTID] Loading file planet.lua
+INFO - [G] [CRYPTID] Loading file sleeve.lua
+INFO - [G] [CRYPTID] Loading file spectral.lua
+INFO - [G] [CRYPTID] Loading file spooky.lua
+INFO - [G] [CRYPTID] Loading file stake.lua
+INFO - [G] [CRYPTID] Loading file tag.lua
+INFO - [G] [CRYPTID] Loading file test.lua
+INFO - [G] [CRYPTID] Loading file voucher.lua
+INFO - [G] 2025-02-22 04:00:11 :: WARN  :: Atlas :: Object cry_effarcire has the same key as an existing object, not registering.
+INFO - [G] 2025-02-22 04:00:11 :: WARN  :: Atlas :: If you want to modify an existing object, use take_ownership()
+INFO - [G] 2025-02-22 04:00:11 :: INFO  :: TIMER :: [0000] Injected Language in 0.001 ms
+INFO - [G] 2025-02-22 04:00:11 :: INFO  :: TIMER :: [0000] Injected [INTERNAL] in 1.056 ms
+INFO - [G] 2025-02-22 04:00:12 :: INFO  :: TIMER :: [0107] Injected Atlas in 1377.822 ms
+INFO - [G] 2025-02-22 04:00:12 :: INFO  :: TIMER :: [0047] Injected Sound in 144.620 ms
+INFO - [G] 2025-02-22 04:00:12 :: INFO  :: TIMER :: [0036] Injected Stake in 0.583 ms
+INFO - [G] 2025-02-22 04:00:12 :: INFO  :: TIMER :: [0010] Injected Rarity in 0.054 ms
+INFO - [G] 2025-02-22 04:00:12 :: INFO  :: TIMER :: [0012] Injected ObjectType in 0.166 ms
+INFO - [G] 2025-02-22 04:00:12 :: INFO  :: TIMER :: [0896] Injected Center in 4.304 ms
+INFO - [G] 2025-02-22 04:00:12 :: INFO  :: TIMER :: [0011] Injected Undiscovered Sprite in 0.009 ms
+INFO - [G] 2025-02-22 04:00:12 :: INFO  :: TIMER :: [0053] Injected Blind in 0.058 ms
+INFO - [G] 2025-02-22 04:00:12 :: INFO  :: TIMER :: [0006] Injected Seal in 0.116 ms
+INFO - [G] 2025-02-22 04:00:12 :: INFO  :: TIMER :: [0006] Injected Suit in 0.113 ms
+INFO - [G] 2025-02-22 04:00:12 :: INFO  :: TIMER :: [0021] Injected Rank in 0.088 ms
+INFO - [G] 2025-02-22 04:00:12 :: INFO  :: TIMER :: [0022] Injected DeckSkin in 0.112 ms
+INFO - [G] 2025-02-22 04:00:12 :: INFO  :: TIMER :: [0021] Injected PokerHand in 0.169 ms
+INFO - [G] 2025-02-22 04:00:12 :: INFO  :: TIMER :: [0036] Injected Challenge in 0.176 ms
+INFO - [G] 2025-02-22 04:00:12 :: INFO  :: TIMER :: [0049] Injected Tag in 0.315 ms
+INFO - [G] 2025-02-22 04:00:12 :: INFO  :: TIMER :: [0014] Injected Sticker in 0.859 ms
+INFO - [G] 2025-02-22 04:00:12 :: INFO  :: TIMER :: [0016] Injected Shader in 229.191 ms
+INFO - [G] 2025-02-22 04:00:12 :: INFO  :: TIMER :: [0001] Injected Keybind in 0.008 ms
+INFO - [G] 2025-02-22 04:00:12 :: INFO  :: TIMER :: [0020] Injected Achievement in 0.061 ms
+INFO - [G] 2025-02-22 04:00:12 :: INFO  :: TIMER :: [0000] Injected [INTERNAL] in 14.700 ms
+INFO - [G] 2025-02-22 04:00:12 :: INFO  :: TIMER :: [0011] Injected Event in 0.016 ms
+INFO - [G] ERROR LOADING GAME: Card area 'shop_booster' not instantiated before load
+INFO - [G] ERROR LOADING GAME: Card area 'shop_jokers' not instantiated before load
+INFO - [G] ERROR LOADING GAME: Card area 'shop_vouchers' not instantiated before load
+INFO - [G] 2025-02-22 04:06:05 :: DEBUG :: DefaultLogger :: [BUNCO] - Triggered Exotic System enabling.
+INFO - [G] 2025-02-22 04:40:30 :: DEBUG :: DefaultLogger :: [BUNCO] - Triggered Exotic System enabling.
+INFO - [G] 2025-02-22 05:23:24 :: DEBUG :: DefaultLogger :: [BUNCO] - Triggered Exotic System enabling.
+INFO - [G] 2025-02-22 05:24:21 :: DEBUG :: DefaultLogger :: [BUNCO] - Triggered Exotic System enabling.
+INFO - [G] 2025-02-22 05:25:49 :: DEBUG :: DefaultLogger :: [BUNCO] - Triggered Exotic System enabling.
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:26:02 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 05:40:58 :: DEBUG :: DefaultLogger :: [BUNCO] - Triggered Exotic System enabling.
+INFO - [G] 2025-02-22 05:41:29 :: DEBUG :: DefaultLogger :: [BUNCO] - Triggered Exotic System enabling.
+INFO - [G] LONG DT @ 778: 0.1
+INFO - [G] LONG DT @ 778: 0.08111422000009
+INFO - [G] LONG DT @ 779: 0.065963636000073
+INFO - [G] LONG DT @ 779: 0.054335348799915
+INFO - [G] LONG DT @ 236: 0.09566728877178
+INFO - [G] LONG DT @ 236: 0.07780587101761
+INFO - [G] LONG DT @ 236: 0.063165956813901
+INFO - [G] LONG DT @ 236: 0.051329425451318
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] 2025-02-22 07:00:39 :: WARN  :: Blind :: Blind object bl_cry_obsidian_orb has debuff_card function, recalc_debuff is preferred
+INFO - [G] line not found
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] 2025-02-22 07:12:10 :: ERROR :: StackTrace :: Oops! The game crashed
+[SMODS JestersPrivilege "JestersPrivilege.lua"]:304: attempt to index field 'other_card' (a nil value)
+Stack Traceback
+===============
+(1) Lua local 'handler' at file 'main.lua:612'
+	Local variables:
+	 msg = string: "[SMODS JestersPrivilege \"JestersPrivilege.lua\"]:304: attempt to index field 'other_card' (a nil value)"
+	 (*temporary) = Lua function '?' (defined at line 31 of chunk [SMODS _ "src/logging.lua"])
+	 (*temporary) = string: "Oops! The game crashed\
+"
+(2) LÖVE metamethod at file 'boot.lua:352'
+	Local variables:
+	 errhand = Lua function '?' (defined at line 598 of chunk main.lua)
+	 handler = Lua function '?' (defined at line 598 of chunk main.lua)
+(3) Lua field 'func' at file 'JestersPrivilege.lua:304' (from mod with id JestersPrivilege)
+	Local variables:
+	 (*temporary) = nil
+	 (*temporary) = nil
+	 (*temporary) = string: "attempt to index field 'other_card' (a nil value)"
+(4) Lua method 'handle' at file 'engine/event.lua:99'
+	Local variables:
+	 self = table: 0x3ba92ae0  {start_timer:true, timer:TOTAL, blockable:true, trigger:immediate, func:function: 0x3b9894e0 (more...)}
+	 _results = table: 0x3b6d4670  {blocking:true, pause_skip:false, time_done:false, completed:false}
+(5) Lua method 'update' at file 'engine/event.lua:182'
+	Local variables:
+	 self = table: 0x3b749208  {queue_last_processed:11516.466666583, queues:table: 0x3b749230, queue_dt:0.016666666666667 (more...)}
+	 dt = number: 0.00290101
+	 forced = nil
+	 (for generator) = C function: next
+	 (for state) = table: 0x3b749230  {unlock:table: 0x3b749320, other:table: 0x3b7493c0, tutorial:table: 0x3b749370 (more...)}
+	 (for control) = number: nan
+	 k = string: "base"
+	 v = table: 0x3b749348  {1:table: 0x3ba5d9e8, 2:table: 0x3ba92ae0, 3:table: 0x3b8cd4f8, 4:table: 0x3ce7f6d8 (more...)}
+	 blocked = boolean: false
+	 i = number: 2
+	 results = table: 0x3b6d4670  {blocking:true, pause_skip:false, time_done:false, completed:false}
+(6) Lua upvalue 'gameUpdateRef' at file 'game.lua:2692'
+	Local variables:
+	 self = table: 0x3b2237c8  {CHOOSE_HAND:table: 0x3c258f58, F_GUIDE:false, F_CRASH_REPORTS:false, prev_boss_state:Upcoming (more...)}
+	 dt = number: 0.00290101
+	 http_resp = nil
+(7) Lua upvalue 'upd' at Steamodded file 'src/ui.lua:84' 
+	Local variables:
+	 self = table: 0x3b2237c8  {CHOOSE_HAND:table: 0x3c258f58, F_GUIDE:false, F_CRASH_REPORTS:false, prev_boss_state:Upcoming (more...)}
+	 dt = number: 0.00290101
+(8) Lua upvalue 'original_game_update' at file 'main.lua:1788'
+	Local variables:
+	 self = table: 0x3b2237c8  {CHOOSE_HAND:table: 0x3c258f58, F_GUIDE:false, F_CRASH_REPORTS:false, prev_boss_state:Upcoming (more...)}
+	 dt = number: 0.00290101
+(9) Lua upvalue 'gu' at file 'Bunco.lua:696' (from mod with id Bunco)
+	Local variables:
+	 self = table: 0x3b2237c8  {CHOOSE_HAND:table: 0x3c258f58, F_GUIDE:false, F_CRASH_REPORTS:false, prev_boss_state:Upcoming (more...)}
+	 dt = number: 0.00290101
+(10) Lua upvalue 'upd' at file 'lib/gameset.lua:26' (from mod with id Cryptid)
+	Local variables:
+	 self = table: 0x3b2237c8  {CHOOSE_HAND:table: 0x3c258f58, F_GUIDE:false, F_CRASH_REPORTS:false, prev_boss_state:Upcoming (more...)}
+	 dt = number: 0.00290101
+(11) Lua method 'update' at file 'lib/overrides.lua:256' (from mod with id Cryptid)
+	Local variables:
+	 self = table: 0x3b2237c8  {CHOOSE_HAND:table: 0x3c258f58, F_GUIDE:false, F_CRASH_REPORTS:false, prev_boss_state:Upcoming (more...)}
+	 dt = number: 0.00290101
+(12) Lua upvalue 'oldupd' at file 'main.lua:1004'
+	Local variables:
+	 dt = number: 0.00290101
+(13) Lua field 'update' at file 'main.lua:1817'
+	Local variables:
+	 dt = number: 0.00290101
+(14) Lua function '?' at file 'main.lua:931' (best guess)
+(15) global C function 'xpcall'
+(16) LÖVE function at file 'boot.lua:377' (best guess)
+	Local variables:
+	 func = Lua function '?' (defined at line 902 of chunk main.lua)
+	 inerror = boolean: true
+	 deferErrhand = Lua function '(LÖVE Function)' (defined at line 348 of chunk [love "boot.lua"])
+	 earlyinit = Lua function '(LÖVE Function)' (defined at line 355 of chunk [love "boot.lua"])
+
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] 2025-02-22 07:12:10 :: INFO  :: StackTrace :: Additional Context:
+Balatro Version: 1.0.1n-FULL
+Modded Version: 1.0.0~ALPHA-1410c-STEAMODDED
+LÖVE Version: 11.5.0
+Lovely Version: 0.7.1
+Platform: Windows
+Steamodded Mods:
+    1: SDM_0's Stuff by SDM_0 [ID: sdm0sstuff, Version: 1.6.4k, Uses Lovely]
+    2: Unsorted by Telbone [ID: unsorted]
+    3: KCVanilla by krackocloud [ID: kcvanilla, Version: 2.2.3, Uses Lovely]
+    4: Buffoonery by PinkMaggit [ID: Buffoonery, Version: 1.1.3, Uses Lovely]
+    5: Talisman by MathIsFun_, Mathguy24, jenwalter666, cg-223 [ID: Talisman, Version: 2.1.0~dev, Uses Lovely]
+        Break Infinity: omeganum
+    6: ExtraCredit by CampfireCollective [ID: extracredit, Priority: 1, Version: 1.1.0, Uses Lovely]
+    7: Bunco by Firch, RENREN, Peas, minichibis, J.D., Guwahavel, Ciirulean, ejwu [ID: Bunco, Version: 5.0, Uses Lovely]
+    8: DNDJ by Auraa_ [ID: dndj, Version: 0.2.6b]
+    9: Cryptid by MathIsFun_, Cryptid and Balatro Discords [ID: Cryptid, Priority: 2147483647, Version: 0.5.4~dev2, Uses Lovely]
+    10: Neato Jokers by Neato [ID: Neato_Jokers, Version: 1.0.3, Uses Lovely]
+    11: Reverie by DVRP [ID: Reverie, Version: 1.4.1, Uses Lovely]
+    12: Paperback by PaperMoon, OppositeWolf770, srockw, Nether, B [ID: paperback, Version: 0.5.1, Uses Lovely]
+    13: Jester's Privilege by unethikeele [ID: JestersPrivilege]
+    14: Cosmos by Cosmos [ID: Cosmos, Version: 0.0.3, Uses Lovely]
+Lovely Mods:

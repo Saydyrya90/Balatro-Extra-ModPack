@@ -1,0 +1,24 @@
+{
+    "name": "Codex Arcanum",
+    "id": "CodexArcanum",
+    "version": "1.1.5",
+    "website_url": "https://github.com/AirBurn0/Codex-Arcanum/tree/main",
+    "description": "Adds a new set of consumable cards - Alchemicals!",
+    "prefix": "alchemy",
+    "author": [
+        "itayfeder",
+        "Lyman",
+        "Jumbo",
+        "AirBurn"
+    ],
+    "main_file": "CodexArcanum.lua",
+    "priority": 1000,
+    "badge_colour": "C09D75",
+    "dependencies": [
+        "Steamodded (>=1.0.0~ALPHA-1401a)"
+    ],
+    "conflicts": [
+        "ReduxArcanum"
+    ],
+    "dump_loc": false 
+}

@@ -1,0 +1,75 @@
+INFO - [♥] Lovely 0.7.1
+INFO - [♥] Game directory is at "G:\\Games\\Balatro v1.0.1.n-FULL\\Balatro"
+INFO - [♥] Writing logs to "C:\\Users\\saydy\\AppData\\Roaming\\Balatro\\Mods\\lovely\\log"
+INFO - [♥] Using mod directory at "C:\\Users\\saydy\\AppData\\Roaming\\Balatro\\Mods"
+WARN - [♥] Unknown key `patches.16.?.match_indent` found in patch file at "C:\\Users\\saydy\\AppData\\Roaming\\Balatro\\Mods\\Bunco-7d23af2998ab14a8401e98b46b947103673e45fc\\lovely.toml", ignoring it
+WARN - [♥] Unknown key `patches.160.?.match_indent` found in patch file at "C:\\Users\\saydy\\AppData\\Roaming\\Balatro\\Mods\\Bunco-7d23af2998ab14a8401e98b46b947103673e45fc\\lovely.toml", ignoring it
+WARN - [♥] Unknown key `patches.21.?.match_indent` found in patch file at "C:\\Users\\saydy\\AppData\\Roaming\\Balatro\\Mods\\Cryptid-refactor\\lovely\\code.toml", ignoring it
+WARN - [♥] Unknown key `patches.49.?.match_indent` found in patch file at "C:\\Users\\saydy\\AppData\\Roaming\\Balatro\\Mods\\Talisman\\lovely.toml", ignoring it
+WARN - [♥] Unknown key `patches.52.?.match_indent` found in patch file at "C:\\Users\\saydy\\AppData\\Roaming\\Balatro\\Mods\\Talisman\\lovely.toml", ignoring it
+INFO - [♥] Cleaning up dumps directory at "C:\\Users\\saydy\\AppData\\Roaming\\Balatro\\Mods\\lovely\\dump"
+INFO - [♥] Initialization complete in 22ms
+WARN - [♥] Pattern 'G.ARGS.score_intensity.organ = G.video_organ or G.ARGS.score_intensity.required_score > 0 and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0' on target 'main.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'if type(G.GAME.current_round.current_hand.chips) ~= \'number\' or type(G.GAME.current_round.current_hand.mult) ~= \'number\' then' on target 'main.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+INFO - [♥] Applied 15 patches to 'main.lua'
+INFO - [♥] Applied 2 patches to 'engine/string_packer.lua'
+INFO - [♥] Applied 6 patches to 'engine/controller.lua'
+INFO - [♥] Applied 13 patches to 'back.lua'
+WARN - [♥] Pattern 'add_tag(Tag(_context.tag.key))' on target 'tag.lua' for pattern patch from Reverie\lovely.toml resulted in no matches
+INFO - [♥] Applied 18 patches to 'tag.lua'
+INFO - [♥] Applied 3 patches to 'engine/node.lua'
+INFO - [♥] Applied 2 patches to 'engine/moveable.lua'
+INFO - [♥] Applied 2 patches to 'engine/sprite.lua'
+INFO - [♥] Applied 2 patches to 'engine/animatedsprite.lua'
+WARN - [♥] Pattern 'assembled_string = assembled_string..(type(subpart) == \'string\' and subpart or args.vars[tonumber(subpart[1])] or \'ERROR\')' on target 'functions/misc_functions.lua' for pattern patch from Talisman\lovely.toml resulted in no matches
+INFO - [♥] Applied 52 patches to 'functions/misc_functions.lua'
+WARN - [♥] Pattern '-- removed first hand drawn context' on target 'game.lua' for pattern patch from Bunco-7d23af2998ab14a8401e98b46b947103673e45fc\lovely.toml resulted in no matches
+WARN - [♥] Pattern 'for i = 1, 2 do' on target 'game.lua' for pattern patch from Bunco-7d23af2998ab14a8401e98b46b947103673e45fc\lovely.toml resulted in no matches
+INFO - [♥] Applied 97 patches to 'game.lua'
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] file not found: main.lua: No such file or directory
+INFO - [G] Oops! The game crashed
+Syntax error: game.lua:3591: unexpected symbol near '}'
+
+Stack Traceback
+===============
+(1) Lua local 'handler' at file 'main.lua:612'
+	Local variables:
+	 msg = string: "Syntax error: game.lua:3591: unexpected symbol near '}'\
+"
+	 (*temporary) = Lua function '?' (defined at line 602 of chunk main.lua)
+	 (*temporary) = string: "Oops! The game crashed\
+"
+(2) LÖVE function at file 'boot.lua:352' (best guess)
+	Local variables:
+	 errhand = Lua function '?' (defined at line 598 of chunk main.lua)
+	 handler = Lua function '?' (defined at line 598 of chunk main.lua)
+(3)  C function 'function: 0x329bbbf8'
+(4) global C function 'require'
+(5) main chunk of file 'main.lua' at line 872
+(6) global C function 'require'
+(7) LÖVE function at file 'boot.lua:323' (best guess)
+	Local variables:
+	 c = table: 0x329ae6b0  {identity:false, version:11.5, accelerometerjoystick:true, modules:table: 0x329b4720 (more...)}
+	 openedconsole = boolean: false
+	 confok = boolean: true
+	 conferr = nil
+(8) global C function 'xpcall'
+(9) LÖVE function at file 'boot.lua:362' (best guess)
+	Local variables:
+	 result = boolean: true
+(10) global C function 'xpcall'
+(11) LÖVE function at file 'boot.lua:377' (best guess)
+	Local variables:
+	 func = Lua function '(LÖVE Function)' (defined at line 355 of chunk [love "boot.lua"])
+	 inerror = boolean: true
+	 deferErrhand = Lua function '(LÖVE Function)' (defined at line 348 of chunk [love "boot.lua"])
+	 earlyinit = Lua function '(LÖVE Function)' (defined at line 355 of chunk [love "boot.lua"])
+
+INFO - [G] Additional Context:
+Balatro Version: 1.0.1n-FULL (best guess)
+Modded Version: 1.0.0~ALPHA-1410c-STEAMODDED
+LÖVE Version: 11.5.0
+Lovely Version: 0.7.1
+Platform: Windows

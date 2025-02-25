@@ -1,0 +1,58 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "G.FUNCS.check_for_buy_space = function(card)"
+position = "after"
+payload = '''
+if card.ability.name == 'Laidback Joker' and not (#G.jokers.cards < (G.jokers.config.card_limit - 1) + ((card.edition and card.edition.negative) and 1 or 0)) then
+  alert_no_space(card, card.ability.consumeable and G.consumeables or G.jokers)
+  return false
+end
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = 'if self.area and self.ability.couponed and (self.area == G.shop_jokers or self.area == G.shop_booster) then self.cost = 0 end'
+position = 'after'
+match_indent = true
+payload = '''
+if self.config.center.key == 'j_buf_afan' and self.added_to_deck then
+    self.sell_cost = self.ability.extra.cost + (self.ability.extra_value or 0)
+end
+'''
+
+[[patches]]
+[patches.pattern]
+target = 'cardarea.lua'
+pattern = 'function CardArea:emplace(card, location, stay_flipped)'
+position = 'before'
+match_indent = true
+payload = '''
+clown_count = -1
+'''
+
+[[patches]]
+[patches.pattern]
+target = 'cardarea.lua'
+pattern = 'if self == G.jokers then'
+position = 'after'
+match_indent = true
+payload = '''
+local check = false
+for i = 1, #G.jokers.cards do
+	if G.jokers.cards[i].config.center.key == "j_buf_clown" then 
+		check = true
+		break
+	end
+end
+if check then
+	clown_count = clown_count + 1
+end
+'''

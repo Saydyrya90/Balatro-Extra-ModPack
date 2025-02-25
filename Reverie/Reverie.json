@@ -1,0 +1,16 @@
+{
+    "id": "Reverie",
+    "name": "Reverie",
+    "author": ["DVRP"],
+    "description": "A movie-themed expansion that focuses on providing special shops and various contents around it",
+    "badge_colour": "9db95f",
+    "version": "1.4.1",
+    "prefix": "dvrprv",
+    "main_file": "Reverie.lua",
+	"dependencies": [
+		"Steamodded (>=1.0.0~ALPHA-1306a)"
+	],
+	"conflicts": [
+		"CardSleeves (<<1.6.0)"
+	]
+}

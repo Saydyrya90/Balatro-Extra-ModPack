@@ -23,6 +23,7 @@ function loadAPIs()
         o = o or {}
         assert(o.mod == nil)
         o.mod = SMODS.current_mod
+        o.original_mod = o.mod
         setmetatable(o, self)
         for _, v in ipairs(o.required_params or {}) do
             assert(not (o[v] == nil), ('Missing required parameter for %s declaration: %s'):format(o.set, v))
@@ -217,11 +218,11 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
         end
         local is_loc_modified = obj.loc_txt or obj.loc_vars or obj.generate_ui
         if is_loc_modified then orig_o.is_loc_modified = true end
-        if not orig_o.is_loc_modified then
+        if not orig_o.is_loc_modified and not orig_o.original_mod then
             -- Setting generate_ui to this sentinel value
             -- makes vanilla localization code run instead of SMODS's code
             orig_o.generate_ui = 0
-		else
+		elseif not orig_o.original_mod then
 			-- reset the value if otherwise, in case when the object was taken over before and this value was already set to 0
 			if orig_o.generate_ui == 0 then
 				orig_o.generate_ui = nil
@@ -311,7 +312,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
         set = '[INTERNAL]',
         register = function() error('INTERNAL CLASS, DO NOT CALL') end,
         pre_inject_class = function()
-            SMODS.handle_loc_file(SMODS.path)
+            SMODS.handle_loc_file(SMODS.path, '_')
             if SMODS.dump_loc then SMODS.dump_loc.pre_inject = copy_table(G.localization) end
             for _, mod in ipairs(SMODS.mod_list) do
                 if mod.process_loc_text and type(mod.process_loc_text) == 'function' then
@@ -1025,7 +1026,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
                 -- Should "cards" be formatted as `{[<center key>] = true}` or {<center key>}?
                 -- Changing "cards" and "pools" wouldn't be hard to do, just depends on preferred format
                 if ((self.pools and self.pools[k]) or (v.cards and v.cards[self.key])) then
-                    SMODS.ObjectTypes[k]:inject_card(self)
+                    v:inject_card(self)
                 end
             end
         end,
@@ -1034,7 +1035,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
             SMODS.remove_pool(G.P_CENTER_POOLS[self.set], self.key)
             for k, v in pairs(SMODS.ObjectTypes) do
                 if ((self.pools and self.pools[k]) or (v.cards and v.cards[self.key])) then
-                    SMODS.ObjectTypes[k]:remove_card(self)
+                    v:delete_card(self)
                 end
             end
             local j
@@ -1112,8 +1113,8 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
         inject = function(self)
             -- call the parent function to ensure all pools are set
             SMODS.Center.inject(self)
-            if self.taken_ownership and self.rarity_original == self.rarity then
-                SMODS.remove_pool(G.P_JOKER_RARITY_POOLS[self.rarity_original], self.key)
+            if self.taken_ownership and self.rarity_original and self.rarity_original ~= self.rarity then
+                SMODS.remove_pool(G.P_JOKER_RARITY_POOLS[self.rarity_original] or {}, self.key)
                 SMODS.insert_pool(G.P_JOKER_RARITY_POOLS[self.rarity], self, false)
             else
                 SMODS.insert_pool(G.P_JOKER_RARITY_POOLS[self.rarity], self)
@@ -1412,7 +1413,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
         draw_hand = true,
         update_pack = SMODS.Booster.update_pack,
         ease_background_colour = function(self) ease_background_colour_blind(G.STATES.TAROT_PACK) end,
-        create_UIBox = function(self) return create_UIBox_arcana_pack() end,
+        create_UIBox = SMODS.Booster.create_UIBox,
         particles = function(self)
             G.booster_pack_sparkles = Particles(1, 1, 0,0, {
                 timer = 0.015,
@@ -1444,7 +1445,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
         group_key = "k_celestial_pack",
         update_pack = SMODS.Booster.update_pack,
         ease_background_colour = function(self) ease_background_colour_blind(G.STATES.PLANET_PACK) end,
-        create_UIBox = function(self) return create_UIBox_celestial_pack() end,
+        create_UIBox = SMODS.Booster.create_UIBox,
         particles = function(self)
             G.booster_pack_stars = Particles(1, 1, 0,0, {
                 timer = 0.07,
@@ -1498,7 +1499,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
         draw_hand = true,
         update_pack = SMODS.Booster.update_pack,
         ease_background_colour = function(self) ease_background_colour_blind(G.STATES.SPECTRAL_PACK) end,
-        create_UIBox = function(self) return create_UIBox_spectral_pack() end,
+        create_UIBox = SMODS.Booster.create_UIBox,
         particles = function(self)
             G.booster_pack_sparkles = Particles(1, 1, 0,0, {
                 timer = 0.015,
@@ -1524,7 +1525,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
         group_key = "k_standard_pack",
         update_pack = SMODS.Booster.update_pack,
         ease_background_colour = function(self) ease_background_colour_blind(G.STATES.STANDARD_PACK) end,
-        create_UIBox = function(self) return create_UIBox_standard_pack() end,
+        create_UIBox = SMODS.Booster.create_UIBox,
         particles = function(self)
             G.booster_pack_sparkles = Particles(1, 1, 0,0, {
                 timer = 0.015,
@@ -1552,7 +1553,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
         group_key = "k_buffoon_pack",
         update_pack = SMODS.Booster.update_pack,
         ease_background_colour = function(self) ease_background_colour_blind(G.STATES.BUFFOON_PACK) end,
-        create_UIBox = function(self) return create_UIBox_buffoon_pack() end,
+        create_UIBox = SMODS.Booster.create_UIBox,
         create_card = function(self, card)
             return {set = "Joker", area = G.pack_cards, skip_materialize = true, soulable = true, key_append = "buf"}
         end,
@@ -2193,7 +2194,6 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
                 func = function()
                     local cards = {}
                     for i = 1, card.ability.extra do
-                        cards[i] = true
                         -- TODO preserve suit vanilla RNG
                         local _suit, _rank =
                             pseudorandom_element(SMODS.Suits, pseudoseed('grim_create')).card_key, 'A'
@@ -2203,7 +2203,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
                                 cen_pool[#cen_pool + 1] = v
                             end
                         end
-                        create_playing_card({
+                        cards[i] = create_playing_card({
                             front = G.P_CARDS[_suit .. '_' .. _rank],
                             center = pseudorandom_element(cen_pool, pseudoseed('spe_card'))
                         }, G.hand, nil, i ~= 1, { G.C.SECONDARY_SET.Spectral })
@@ -2226,7 +2226,6 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
                 func = function()
                     local cards = {}
                     for i = 1, card.ability.extra do
-                        cards[i] = true
                         -- TODO preserve suit vanilla RNG
                         local faces = {}
                         for _, v in ipairs(SMODS.Rank.obj_buffer) do
@@ -2242,7 +2241,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
                                 cen_pool[#cen_pool + 1] = v
                             end
                         end
-                        create_playing_card({
+                        cards[i] = create_playing_card({
                             front = G.P_CARDS[_suit .. '_' .. _rank],
                             center = pseudorandom_element(cen_pool, pseudoseed('spe_card'))
                         }, G.hand, nil, i ~= 1, { G.C.SECONDARY_SET.Spectral })
@@ -2265,7 +2264,6 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
                 func = function()
                     local cards = {}
                     for i = 1, card.ability.extra do
-                        cards[i] = true
                         -- TODO preserve suit vanilla RNG
                         local numbers = {}
                         for _, v in ipairs(SMODS.Rank.obj_buffer) do
@@ -2281,7 +2279,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
                                 cen_pool[#cen_pool + 1] = v
                             end
                         end
-                        create_playing_card({
+                        cards[i] = create_playing_card({
                             front = G.P_CARDS[_suit .. '_' .. _rank],
                             center = pseudorandom_element(cen_pool, pseudoseed('spe_card'))
                         }, G.hand, nil, i ~= 1, { G.C.SECONDARY_SET.Spectral })
@@ -3281,7 +3279,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
         pre_inject_class = function()
             for _, mod in ipairs(SMODS.mod_list) do
                 if mod.can_load then
-                    SMODS.handle_loc_file(mod.path)
+                    SMODS.handle_loc_file(mod.path, mod.id)
                 end
             end
         end

@@ -55,14 +55,15 @@ if G.GAME.cry_oboe then
     self.ability.extra = self.ability.extra + G.GAME.cry_oboe
     G.GAME.pack_choices = G.GAME.pack_choices + G.GAME.cry_oboe
     G.GAME.cry_oboe = nil
-    G.GAME.pack_size = self.ability.extra
 end
-if G.GAME.boostertag then
+if G.GAME.boostertag and G.GAME.boostertag > 0 then
     self.ability.extra = self.ability.extra * 2
     G.GAME.pack_choices = G.GAME.pack_choices * 2
-    G.GAME.boostertag = nil
-    G.GAME.pack_size = self.ability.extra
+    G.GAME.boostertag = math.max(0, G.GAME.boostertag - 1)
 end
+self.ability.extra = math.min(self.ability.extra, 1000)
+G.GAME.pack_choices = math.min(G.GAME.pack_choices, 1000)
+G.GAME.pack_size = self.ability.extra
 '''
 match_indent = true
 
@@ -79,7 +80,7 @@ match_indent = true
 # Vouchers
 [[patches]]
 [patches.pattern]
-target = "game.lua"
+target = '''=[SMODS _ "src/utils.lua"]'''
 pattern = "create_shop_card_ui(card, 'Voucher', G.shop_vouchers)"
 position = "before"
 payload = '''

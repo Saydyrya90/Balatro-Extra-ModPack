@@ -52,6 +52,7 @@ Cryptid.edeck_sprites = {
 		rental = { atlas = "cry_atlasenhanced", pos = { x = 1, y = 3 } },
 		pinned = { atlas = "cry_atlasenhanced", pos = { x = 0, y = 5 } },
 		banana = { atlas = "cry_atlasenhanced", pos = { x = 5, y = 4 } },
+		cry_rigged = { atlas = "cry_atlasenhanced", pos = { x = 3, y = 6 } },
 	},
 	suit = {
 		order = 4,
@@ -363,16 +364,15 @@ return {
 			ccl(self)
 			if
 				Galdur
+					and safe_get(Galdur, "run_setup", "current_page") == 1
 					and (self.edeck_select or (self.area == safe_get(Galdur, "run_setup", "selected_deck_area") and safe_get(
 						self,
 						"config",
 						"center",
 						"edeck_type"
 					)))
-				or (
-					safe_get(G.GAME, "viewed_back", "effect", "center", "edeck_type")
-					and (self.back == "viewed_back" or self.edeck_select)
-				)
+				or not Galdur
+					and (safe_get(G.GAME, "viewed_back", "effect", "center", "edeck_type") and (self.back == "viewed_back" or self.edeck_select))
 			then
 				if self.edeck_select then
 					G.PROFILES[G.SETTINGS.profile]["cry_edeck_" .. self.config.center.edeck_type] = self.edeck_select

@@ -1254,6 +1254,14 @@ return {
 					"{C:inactive,s:0.8}Seems legit...{}",
 				},
 			},
+			j_cry_jtron = {
+				name = "Jimbo-tron 9000",
+				text = {
+					"Dieser Joker bekommt {X:dark_edition,C:white} ^#1# {} Mult",
+					"für jeden Standard {C:attention}Joker{}",
+					"{C:inactive}(Momentan {X:dark_edition,C:white}^#2#{C:inactive} Mult)",
+				},
+			},
 			j_cry_kidnap = {
 				name = "Entführung",
 				text = {
@@ -1286,6 +1294,15 @@ return {
 					"Füge {C:dark_edition}Polychrome{} zu",
 					"einem zufälligen {C:attention}Joker{} hinzu",
 					"wenn {C:attention}Boss Blind{} besiegt wird",
+				},
+			},
+			j_cry_lebaron_james = {
+				name = "LeBaron James",
+				text = {
+					"Gespeilte und gewertete {C:attention}Könige{} geben",
+					"{C:attention}+#1#{} Handgröße für diese Runde",
+					"und lösen {C:attention}in der Hand{} Effekte aus",
+					"{C:inactive}(Momentan {C:attention}+#2#{C:inactive} Handgröße)",
 				},
 			},
 			j_cry_lightupthenight = {
@@ -3443,6 +3460,72 @@ return {
 		},
 	},
 	misc = {
+		tutorial = {
+			cry_intro_1 = {
+				"Hallo, ich bin {C:attention}Joseph J. Joker{}!",
+				"Wilkommen zu {C:cry_exotic,E:1}Cryptid{}!",
+			},
+			cry_intro_2 = {
+				"Sieht aus als hättest du auf diesem Profil",
+				"noch nie {C:cry_exotic,E:1}Cryptid{} genutzt.",
+				"Lass mich dir zeigen wie es funktioniert!",
+			},
+			cry_intro_3 = {
+				"*wächst hände*",
+			},
+			cry_intro_4 = {
+				"Es ist schwer dieses Mod in nur",
+				"einigen Sätzen zu beschreiben, aber was ich sagen kann",
+				"ist, dass es jetzt {C:cry_exotic,E:1}wild{} wird!",
+				"Das ist nicht das selbe {C:attention}Joker Poker{} das du kennst...",
+			},
+			cry_intro_5 = {
+				"Wie du von diesen {C:cry_ascendant}Gamesets{}",
+				"sehen kannst, mag ich den Buchstaben {C:attention}M{}.",
+				"Wähle ein Gameset das ich erklähren soll...",
+				"{s:0.8}Achtung: An Gamesets wird immernoch gearbeitet.",
+				"{s:0.8}Erwarte regelmäßige Änderungen!",
+			},
+			cry_modest_1 = {
+				"Suchst du eine Erfahrung ähnlich zu Vanilla?",
+				"Dann ist das {C:cry_ascendant}Modest{} Gameset für dich!",
+			},
+			cry_modest_2 = {
+				"Aber halte trotzdem die Augen offen für all",
+				"den Schabernack in Cryptid! Du weißt nie",
+				"was du in der nächsten Runde findest...",
+			},
+			cry_mainline_1 = {
+				"Willst du das Spiel gerne {E:1,C:attention}zerstören{}? Gute Nachichten!",
+				"Du kannst es machen ohne komplett durchzudrehen.",
+			},
+			cry_mainline_2 = {
+				"Hier ist es immernoch verrückt, aber du hast die",
+				"Chance das {C:cry_ascendant}Fortschrittsystem{} zu",
+				"erfahren. Aber werde nicht zu gemütlich...",
+			},
+			cry_mainline_3 = {
+				"Weil du stärker sein wirst,",
+				"habe ich einige {E:1,C:dark_edition}Bosse{} die",
+				"dich deine Wahl bereuen lassen könnten.",
+			},
+			cry_madness_1 = {
+				"Willst du deine Festplatte komplett {C:red,E:1}vernichten{}?",
+				"Oh, was ein Spaß! Das {C:cry_ascendant}Madness{} Gameset sagt",
+				"'Balance? {E:1,C:red}WAS IST DAS DEN!?{}'",
+			},
+			cry_madness_2 = {
+				"Ich habe viele schlaflose Wochen, {C:green}Mountain Dew{}-angetriebene",
+				"Nächte verbracht um sicherzustellen, dass dieses Gameset für dich",
+				"{C:cry_ascendant}PERFEKT BALANCIERT{} ist!",
+			},
+			cry_madness_3 = {
+				"Du beginnst mit allem freigeschaltet, also",
+				"kannst du die {C:red,E:1}volle Macht{} von Cryptid sofort nutzen!",
+				"Sei nur vorsichtig, dass das Spiel nicht {C:attention,E:1}abstürzt{},",
+				"da das Warscheinlich passiert bevor du verlierst...",
+			},
+		},
 		poker_hands = {
 			["cry_Bulwark"] = "Bollwerk",
 			["cry_Clusterfuck"] = "Clusterfuck",
@@ -3633,6 +3716,26 @@ return {
 			cry_notif_jimball_d1 = 'Jimball spielt den Song "Funkytown",',
 			cry_notif_jimball_d2 = "welcher urheberrechtlich geschützt ist und nicht",
 			cry_notif_jimball_d3 = "für Streams und Videos genutzt werden kann.",
+
+			cry_gameset_explanation = {
+				"Wähle eine Gameset Konfiguartion",
+				"für diese Karte.",
+			},
+			cry_gameset_disabled = "Deaktiviert",
+			cry_gameset_modest = "Modest",
+			cry_gameset_mainline = "Mainline",
+			cry_gameset_madness = "Madness",
+			cry_gameset_custom = "Modifiziert",
+			cry_gameset_experimental = "Experimentel",
+			cry_gameset_experimental_modest = "Experimentel (Modest)",
+			cry_gameset_experimental_mainline = "Experimentel (Mainline)",
+			cry_gameset_experimental_madness = "Experimentel (Madness)",
+
+			cry_view_set_contents = "Siehe Gegenstände im set",
+
+			b_reset_gameset_modest = "Setzt Gameset Konfiguaration zurück (Modest)",
+			b_reset_gameset_mainline = "Setzt Gameset Konfiguaration zurück (Mainline)",
+			b_reset_gameset_madness = "Setzt Gameset Konfiguaration zurück (Madness)",
 		},
 		labels = {
 			food_jokers = "Essen Joker",
@@ -3804,9 +3907,9 @@ return {
 			{ "VERSUCHST SPÄTER NOCHMAL", "HINWEIS: DU WIRST NICHT", "GENUG GELD HABEN" },
 			{ "HÄ?", '"GUTSCHEINE"?', "DAS IST NICHTMAL EIN WORT..." },
 			{ 'HALTE "R"', "UM ALLE GUTSCHEINE", "NACHZUFÜLLEN" },
-			{ "WÜSSTEST DU?", "ALT+F4 DRÜCKEN", "GIBT KOSTENLOSE GUTSCHEINE!" },
+			{ "WUSSTEST DU?", "ALT+F4 DRÜCKEN", "GIBT KOSTENLOSE GUTSCHEINE!" },
 			{ "TUHT MIR LEID,", "ES GIBT KEINE GUTSCHEINE", "WEGEN BUDGETVERKÜRZUNGEN" },
-			{ "RUFE 1-600-JIMBO AN", "UM DEINE ERFAHRUNG MIR", "GUTSCHEINEN ZU BEWERTEN" },
+			{ "RUFE 1-600-JIMBO AN", "UM DEINE ERFAHRUNG MIT", "GUTSCHEINEN ZU BEWERTEN" },
 			{ "BESIEGE", "ANTE 39 BOSS BLIND", "ZUM NACHFÜLLEN" },
 			{ "ZAUBERTRICK", "ICH HABE DIESEN GUTSCHEIN", "VERSCHWINDEN LASSEN" },
 			{ "WARUM IST EIN", "GUTSCHEIN WIE EIN", "SCHREIBTISCH?" },
@@ -3827,11 +3930,11 @@ return {
 			{ "ES GIBT KEINEN", "WEINACHTSMANN", "UND AUCH KEINE GUTSCHEINE" },
 			{ "", "GUTNEIN", "" },
 			{ "DU", "HAST GERADE", "DAS SPIEL VERLOREN" },
-			{ "CAN ICH DIR IN DIESEN", "IN DIESEN SCHWEREN ZEITEN", "EIN SCHÖNES EI ANBIETEN?" },
-			{ "BERÜHRE ETWAS GRASS", "ANSTATT DIESES", "DECK ZU BENUZEN" },
+			{ "KANN ICH DIR IN DIESEN", "IN DIESEN SCHWEREN ZEITEN", "EIN SCHÖNES EI ANBIETEN?" },
+			{ "BERÜHRE ETWAS GRASS", "ANSTATT DIESES", "DECK ZU BENUTZEN" },
 			{ "DU KÖNNTEST JETZT", "GERADE MIT DEM BLAUEN", "DECK SPEILEN" },
 			{ "KOSTENLOSE EXOTISCHE JOKER", "HOHLE SIE BEVOR", "ES ZU SPÄT IST (ausverkauft)" },
-			{ "DU KANNST BEWEISEN, DASS", "ICH FALSCH LIEGE INDEM", "DU DEN UNSICHBAREN GUTSCHEIN KAUFST" },
+			{ "DU KANNST BEWEISEN, DASS", "ICH FALSCH LIEGE INDEM", "DU DEN UNSICHTBAREN GUTSCHEIN KAUFST" },
 			{ "", "keine gutscheine?", "" },
 			{
 				"siehst du diese werbung?",

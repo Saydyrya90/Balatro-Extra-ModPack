@@ -16,6 +16,13 @@ local very_fair = {
 	end,
 	init = function(self)
 		very_fair_quip = {}
+		local avts = SMODS.add_voucher_to_shop
+		function SMODS.add_voucher_to_shop(...)
+			if G.GAME.modifiers.cry_no_vouchers then
+				return
+			end
+			return avts(...)
+		end
 	end,
 }
 local equilibrium = {
@@ -465,6 +472,12 @@ local antimatter = {
 			"set_cry_deck",
 		},
 	},
+	loc_vars = function(self, info_queue, center)
+		return {
+			key = "b_cry_antimatter"
+				.. (cry_get_gameset(G.P_CENTERS.b_cry_antimatter) == "madness" and "" or "_balanced"),
+		}
+	end,
 	name = "cry-Antimatter",
 	order = 76,
 	key = "antimatter",

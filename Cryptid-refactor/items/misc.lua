@@ -512,7 +512,7 @@ local glitched = {
 				}))
 				update_hand_text(
 					{ delay = 1.3 },
-					{ mult = (amount > to_big(0) and "+" or "-") .. "???", StatusText = true }
+					{ mult = (to_big(amount) > to_big(0) and "+" or "-") .. "???", StatusText = true }
 				)
 			end
 		end
@@ -1073,7 +1073,9 @@ local glass_edition = {
 		end
 
 		if
-			context.cardarea == G.jokers and context.post_trigger --animation-wise this looks weird sometimes
+			context.cardarea == G.jokers
+			and context.post_trigger
+			and context.other_card == card --animation-wise this looks weird sometimes
 		then
 			if
 				not card.ability.eternal
@@ -1173,7 +1175,7 @@ local gold_edition = {
 	weight = 7,
 	extra_cost = 4,
 	in_shop = true,
-	config = { dollars = 2 },
+	config = { dollars = 2, active = true },
 	loc_vars = function(self, info_queue)
 		return { vars = { self.config.dollars } }
 	end,
@@ -1187,8 +1189,21 @@ local gold_edition = {
 		card.edition.cry_gold_seed = pseudorandom("e_cry_gold") * 2 - 1
 	end,
 	calculate = function(self, card, context)
-		if context.post_trigger or (context.using_consumeable and context.consumeable == card) then
-			SMODS.calculate_effect({ dollars = self.config.dollars }, card, true)
+		if
+			(
+				context.post_trigger -- for when on jonklers
+				and context.other_card == card
+			)
+			or (
+				context.main_scoring -- for when on playing cards
+				and context.cardarea == G.play
+			)
+			or (
+				context.using_consumeable -- for when using a consumable
+				and context.consumeable == card
+			)
+		then
+			return { p_dollars = self.config.dollars } -- updated value
 		end
 	end,
 }
@@ -1928,20 +1943,24 @@ local absolute = {
 	should_apply = false,
 	no_sticker_sheet = true,
 	draw = function(self, card, layer)
+		local notilt = nil
+		if card.area and card.area.config.type == "deck" then
+			notilt = true
+		end
 		G.shared_stickers["cry_absolute"].role.draw_major = card
-		G.shared_stickers["cry_absolute"]:draw_shader("dissolve", nil, nil, nil, card.children.center)
+		G.shared_stickers["cry_absolute"]:draw_shader("dissolve", nil, nil, notilt, card.children.center)
 		G.shared_stickers["cry_absolute"]:draw_shader(
 			"polychrome",
 			nil,
 			card.ARGS.send_to_shader,
-			nil,
+			notilt,
 			card.children.center
 		)
 		G.shared_stickers["cry_absolute"]:draw_shader(
 			"voucher",
 			nil,
 			card.ARGS.send_to_shader,
-			nil,
+			notilt,
 			card.children.center
 		)
 	end,

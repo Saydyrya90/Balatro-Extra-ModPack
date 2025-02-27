@@ -262,25 +262,7 @@ local sync_catalyst = {
 			"Math",
 		},
 	},
-	unlocked = false,
-	check_for_unlock = function(self, args)
-		if safe_get(G, "jokers") and safe_get(G.GAME, "round_resets", "ante") and G.GAME.round_resets.ante < 9 then
-			local rarities = {}
-			for i = 1, #G.jokers.cards do
-				local card = G.jokers.cards[i]
-				rarities[card.config.center.rarity .. "_rarity"] = true
-			end
-			if rarities["3_rarity"] and rarities["4_rarity"] and rarities["cry_epic_rarity"] then
-				unlock_card(self)
-			end
-		end
-		if args.type == "cry_lock_all" then
-			lock_card(self)
-		end
-		if args.type == "cry_unlock_all" then
-			unlock_card(self)
-		end
-	end,
+	unlocked = true,
 }
 
 -- Negative Joker
@@ -409,8 +391,9 @@ local error_joker = {
 	eternal_compat = false,
 	atlas = "atlasepic",
 	loc_vars = function(self, info_queue, center)
-		if safe_get(G.GAME, "pseudorandom") and G.STAGE == G.STAGES.RUN then
-			cry_error_msgs[#cry_error_msgs].string = "%%" .. predict_card_for_shop()
+		local ok, ret = pcall(predict_card_for_shop)
+		if safe_get(G.GAME, "pseudorandom") and G.STAGE == G.STAGES.RUN and ok then
+			cry_error_msgs[#cry_error_msgs].string = "%%" .. ret
 		else
 			cry_error_msgs[#cry_error_msgs].string = "%%J6"
 		end
@@ -1650,7 +1633,7 @@ local soccer = {
 			"set_cry_epic",
 		},
 	},
-	immutable = true,
+	immutable = true, -- i swear i changed this... whatever
 	rarity = "cry_epic",
 	order = 58,
 	cost = 20,
@@ -1658,28 +1641,23 @@ local soccer = {
 	loc_vars = function(self, info_queue, center)
 		return { vars = { center.ability.extra.holygrail } }
 	end,
-	add_to_deck = function(self, card, from_debuff) --TODO: Card in booster packs, Voucher slots
+	add_to_deck = function(self, card, from_debuff)
 		card.ability.extra.holygrail = math.floor(card.ability.extra.holygrail)
-		G.jokers.config.card_limit = G.jokers.config.card_limit
-			+ ((Card.get_gameset(card) == "modest") and 0 or card.ability.extra.holygrail)
-		G.consumeables.config.card_limit = G.consumeables.config.card_limit + card.ability.extra.holygrail
-		G.hand:change_size(card.ability.extra.holygrail)
-		if not G.GAME.modifiers.cry_booster_packs then
-			G.GAME.modifiers.cry_booster_packs = 2
-		end
-		G.GAME.modifiers.cry_booster_packs = G.GAME.modifiers.cry_booster_packs + card.ability.extra.holygrail
-		change_shop_size(card.ability.extra.holygrail)
+		local mod = card.ability.extra.holygrail
+		G.jokers.config.card_limit = G.jokers.config.card_limit + ((Card.get_gameset(card) == "modest") and 0 or mod)
+		G.consumeables.config.card_limit = G.consumeables.config.card_limit + mod
+		G.hand:change_size(mod)
+		SMODS.change_booster_limit(mod)
+		SMODS.change_voucher_limit(mod)
 	end,
 	remove_from_deck = function(self, card, from_debuff)
-		G.jokers.config.card_limit = G.jokers.config.card_limit
-			- ((Card.get_gameset(card) == "modest") and 0 or card.ability.extra.holygrail)
-		G.consumeables.config.card_limit = G.consumeables.config.card_limit - card.ability.extra.holygrail
-		G.hand:change_size(-card.ability.extra.holygrail)
-		if not G.GAME.modifiers.cry_booster_packs then
-			G.GAME.modifiers.cry_booster_packs = 2
-		end
-		G.GAME.modifiers.cry_booster_packs = G.GAME.modifiers.cry_booster_packs - card.ability.extra.holygrail
-		change_shop_size(card.ability.extra.holygrail * -1)
+		card.ability.extra.holygrail = math.floor(card.ability.extra.holygrail)
+		local mod = card.ability.extra.holygrail
+		G.jokers.config.card_limit = G.jokers.config.card_limit + ((Card.get_gameset(card) == "modest") and 0 or -mod)
+		G.consumeables.config.card_limit = G.consumeables.config.card_limit - mod
+		G.hand:change_size(-mod)
+		SMODS.change_booster_limit(-mod)
+		SMODS.change_voucher_limit(-mod)
 	end,
 	cry_credits = {
 		idea = {
@@ -1881,6 +1859,44 @@ local spectrogram = {
 		},
 	},
 }
+local jtron = {
+	object_type = "Joker",
+	name = "cry-jtron",
+	key = "jtron",
+	config = { extra = { bonus = 1, current = 0 } },
+	rarity = "cry_epic",
+	cost = 14,
+	order = 64,
+	blueprint_compat = true,
+	atlas = "atlasepic",
+	pos = { x = 2, y = 5 },
+	loc_vars = function(self, info_queue, center)
+		info_queue[#info_queue + 1] = G.P_CENTERS.j_joker
+		center.ability.extra.current = 1 + center.ability.extra.bonus * #SMODS.find_card("j_joker")
+		return { vars = { center.ability.extra.bonus, center.ability.extra.current } }
+	end,
+	calculate = function(self, card, context)
+		card.ability.extra.current = 1 + card.ability.extra.bonus * #SMODS.find_card("j_joker")
+		if context.cardarea == G.jokers and context.joker_main then
+			return {
+				message = localize({
+					type = "variable",
+					key = "a_powmult",
+					vars = {
+						number_format(card.ability.extra.current),
+					},
+				}),
+				Emult_mod = card.ability.extra.current,
+				colour = G.C.DARK_EDITION,
+			}
+		end
+	end,
+	cry_credits = {
+		idea = { "AlexZGreat" },
+		art = { "Darren_the_frog" },
+		code = { "candycanearter" },
+	},
+}
 return {
 	name = "Epic Jokers",
 	items = {
@@ -1907,5 +1923,6 @@ return {
 		soccer,
 		fleshpanopticon,
 		spectrogram,
+		jtron,
 	},
 }

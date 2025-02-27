@@ -368,7 +368,7 @@ local mneon = {
 		if context.end_of_round and not context.blueprint and not context.individual and not context.repetition then
 			local jollycount = 0
 			for i = 1, #G.jokers.cards do
-				if G.jokers.cards[i]:is_jolly() or safe_get(G.jokers.cards[i], "pools", "M") then
+				if G.jokers.cards[i]:is_jolly() or safe_get(G.jokers.cards[i].config.center, "pools", "M") then
 					jollycount = jollycount + 1
 				end
 			end
@@ -1060,7 +1060,9 @@ local smallestm = {
 		if context.cardarea == G.jokers and context.before then
 			--This isn't retrigger joker compatible for some reason
 			if context.scoring_name == card.ability.extra.type then
-				add_tag(Tag("tag_cry_double_m"))
+				local tag = Tag("tag_cry_double_m")
+				tag.ability.shiny = cry_rollshinybool()
+				add_tag(tag)
 				play_sound("generic1", 0.9 + math.random() * 0.1, 0.8)
 				play_sound("holo1", 1.2 + math.random() * 0.1, 0.4)
 				card_eval_status_text(context.blueprint_card or card, "extra", nil, nil, nil, {
@@ -1218,7 +1220,7 @@ local mprime = {
 		elseif context.other_joker then
 			if
 				context.other_joker
-				and (context.other_joker:is_jolly() or safe_get(context.other_joker, "pools", "M"))
+				and (context.other_joker:is_jolly() or safe_get(context.other_joker.config.center, "pools", "M"))
 			then
 				if not Talisman.config_file.disable_anims then
 					G.E_MANAGER:add_event(Event({
@@ -1284,7 +1286,7 @@ local macabre = {
 							v ~= card
 							and not v:is_jolly()
 							and v.config.center.key ~= "j_cry_mprime"
-							and not (v.ability.eternal or v.getting_sliced or safe_get(v, "pools", "M"))
+							and not (v.ability.eternal or v.getting_sliced or safe_get(v.config.center, "pools", "M"))
 						then
 							destroyed_jokers[#destroyed_jokers + 1] = v
 						end
@@ -1401,29 +1403,25 @@ local longboi = {
 	name = "cry-longboi",
 	key = "longboi",
 	pos = { x = 5, y = 4 },
-	config = { extra = { mult = nil, bonus = 0.75 } },
+	config = { extra = { monster = 1, bonus = 0.75 } },
 	rarity = 1,
 	cost = 5,
 	order = 261,
 	pools = { ["M"] = true },
-	no_dbl = true,
 	blueprint_compat = true,
 	eternal_compat = false,
 	loc_vars = function(self, info_queue, center)
 		return {
 			vars = {
-				math.max(0.75, math.floor(center.ability.extra.bonus)),
-				(center.ability.extra.mult ~= nil and center.ability.extra.mult or (G.GAME.monstermult or 1)),
+				math.max(0.75, center.ability.extra.bonus),
+				center.ability.extra.monster,
 			},
 		}
 	end,
 	atlas = "atlasthree",
 	calculate = function(self, card, context)
 		if context.end_of_round and not context.individual and not context.repetition then
-			if not G.GAME.monstermult then
-				G.GAME.monstermult = 1
-			end
-			G.GAME.monstermult = G.GAME.monstermult + math.max(0.75, math.floor(card.ability.extra.bonus))
+			G.GAME.monstermult = G.GAME.monstermult + math.max(0.75, card.ability.extra.bonus)
 			if not context.retrigger_joker then
 				return {
 					card_eval_status_text(context.blueprint_card or card, "extra", nil, nil, nil, {
@@ -1432,22 +1430,15 @@ local longboi = {
 					}),
 				}
 			end
-		elseif context.joker_main and ((card.ability.extra.mult or 1) > 1) then
+		elseif context.joker_main and card.ability.extra.monster > 1 then
 			return {
-				message = localize({ type = "variable", key = "a_xmult", vars = { card.ability.extra.mult } }),
-				Xmult_mod = card.ability.extra.mult,
+				message = localize({ type = "variable", key = "a_xmult", vars = { card.ability.extra.monster } }),
+				Xmult_mod = card.ability.extra.monster,
 			}
 		end
 	end,
-	add_to_deck = function(self, card, from_debuff)
-		if (not from_debuff and card.ability.extra.mult == nil) or card.checkmonster then
-			--Stops Things like Gemini from updating mult when it isn't supposed to
-			if card.checkmonster then
-				card.checkmonster = nil
-			end
-
-			card.ability.extra.mult = G.GAME.monstermult or 1
-		end
+	set_ability = function(self, card, from_debuff)
+		card.ability.extra.monster = G.GAME and G.GAME.monstermult or 1
 	end,
 	cry_credits = {
 		idea = {

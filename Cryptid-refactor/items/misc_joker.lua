@@ -262,7 +262,7 @@ local potofjokes = {
 	end,
 	calculate = function(self, card, context)
 		if context.end_of_round and not context.individual and not context.repetition and not context.blueprint then
-			G.hand:change_size(math.min(1000 - card.ability.extra.h_size, card.ability.extra.h_mod))
+			G.hand:change_size(math.min(math.max(0, 1000 - card.ability.extra.h_size), card.ability.extra.h_mod))
 			card.ability.extra.h_size = card.ability.extra.h_size + card.ability.extra.h_mod
 			return {
 				message = localize({ type = "variable", key = "a_handsize", vars = { card.ability.extra.h_mod } }),
@@ -386,8 +386,8 @@ local wee_fib = {
 	end,
 	calculate = function(self, card, context)
 		if context.cardarea == G.play and context.individual and not context.blueprint then
-			local rank = SMODS.Ranks[context.other_card.base.value].key
-			if rank == "Ace" or rank == "2" or rank == "3" or rank == "5" or rank == "8" then
+			local rank = context.other_card:get_id()
+			if rank == 14 or rank == 2 or rank == 3 or rank == 5 or rank == 8 then
 				card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_mod
 
 				return {
@@ -638,19 +638,21 @@ local pickle = {
 	calculate = function(self, card, context)
 		if context.skip_blind then
 			for i = 1, math.min(20, card.ability.extra.tags) do
-				local tag = Tag(get_next_tag_key("cry_pickle"))
-				if tag.name == "Orbital Tag" then
-					local _poker_hands = {}
-					for k, v in pairs(G.GAME.hands) do
-						if v.visible then
-							_poker_hands[#_poker_hands + 1] = k
-						end
-					end
-					tag.ability.orbital_hand = pseudorandom_element(_poker_hands, pseudoseed("cry_pickle_orbital"))
-				end
-				if tag.name == "Boss Tag" then
+				local tag_key = get_next_tag_key("cry_pickle")
+				if tag_key == "tag_boss" then
 					i = i - 1 --skip these, as they can cause bugs with pack opening from other tags
 				else
+					local tag = Tag(tag_key)
+					if tag.name == "Orbital Tag" then
+						local _poker_hands = {}
+						for k, v in pairs(G.GAME.hands) do
+							if v.visible then
+								_poker_hands[#_poker_hands + 1] = k
+							end
+						end
+						tag.ability.orbital_hand = pseudorandom_element(_poker_hands, pseudoseed("cry_pickle_orbital"))
+					end
+					tag.ability.shiny = cry_rollshinybool()
 					add_tag(tag)
 				end
 			end
@@ -670,8 +672,8 @@ local pickle = {
 				card_eval_status_text(card, "extra", nil, nil, nil, {
 					message = localize({
 						type = "variable",
-						key = card.ability.extra.tags == 1 and "a_tag_minus" or "a_tags_minus",
-						vars = { card.ability.extra.tags },
+						key = card.ability.extra.tags_mod == 1 and "a_tag_minus" or "a_tags_minus",
+						vars = { card.ability.extra.tags_mod },
 					})[1],
 					colour = G.C.FILTER,
 				})
@@ -795,7 +797,7 @@ local triplet_rhythm = {
 		if context.joker_main and context.scoring_hand then
 			local threes = 0
 			for i = 1, #context.scoring_hand do
-				if SMODS.Ranks[context.scoring_hand[i].base.value].key == "3" then
+				if context.scoring_hand[i]:get_id() == 3 then
 					threes = threes + 1
 				end
 			end
@@ -840,18 +842,12 @@ local booster = {
 		return { vars = { math.min(25, center.ability.extra.booster_slots) } }
 	end,
 	add_to_deck = function(self, card, from_debuff)
-		if not G.GAME.modifiers.cry_booster_packs then
-			G.GAME.modifiers.cry_booster_packs = 2
-		end
-		G.GAME.modifiers.cry_booster_packs = G.GAME.modifiers.cry_booster_packs
-			+ math.min(25, card.ability.extra.booster_slots)
+		local mod = math.min(25, card.ability.extra.booster_slots)
+		SMODS.change_booster_limit(mod)
 	end,
 	remove_from_deck = function(self, card, from_debuff)
-		if not G.GAME.modifiers.cry_booster_packs then
-			G.GAME.modifiers.cry_booster_packs = 2
-		end
-		G.GAME.modifiers.cry_booster_packs = G.GAME.modifiers.cry_booster_packs
-			- math.min(25, card.ability.extra.booster_slots)
+		local mod = math.min(25, card.ability.extra.booster_slots)
+		SMODS.change_booster_limit(-mod)
 	end,
 	cry_credits = {
 		idea = {
@@ -1047,7 +1043,7 @@ local eternalflame = {
 	name = "cry-eternalflame",
 	key = "eternalflame",
 	pos = { x = 0, y = 4 },
-	config = { extra = { extra = 0.1, x_mult = 1 } },
+	config = { extra = { extra = 0.2, x_mult = 1 } },
 	rarity = 3,
 	order = 100,
 	cost = 9,
@@ -1194,14 +1190,14 @@ local seal_the_deal = {
 	end,
 	set_ability = function(self, card, initial, delay_sprites)
 		local sealtable = { "blue", "red", "purple" }
-		if Cryptid.enabled["Misc."] then
+		if cry_card_enabled("cry_azure") then
 			sealtable[#sealtable + 1] = "azure"
 		end
-		if Cryptid.enabled["Code Cards"] then
+		if cry_card_enabled("cry_green") then
 			sealtable[#sealtable + 1] = "green"
 		end
 		card.ability.extra = pseudorandom_element(sealtable, pseudoseed("abc"))
-		if G.P_CENTERS["j_cry_seal_the_deal"].discovered then
+		if self.discovered then
 			--Gold (ULTRA RARE!!!!!!!!)
 			if pseudorandom("xyz") <= 0.000001 and not (card.area and card.area.config.collection) then
 				card.children.center:set_sprite_pos({ x = 6, y = 4 })
@@ -1394,7 +1390,7 @@ local sus = {
 		local function is_impostor(card)
 			return card.base.value and SMODS.Ranks[card.base.value].key == "King" and card:is_suit("Hearts")
 		end
-		if context.end_of_round and not context.cardarea then
+		if context.end_of_round and context.cardarea == G.jokers then
 			if not card.ability.used_round or card.ability.used_round ~= G.GAME.round then
 				card.ability.chosen_card = nil
 			end
@@ -1498,7 +1494,7 @@ local fspinner = {
 		return { vars = { center.ability.extra.chips, center.ability.extra.chip_mod } }
 	end,
 	rarity = 1,
-	cost = 6,
+	cost = 5,
 	order = 77,
 	blueprint_compat = true,
 	perishable_compat = false,
@@ -1755,11 +1751,11 @@ local gardenfork = {
 		return { vars = { center.ability.extra.money } }
 	end,
 	calculate = function(self, card, context)
-		if context.cardarea == G.jokers and context.before and not context.blueprint then
+		if context.cardarea == G.jokers and context.before then
 			for i = 1, #context.full_hand do
-				if context.other_card:get_id() == 14 then
+				if context.scoring_hand[i]:get_id() == 14 then
 					for j = 1, #context.full_hand do
-						if context.other_card:get_id() == 7 then -- :( ekshpenshive
+						if context.scoring_hand[j]:get_id() == 7 then -- :( ekshpenshive
 							ease_dollars(card.ability.extra.money)
 							return { message = "$" .. card.ability.extra.money, colour = G.C.MONEY }
 						end
@@ -1942,18 +1938,8 @@ local hunger = {
 	loc_vars = function(self, info_queue, center)
 		return { vars = { center.ability.extra.money } }
 	end,
-	calculate = function(self, card, context) --This didn't work for Jevonn for some reason but it works for me :joker:
-		if context.using_consumeable then --shush
-			ease_dollars(card.ability.extra.money)
-			card_eval_status_text(
-				context.blueprint_card or card,
-				"extra",
-				nil,
-				nil,
-				nil,
-				{ message = "$" .. card.ability.extra.money, colour = G.C.MONEY }
-			)
-		end
+	calculate = function(self, card, context) -- haha one liner
+		return context.using_consumeable and { p_dollars = card.ability.extra.money }
 	end,
 	cry_credits = {
 		idea = {
@@ -2742,11 +2728,7 @@ local happy = {
 	eternal_compat = false,
 	atlas = "atlastwo",
 	calculate = function(self, card, context)
-		if
-			context.selling_self
-			and #G.jokers.cards + G.GAME.joker_buffer <= G.jokers.config.card_limit
-			and not context.retrigger_joker
-		then
+		if context.selling_self and #G.jokers.cards + G.GAME.joker_buffer <= G.jokers.config.card_limit then
 			local sellcreatejoker = 1
 			G.GAME.joker_buffer = G.GAME.joker_buffer + sellcreatejoker
 			G.E_MANAGER:add_event(Event({
@@ -2776,7 +2758,6 @@ local happy = {
 			and not context.individual
 			and not context.repetition
 			and #G.jokers.cards + G.GAME.joker_buffer < G.jokers.config.card_limit
-			and not context.retrigger_joker
 		then
 			local roundcreatejoker = math.min(1, G.jokers.config.card_limit - (#G.jokers.cards + G.GAME.joker_buffer))
 			G.GAME.joker_buffer = G.GAME.joker_buffer + roundcreatejoker
@@ -4376,7 +4357,7 @@ local duos = {
 	calculate = function(self, card, context)
 		if context.joker_main and (to_big(card.ability.x_mult) > to_big(1)) then
 			if
-				context.poker_hands ~= nil and next(context.poker_hands["Two Pair"])
+				context.poker_hands ~= nil and next(context.poker_hands[card.ability.type])
 				or context.poker_hands ~= nil and next(context.poker_hands["Full House"])
 			then
 				return {
@@ -4422,7 +4403,7 @@ local home = {
 	blueprint_compat = true,
 	calculate = function(self, card, context)
 		if context.joker_main and (to_big(card.ability.x_mult) > to_big(1)) then
-			if context.poker_hands ~= nil and next(context.poker_hands["Full House"]) then
+			if context.poker_hands ~= nil and next(context.poker_hands[card.ability.type]) then
 				return {
 					message = localize({ type = "variable", key = "a_xmult", vars = { card.ability.x_mult } }),
 					colour = G.C.RED,
@@ -4466,7 +4447,7 @@ local nuts = {
 	blueprint_compat = true,
 	calculate = function(self, card, context)
 		if context.joker_main and (to_big(card.ability.x_mult) > to_big(1)) then
-			if context.poker_hands ~= nil and next(context.poker_hands["Straight Flush"]) then
+			if context.poker_hands ~= nil and next(context.poker_hands[card.ability.type]) then
 				return {
 					message = localize({ type = "variable", key = "a_xmult", vars = { card.ability.x_mult } }),
 					colour = G.C.RED,
@@ -4510,7 +4491,7 @@ local quintet = {
 	blueprint_compat = true,
 	calculate = function(self, card, context)
 		if context.joker_main and (to_big(card.ability.x_mult) > to_big(1)) then
-			if context.poker_hands ~= nil and next(context.poker_hands["Five of a Kind"]) then
+			if context.poker_hands ~= nil and next(context.poker_hands[card.ability.type]) then
 				return {
 					message = localize({ type = "variable", key = "a_xmult", vars = { card.ability.x_mult } }),
 					colour = G.C.RED,
@@ -4526,7 +4507,7 @@ local quintet = {
 		return false
 	end,
 	check_for_unlock = function(self, args)
-		if args.type == "cry_win_with_hand" and args.hand == "Five of a Kind" then
+		if args.type == "win" and G.GAME.last_hand_played == "Five of a Kind" then
 			return true
 		end
 	end,
@@ -4564,7 +4545,7 @@ local unity = {
 	blueprint_compat = true,
 	calculate = function(self, card, context)
 		if context.joker_main and (to_big(card.ability.x_mult) > to_big(1)) then
-			if context.poker_hands ~= nil and next(context.poker_hands["Flush House"]) then
+			if context.poker_hands ~= nil and next(context.poker_hands[card.ability.type]) then
 				return {
 					message = localize({ type = "variable", key = "a_xmult", vars = { card.ability.x_mult } }),
 					colour = G.C.RED,
@@ -4580,7 +4561,7 @@ local unity = {
 		return false
 	end,
 	check_for_unlock = function(self, args)
-		if args.type == "cry_win_with_hand" and args.hand == "Flush House" then
+		if args.type == "win" and G.GAME.last_hand_played == "Flush House" then
 			return true
 		end
 	end,
@@ -4618,7 +4599,7 @@ local swarm = {
 	blueprint_compat = true,
 	calculate = function(self, card, context)
 		if context.joker_main and (to_big(card.ability.x_mult) > to_big(1)) then
-			if context.poker_hands ~= nil and next(context.poker_hands["Flush Five"]) then
+			if context.poker_hands ~= nil and next(context.poker_hands[card.ability.type]) then
 				return {
 					message = localize({ type = "variable", key = "a_xmult", vars = { card.ability.x_mult } }),
 					colour = G.C.RED,
@@ -4634,7 +4615,7 @@ local swarm = {
 		return false
 	end,
 	check_for_unlock = function(self, args)
-		if args.type == "cry_win_with_hand" and args.hand == "Flush Five" then
+		if args.type == "win" and G.GAME.last_hand_played == "Flush Five" then
 			return true
 		end
 	end,
@@ -4674,7 +4655,7 @@ local stronghold = {
 	blueprint_compat = true,
 	calculate = function(self, card, context)
 		if context.joker_main and (to_big(card.ability.x_mult) > to_big(1)) then
-			if context.poker_hands ~= nil and next(context.poker_hands["cry_Bulwark"]) then
+			if context.poker_hands ~= nil and next(context.poker_hands[card.ability.type]) then
 				return {
 					message = localize({ type = "variable", key = "a_xmult", vars = { card.ability.x_mult } }),
 					colour = G.C.RED,
@@ -4690,7 +4671,7 @@ local stronghold = {
 		return false
 	end,
 	check_for_unlock = function(self, args)
-		if args.type == "cry_win_with_hand" and args.hand == "cry_Bulwark" then
+		if args.type == "win" and G.GAME.last_hand_played == "cry_Bulwark" then
 			return true
 		end
 	end,
@@ -4719,7 +4700,7 @@ local wtf = {
 	blueprint_compat = true,
 	calculate = function(self, card, context)
 		if context.joker_main and (to_big(card.ability.x_mult) > to_big(1)) then
-			if context.poker_hands ~= nil and next(context.poker_hands["cry_Clusterfuck"]) then
+			if context.poker_hands ~= nil and next(context.poker_hands[card.ability.type]) then
 				return {
 					message = localize({ type = "variable", key = "a_xmult", vars = { card.ability.x_mult } }),
 					colour = G.C.RED,
@@ -4735,7 +4716,7 @@ local wtf = {
 		return false
 	end,
 	check_for_unlock = function(self, args)
-		if args.type == "cry_win_with_hand" and args.hand == "cry_Clusterfuck" then
+		if args.type == "win" and G.GAME.last_hand_played == "cry_Clusterfuck" then
 			return true
 		end
 	end,
@@ -4764,7 +4745,7 @@ local clash = {
 	blueprint_compat = true,
 	calculate = function(self, card, context)
 		if context.joker_main and (to_big(card.ability.x_mult) > to_big(1)) then
-			if context.poker_hands ~= nil and next(context.poker_hands["cry_UltPair"]) then
+			if context.poker_hands ~= nil and next(context.poker_hands[card.ability.type]) then
 				return {
 					message = localize({ type = "variable", key = "a_xmult", vars = { card.ability.x_mult } }),
 					colour = G.C.RED,
@@ -4780,7 +4761,7 @@ local clash = {
 		return false
 	end,
 	check_for_unlock = function(self, args)
-		if args.type == "cry_win_with_hand" and args.hand == "cry_UltPair" then
+		if args.type == "win" and G.GAME.last_hand_played == "cry_UltPair" then
 			return true
 		end
 	end,
@@ -4807,7 +4788,7 @@ local filler = {
 	cost = 1,
 	blueprint_compat = true,
 	calculate = function(self, card, context)
-		if context.joker_main and context.poker_hands and next(context.poker_hands["High Card"]) then
+		if context.joker_main and context.poker_hands and next(context.poker_hands[card.ability.type]) then
 			return {
 				message = localize({ type = "variable", key = "a_xmult", vars = { card.ability.x_mult } }),
 				colour = G.C.RED,
@@ -6659,6 +6640,38 @@ local astral_bottle = {
 		end
 	end,
 }
+local kittyprinter = {
+	dependencies = {
+		items = {
+			"tag_cry_cat",
+		},
+	},
+	object_type = "Joker",
+	name = "cry-kittyprinter",
+	key = "kittyprinter",
+	config = { extra = { Xmult = 2 } },
+	pos = { x = 3, y = 5 },
+	rarity = 2,
+	cost = 6,
+	atlas = "atlasone",
+	order = 133,
+	blueprint_compat = true,
+	loc_vars = function(self, info_queue, card)
+		return { vars = { card.ability.extra.Xmult } }
+	end,
+	calculate = function(self, card, context)
+		if context.joker_main then
+			return {
+				message = localize({
+					type = "variable",
+					key = "a_xmult",
+					vars = { card.ability.extra.Xmult },
+				}),
+				Xmult_mod = card.ability.extra.Xmult,
+			}
+		end
+	end,
+}
 local kidnap = {
 	object_type = "Joker",
 	dependencies = {
@@ -6747,7 +6760,7 @@ local exposed = {
 	atlas = "atlastwo",
 	blueprint_compat = true,
 	loc_vars = function(self, info_queue, center)
-		return { vars = { center.ability.extra } }
+		return { vars = { math.min(40, center.ability.extra) } }
 	end,
 	update = function(self, card, dt)
 		if G.deck and card.added_to_deck then
@@ -6770,7 +6783,7 @@ local exposed = {
 			if not context.other_card:is_face() then
 				return {
 					message = localize("k_again_ex"),
-					repetitions = card.ability.extra,
+					repetitions = math.min(40, card.ability.extra),
 					card = card,
 				}
 			end
@@ -6794,7 +6807,7 @@ local mask = {
 	order = 124,
 	blueprint_compat = true,
 	loc_vars = function(self, info_queue, center)
-		return { vars = { center.ability.extra } }
+		return { vars = { math.min(40, center.ability.extra) } }
 	end,
 	update = function(self, card, dt)
 		if G.deck and card.added_to_deck then
@@ -6817,7 +6830,7 @@ local mask = {
 			if context.other_card:is_face() then
 				return {
 					message = localize("k_again_ex"),
-					repetitions = card.ability.extra,
+					repetitions = math.min(40, card.ability.extra),
 					card = card,
 				}
 			end
@@ -6998,7 +7011,7 @@ local cookie = {
 	cost = 4,
 	atlas = "atlastwo",
 	order = 133,
-	config = { extra = { chips = 150, chip_mod = 1 } },
+	config = { extra = { chips = 200, chip_mod = 1 } },
 	blueprint_compat = true,
 	eternal_compat = false,
 	perishable_compat = false,
@@ -7287,7 +7300,7 @@ local pity_prize = {
 	pos = { x = 5, y = 5 },
 	config = {},
 	rarity = 1,
-	cost = 4,
+	cost = 2,
 	atlas = "atlastwo",
 	order = 129,
 	loc_vars = function(self, info_queue, center)
@@ -7295,10 +7308,13 @@ local pity_prize = {
 	end,
 	calculate = function(self, card, context)
 		if context.skipping_booster then
-			local tag
+			local tag_key
 			repeat
-				tag = Tag(get_next_tag_key("cry_pity_prize"))
-			until tag.name ~= "Boss Tag" and tag.name ~= "Gambler's Tag" and tag.name ~= "Empowered Tag"
+				tag_key = get_next_tag_key("cry_pity_prize")
+			until tag_key ~= "tag_boss" --I saw pickle not generating boss tags because it apparently causes issues, so I did the same here
+			-- this is my first time seeing repeat... wtf
+			local tag = Tag(tag_key)
+			tag.ability.shiny = cry_rollshinybool()
 			if tag.name == "Orbital Tag" then
 				local _poker_hands = {}
 				for k, v in pairs(G.GAME.hands) do
@@ -7437,12 +7453,21 @@ local digitalhallucinations = {
 				)
 				return nil, true
 			end
-			if boosty.ability.name:find("Buffoon") then
+			if boosty.ability.name:find("Buffoon") or boosty.ability.name:find("meme") then
 				G.E_MANAGER:add_event(Event({
 					trigger = "before",
 					delay = 0.0,
 					func = function()
-						local ccard = create_card("Joker", G.jokers, nil, nil, nil, nil, nil, "diha")
+						local ccard = create_card(
+							boosty.ability.name:find("meme") and "Meme" or "Joker",
+							G.jokers,
+							nil,
+							nil,
+							nil,
+							nil,
+							nil,
+							"diha"
+						) -- who up wasting their cycles rn
 						ccard:set_edition({ negative = true }, true)
 						ccard:add_to_deck()
 						G.jokers:emplace(ccard)
@@ -7477,6 +7502,7 @@ local digitalhallucinations = {
 						ccard:set_edition({ negative = true }, true)
 						ccard:start_materialize({ G.C.SECONDARY_SET.Enhanced })
 						G.play:emplace(ccard)
+						playing_card_joker_effects({ ccard }) -- odd timing
 						table.insert(G.playing_cards, ccard)
 						return true
 					end,
@@ -7497,8 +7523,6 @@ local digitalhallucinations = {
 					end,
 				}))
 				draw_card(G.play, G.deck, 90, "up", nil)
-
-				playing_card_joker_effects({ true }) -- who knows what most this stuff does, i just copied it from marble jonkler
 				return nil, true
 			end
 		end
@@ -7615,6 +7639,86 @@ local zooble = {
 		},
 	},
 }
+local lebaron_james = {
+	object_type = "Joker",
+	dependencies = {
+		items = {
+			"set_cry_misc_joker",
+		},
+	},
+	name = "cry-LeBaron James",
+	key = "lebaron_james",
+	pos = { x = 2, y = 5 },
+	config = { extra = { h_mod = 1, h_size = 0 } },
+	rarity = 3,
+	cost = 6,
+	atlas = "atlasone",
+	order = 133,
+	no_dbl = true,
+	immutable = true, -- has issues with value manip and not easy to fix
+	loc_vars = function(self, info_queue, center)
+		return { vars = { center.ability.extra.h_mod, math.min(1000, center.ability.extra.h_size) } }
+	end,
+	calculate = function(self, card, context)
+		if context.cardarea == G.play and context.individual then
+			if SMODS.Ranks[context.other_card.base.value].key == "King" then
+				local h_size = math.max(0, math.min(1000 - card.ability.extra.h_size, card.ability.extra.h_mod))
+				G.hand:change_size(h_size)
+				card.ability.extra.h_size = card.ability.extra.h_size + h_size
+				if h_size > 0 then
+					return {
+						message = localize({ type = "variable", key = "a_handsize", vars = { h_size } }),
+						colour = G.C.FILTER,
+						card = card,
+					}
+				end
+			end
+		end
+		if context.end_of_round and not context.individual and not context.repetition then
+			G.hand:change_size(-1 * math.min(1000, card.ability.extra.h_size))
+			card.ability.extra.h_size = 0
+			return {
+				card = card,
+				message = localize("k_reset"),
+			}
+		end
+	end,
+	remove_from_deck = function(self, card, from_debuff)
+		G.hand:change_size(-1 * math.min(1000, card.ability.extra.h_size))
+	end,
+	cry_credits = {
+		idea = {
+			"indefenite_idiot",
+			"HexaCryonic",
+		},
+		code = {
+			"AlexZGreat",
+		},
+		art = {
+			"lamborghiniofficial",
+		},
+	},
+	init = function(self)
+		-- Calculate enhancements for kings as if held in hand
+		-- Note that for enhancements that work when played and held in hand, this will fail
+		-- Not tested since no enhancements use this yet (Steel is weird, and Gold won't work)
+		local cce = Card.calculate_enhancement
+		function Card:calculate_enhancement(context)
+			local ret = cce(self, context)
+			if
+				not ret
+				and next(SMODS.find_card("j_cry_lebaron_james"))
+				and SMODS.Ranks[self.base.value].key == "King"
+				and context.cardarea == G.play
+			then
+				context.cardarea = G.hand
+				local ret = cce(self, context)
+				context.cardarea = G.play
+			end
+			return ret
+		end
+	end,
+}
 local miscitems = {
 	jimball_sprite,
 	dropshot,
@@ -7698,6 +7802,7 @@ local miscitems = {
 	savvy,
 	subtle,
 	discreet,
+	kittyprinter,
 	kidnap,
 	exposed,
 	mask,
@@ -7725,6 +7830,7 @@ local miscitems = {
 	fuckedup,
 	foolhardy,
 	translucent,
+	lebaron_james,
 }
 return {
 	name = "Misc. Jokers",

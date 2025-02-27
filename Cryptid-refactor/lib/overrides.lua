@@ -169,6 +169,7 @@ function Game:init_game_object()
 	-- Add initial dropshot and number blocks card
 	g.current_round.cry_nb_card = { rank = "Ace" }
 	g.current_round.cry_dropshot_card = { suit = "Spades" }
+	g.monstermult = 1
 	-- Create G.GAME.events when starting a run, so there's no errors
 	g.events = {}
 	return g
@@ -229,6 +230,8 @@ G.C.CRY_BLOSSOM = { 0, 0, 0, 0 }
 G.C.CRY_AZURE = { 0, 0, 0, 0 }
 G.C.CRY_ASCENDANT = { 0, 0, 0, 0 }
 G.C.CRY_JOLLY = { 0, 0, 0, 0 }
+G.C.CRY_GREENGRADIENT = { 0, 0, 0, 0 }
+G.C.CRY_ALTGREENGRADIENT = { 0, 0, 0, 0 }
 Cryptid.C = {
 	EXOTIC = { HEX("708b91"), HEX("1e9eba") },
 	TWILIGHT = { HEX("0800ff"), HEX("aa00ff") },
@@ -241,8 +244,9 @@ Cryptid.C = {
 	ASCENDANT = { HEX("2e00f5"), HEX("e5001d") },
 	JOLLY = { HEX("6ec1f5"), HEX("456b84") },
 	SELECTED = { HEX("e38039"), HEX("ccdd1b") },
+	GREENGRADIENT = { HEX("51e099"), HEX("1e523a") },
+	ALTGREENGRADIENT = { HEX("6bb565"), HEX("bd28bf") },
 }
-
 cry_pointer_dt = 0
 cry_jimball_dt = 0
 cry_glowing_dt = 0
@@ -458,7 +462,7 @@ function Card:set_cost()
 	end
 end
 
--- Modify to display badges for credits
+-- Modify to display badges for credits and some gameset badges
 -- todo: make this optional
 local smcmb = SMODS.create_mod_badges
 function SMODS.create_mod_badges(obj, badges)
@@ -605,11 +609,28 @@ function SMODS.create_mod_badges(obj, badges)
 			}
 		end
 	end
+	if safe_get(G, "ACTIVE_MOD_UI", "id") == "Cryptid" and obj and not obj.force_gameset then
+		local set = cry_get_gameset(obj)
+		if set == "disabled" or obj.set == "Content Set" then
+			return
+		end
+		local card_type = localize("cry_gameset_" .. cry_get_gameset(obj))
+		if card_type == "ERROR" then
+			card_type = localize("cry_gameset_custom")
+		end
+		badges[#badges + 1] = create_badge(
+			card_type,
+			set == "modest" and G.C.GREEN
+				or set == "mainline" and G.C.RED
+				or set == "madness" and G.C.CRY_EXOTIC
+				or G.C.CRY_ASCENDANT
+		)
+	end
 end
 
 -- This is short enough that I'm fine overriding it
 function calculate_reroll_cost(skip_increment)
-	if G.GAME.current_round.free_rerolls < 0 then
+	if not G.GAME.current_round.free_rerolls or G.GAME.current_round.free_rerolls < 0 then
 		G.GAME.current_round.free_rerolls = 0
 	end
 	if next(find_joker("cry-crustulum")) or G.GAME.current_round.free_rerolls > 0 then

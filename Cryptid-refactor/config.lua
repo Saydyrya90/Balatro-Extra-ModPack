@@ -7,4 +7,7 @@ return {
 		["alt_bg_music"] = true,
 	},
 	["family_mode"] = false,
+	["experimental"] = false,
+	["HTTPS"] = false,
+	["menu"] = true,
 }

@@ -183,17 +183,44 @@ end
 
 -- simple plural s function for localisation
 function cry_pls(str, vars)
-	if string.sub(str, 1, 1) == "p" or string.sub(str, 1, 1) == "s" or string.sub(str, 1, 1) == "y" then
-		num = vars[tonumber(string.sub(str, 2, -1))]
-		if num then
-			if math.abs(to_big(num) - 1) > to_big(0.001) then
-				return string.sub(str, 1, 1) == "y" and "ies" or "s"
-			else
-				return string.sub(str, 1, 1) == "y" and "y" or ""
+	local inside = str:match("<(.-)>") -- finds args
+	local _table = {}
+	if inside then
+		for v in inside:gmatch("[^,]+") do -- adds args to array
+			table.insert(_table, v)
+		end
+		local num = vars[tonumber(string.match(str, ">(%d+)"))]
+		local plural = _table[1] -- default
+		local checks = { [1] = "=" }
+		if #_table > 1 then
+			for i = 2, #_table do
+				local isnum = tonumber(_table[i])
+				if isnum then
+					checks[isnum] = ">" .. (_table[i + 1] or "")
+					i = i + 1
+				elseif i == 2 then
+					checks[1] = "=" .. _table[i]
+				else
+					print("Unexpected string: " .. _table[i])
+				end
 			end
 		end
+		local function fch(str, c)
+			return string.sub(str, 1, 1) == c -- gets first char and returns boolean
+		end
+		for k, v in pairs(checks) do
+			if fch(v, "=") then
+				if math.abs(to_big(num) - k) < to_big(0.001) then
+					return string.sub(v, 2, -1)
+				end
+			elseif fch(v, ">") then
+				if to_big(num) >= to_big(k - 0.001) then
+					return string.sub(v, 2, -1)
+				end
+			end
+		end
+		return plural
 	end
-	return false -- idk it doesn't really matter
 end
 
 -- generate a random edition (e.g. Antimatter Deck)
@@ -289,7 +316,7 @@ function get_m_jokers()
 	local mcount = 0
 	if G.jokers then
 		for i = 1, #G.jokers.cards do
-			if safe_get(G.jokers.cards[i], "pools", "M") then
+			if safe_get(G.jokers.cards[i].config.center, "pools", "M") then
 				mcount = mcount + 1
 			end
 			if G.jokers.cards[i].ability.name == "cry-mprime" then
@@ -348,7 +375,7 @@ end
 
 --Changes main menu colors and stuff
 --has to be modified with new enabling system
-if true then --Cryptid.enabled["Menu"] then
+if Cryptid_config.menu then
 	local oldfunc = Game.main_menu
 	Game.main_menu = function(change_context)
 		local ret = oldfunc(change_context)
@@ -450,6 +477,27 @@ function cry_bonusvouchermod(mod)
 				end
 				G.shop_vouchers.config.card_limit = G.shop_vouchers.config.card_limit + 1
 				G.shop_vouchers:emplace(card)
+			end
+		end
+	end
+end
+
+function save_cryptid()
+	local data = {
+		shinytags = {},
+	}
+	data.shinytags = copy_table(Cryptid.shinytagdata)
+	compress_and_save(G.SETTINGS.profile .. "/" .. "cryptidsave.jkr", STR_PACK(data))
+end
+
+local sppref = set_profile_progress
+function set_profile_progress()
+	sppref()
+	if not Cryptid.shinytagdata.init then
+		for k, v in pairs(G.P_TAGS) do
+			if Cryptid.shinytagdata[k] == nil then
+				Cryptid.shinytagdata.init = true
+				Cryptid.shinytagdata[k] = false
 			end
 		end
 	end

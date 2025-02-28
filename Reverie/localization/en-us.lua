@@ -525,12 +525,13 @@ return {
         dictionary = {
             k_dvrprv_title = "Reverie",
             k_dvrprv_description = "Prepare Your Tickets",
-            k_dvrprv_cine = "Cine",
+            k_cine = "Cine",
             k_dvrprv_tag = "Tag",
             k_dvrprv_tag_pack = "Tag Pack",
             k_dvrprv_crazy_pack = "Pack",
             k_dvrprv_film_pack = "Film Pack",
-            b_dvrprv_cine_cards = "Cine Cards",
+            k_dvrprv_redeemed_cine = "Now Playing",
+            b_cine_cards = "Cine Cards",
             b_dvrprv_jokerdisplay_compat = "JokerDisplay compatibility",
             b_dvrprv_jokerdisplay_compat_info = {
                 "Enable JokerDisplay compatibility for",

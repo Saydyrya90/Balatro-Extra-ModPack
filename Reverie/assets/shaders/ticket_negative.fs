@@ -4,7 +4,7 @@
 	#define MY_HIGHP_OR_MEDIUMP mediump
 #endif
 
-extern MY_HIGHP_OR_MEDIUMP vec2 ticket_negative;
+extern MY_HIGHP_OR_MEDIUMP vec4 ticket_negative;
 extern MY_HIGHP_OR_MEDIUMP number dissolve;
 extern MY_HIGHP_OR_MEDIUMP number time;
 extern MY_HIGHP_OR_MEDIUMP vec4 texture_details;
@@ -94,10 +94,53 @@ vec4 HSL(vec4 c)
 	return hsl;
 }
 
+vec4 shine_effect( vec4 colour, vec4 tex, vec2 uv, vec2 texture_coords ){
+
+    vec4 orig_rgba = tex.rgba;
+
+    number low = min(tex.r, min(tex.g, tex.b));
+    number high = max(tex.r, max(tex.g, tex.b));
+	number delta = high-low -0.1;
+
+    number fac = 0.8 + 0.9*sin(11.*uv.x+4.32*uv.y + ticket_negative.r*12. + cos(ticket_negative.r*5.3 + uv.y*4.2 - uv.x*4.));
+    number fac2 = 0.5 + 0.5*sin(8.*uv.x+2.32*uv.y + ticket_negative.r*5. - cos(ticket_negative.r*2.3 + uv.x*8.2));
+    number fac3 = 0.5 + 0.5*sin(10.*uv.x+5.32*uv.y + ticket_negative.r*6.111 + sin(ticket_negative.r*5.3 + uv.y*3.2));
+    number fac4 = 0.5 + 0.5*sin(3.*uv.x+2.32*uv.y + ticket_negative.r*8.111 + sin(ticket_negative.r*1.3 + uv.y*11.2));
+    number fac5 = sin(0.9*16.*uv.x+5.32*uv.y + ticket_negative.r*12. + cos(ticket_negative.r*5.3 + uv.y*4.2 - uv.x*4.));
+
+    number maxfac = 0.7*max(max(fac, max(fac2, max(fac3,0.0))) + (fac+fac2+fac3*fac4), 0.);
+
+    tex.rgb = tex.rgb*0.5 + vec3(0.4, 0.4, 0.8);
+
+    tex.r = tex.r-delta + delta*maxfac*(0.7 + fac5*0.27) - 0.1;
+    tex.g = tex.g-delta + delta*maxfac*(0.7 - fac5*0.27) - 0.1;
+    tex.b = tex.b-delta + delta*maxfac*0.7 - 0.1;
+    tex.a = tex.a*(0.5*max(min(1., max(0.,0.3*max(low*0.2, delta)+ min(max(maxfac*0.1,0.), 0.4)) ), 0.) + 0.15*maxfac*(0.1+delta));
+
+    tex.r = orig_rgba.r * (1 - tex.a) + tex.r * tex.a;
+    tex.g = orig_rgba.g * (1 - tex.a) + tex.g * tex.a;
+    tex.b = orig_rgba.b * (1 - tex.a) + tex.b * tex.a;
+    tex.a = orig_rgba.a;
+
+    return dissolve_mask(tex*colour, texture_coords, uv);
+}
+
 vec4 effect( vec4 colour, Image texture, vec2 texture_coords, vec2 screen_coords )
 {
     vec4 tex = Texel(texture, texture_coords);
 	vec2 uv = (((texture_coords)*(image_details)) - texture_details.xy*texture_details.ba)/texture_details.ba;
+
+    float omit_top_half = ticket_negative[2];
+    float omit_bottom_half = ticket_negative[3];
+
+    if (uv.y <= 0.375 && omit_top_half > 0){
+        tex.a = 0.;
+    } else if (uv.y > 0.375 && omit_bottom_half > 0) {
+        tex.a = 0.;
+    }
+
+    vec4 orig_rgba = tex.rgba;
+
     vec4 border_1 = vec4(255. / 255., 244. / 255., 180. / 255., 1.);
     vec4 border_2 = vec4(189. / 255., 188. / 255., 132. / 255., 1.);
     vec4 border_3 = vec4(171. / 255., 170. / 255., 120. / 255., 1.);
@@ -118,7 +161,13 @@ vec4 effect( vec4 colour, Image texture, vec2 texture_coords, vec2 screen_coords
 
 	if (tex[3] < 0.7)
 		tex[3] = tex[3]/3.;
-	return dissolve_mask(tex*colour, texture_coords, uv);
+
+    tex.r = orig_rgba.r * (1 - tex.a) + tex.r * tex.a;
+    tex.g = orig_rgba.g * (1 - tex.a) + tex.g * tex.a;
+    tex.b = orig_rgba.b * (1 - tex.a) + tex.b * tex.a;
+    tex.a = orig_rgba.a;
+
+	return shine_effect(colour, tex, uv, texture_coords);
 }
 
 extern MY_HIGHP_OR_MEDIUMP vec2 mouse_screen_pos;

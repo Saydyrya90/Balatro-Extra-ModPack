@@ -166,30 +166,30 @@ payload = '''
 (self.ability.set == 'Cine' and {G.C.SECONDARY_SET.Cine}) or'''
 match_indent = true
 
-# Card:draw()
-# Adds shaders for certain cine cards
-[[patches]]
-[patches.pattern]
-target = "card.lua"
-pattern = '''if self.ability.name == 'Invisible Joker' and (self.config.center.discovered or self.bypass_discovery_center) then'''
-position = "before"
-payload = '''
-if self.ability.set == "Cine" and (not self.edition or not self.edition.negative) then
-    if self.ability.name == "The Unseen" and (self.config.center.discovered or self.bypass_discovery_center) then
-        self.children.center:draw_shader("dvrprv_ticket_negative", nil, self.ARGS.send_to_shader)
-        self.children.center:draw_shader("negative_shine", nil, self.ARGS.send_to_shader)
+# # Card:draw()
+# # Adds shaders for certain cine cards
+# [[patches]]
+# [patches.pattern]
+# target = "card.lua"
+# pattern = '''if self.ability.name == 'Invisible Joker' and (self.config.center.discovered or self.bypass_discovery_center) then'''
+# position = "before"
+# payload = '''
+# if self.ability.set == "Cine" and (not self.edition or not self.edition.negative) then
+#     if self.ability.name == "The Unseen" and (self.config.center.discovered or self.bypass_discovery_center) then
+#         self.children.center:draw_shader("dvrprv_ticket_negative", nil, self.ARGS.send_to_shader)
+#         self.children.center:draw_shader("negative_shine", nil, self.ARGS.send_to_shader)
 
-        if self.children.front then
-            self.children.front:draw_shader("dvrprv_ticket_negative", nil, self.ARGS.send_to_shader)
-        end
-    elseif self.ability.name == "I Sing, I've No Shape" and self.config.center.discovered then
-        self.children.center:draw_shader("dvrprv_ticket_polychrome", nil, self.ARGS.send_to_shader)
-    else
-        self.children.center:draw_shader("dvrprv_ticket", nil, self.ARGS.send_to_shader)
-    end
-end
-'''
-match_indent = true
+#         if self.children.front then
+#             self.children.front:draw_shader("dvrprv_ticket_negative", nil, self.ARGS.send_to_shader)
+#         end
+#     elseif self.ability.name == "I Sing, I've No Shape" and self.config.center.discovered then
+#         self.children.center:draw_shader("dvrprv_ticket_polychrome", nil, self.ARGS.send_to_shader)
+#     else
+#         self.children.center:draw_shader("dvrprv_ticket", nil, self.ARGS.send_to_shader)
+#     end
+# end
+# '''
+# match_indent = true
 
 # G.FUNCS.use_card()
 [[patches]]
@@ -263,7 +263,7 @@ match_indent = true
 [[patches]]
 [patches.regex]
 target = "functions/button_callbacks.lua"
-pattern = '''ease_background_colour_blind\(G.GAME.PACK_INTERRUPT\)\n.*\n.*\n.*\n(?<indent>[ \t]*)for i = 1, #G\.GAME\.tags do\n'''
+pattern = '''ease_background_colour_blind\(G.GAME.PACK_INTERRUPT\)((.|\n)*?)(?<indent>[ \t]*)for i = 1, #G\.GAME\.tags do\n'''
 position = "after"
 line_prepend = "$indent"
 payload = '''
@@ -291,51 +291,86 @@ match_indent = true
 # Card:add_to_deck()
 # Make negative cine cards change card_limit correctly when added to deck as negative
 [[patches]]
-[patches.pattern]
+[patches.regex]
 target = "card.lua"
-pattern = '''G.jokers.config.card_limit = G.jokers.config.card_limit + self.edition.card_limit'''
-position = "after"
+pattern = '''(?<indent>[\t ]*)(?<pre>if self.edition and self.edition.card_limit then.*)\n[\t ]*(?<cond>if self.ability.consumeable then)\n[\t ]*G\.consumeables\.config\.card_limit = G\.consumeables\.config\.card_limit \+ self\.edition\.card_limit(?<post>(\n.*?)*end)'''
+position = "at"
+line_prepend = "$indent"
 payload = '''
-
-if Reverie.is_cine_or_reverie(self) then
-    G.consumeables.config.card_limit = G.consumeables.config.card_limit - self.edition.card_limit
-    G.cine_quests.config.card_limit = G.cine_quests.config.card_limit + self.edition.card_limit
-end
+$pre
+    $cond
+        if Reverie.is_cine_or_reverie(self) then
+            G.cine_quests.config.card_limit = G.cine_quests.config.card_limit + self.edition.card_limit
+        else
+            G.consumeables.config.card_limit = G.consumeables.config.card_limit + self.edition.card_limit
+        end
+    $post
 '''
-match_indent = true
 
 # Card:set_edition()
 # Make negative cine cards change card_limit correctly when negative is applied to it
 [[patches]]
 [patches.regex]
 target = "card.lua"
-pattern = '''self.edition = \{\}\n.*if self.added_to_deck then.*\n(?<indent>[\t ]*)if self.ability.consumeable then(\n.*?)*end'''
-position = "after"
+pattern = '''(?<indent>[\t ]*)(?<pre>self.edition = \{\}\n.*if self.added_to_deck then.*)\n[\t ]*(?<cond>if self.ability.consumeable then)\n[\t ]*G\.consumeables\.config\.card_limit = G\.consumeables\.config\.card_limit \+ 1(?<post>(\n.*?)*end)'''
+position = "at"
 line_prepend = "$indent"
 payload = '''
-
-if Reverie.is_cine_or_reverie(self) then
-    G.consumeables.config.card_limit = G.consumeables.config.card_limit - 1
-    G.cine_quests.config.card_limit = G.cine_quests.config.card_limit + 1
-end
+$pre
+    $cond
+        if Reverie.is_cine_or_reverie(self) then
+            G.cine_quests.config.card_limit = G.cine_quests.config.card_limit + 1
+        else
+            G.consumeables.config.card_limit = G.consumeables.config.card_limit + 1
+        end
+    $post
 '''
 
 # Card:remove_from_deck() and Card:remove()
 # Make removed negative cine cards modify card limit
 [[patches]]
-[patches.pattern]
+[patches.regex]
 target = "card.lua"
-pattern = '''G.jokers.config.card_limit = G.jokers.config.card_limit - self.edition.card_limit'''
-position = "after"
-match_indent = true
+pattern = '''(?<indent>[\t ]*)(?<pre>if self.edition and self.edition.card_limit then.*)\n[\t ]*(?<cond>if self.ability.consumeable then)\n[\t ]*G\.consumeables\.config\.card_limit = G\.consumeables\.config\.card_limit - self\.edition\.card_limit(?<post>(\n.*?)*end)'''
+position = "at"
+line_prepend = "$indent"
 payload = '''
-
-if Reverie.is_cine_or_reverie(self) then
-    G.consumeables.config.card_limit = G.consumeables.config.card_limit + self.edition.card_limit
-    G.cine_quests.config.card_limit = G.cine_quests.config.card_limit - self.edition.card_limit
-end
+$pre
+    $cond
+        if Reverie.is_cine_or_reverie(self) then
+            G.cine_quests.config.card_limit = G.cine_quests.config.card_limit - self.edition.card_limit
+        else
+            G.consumeables.config.card_limit = G.consumeables.config.card_limit - self.edition.card_limit
+        end
+    $post
 '''
 times = 2
+
+# Card:set_edition() SMOD override
+[[patches]]
+[patches.pattern]
+target = '=[SMODS _ "src/overrides.lua"]'
+pattern = '''elseif self.ability.set == 'Joker' and self.area == G.jokers then'''
+position = "before"
+payload = '''
+elseif self.ability.consumeable and self.area == G.cine_quests then
+    G.cine_quests.config.card_limit = G.cine_quests.config.card_limit - self.edition.card_limit
+'''
+match_indent = true
+
+# Card:set_edition() SMOD override
+[[patches]]
+[patches.pattern]
+target = '=[SMODS _ "src/overrides.lua"]'
+pattern = '''elseif self.ability.set == 'Joker' then'''
+position = "before"
+payload = '''
+    if self.ability.consumeable and self.area == G.cine_quests then
+        G.consumeables.config.card_limit = G.consumeables.config.card_limit - v
+        G.cine_quests.config.card_limit = G.cine_quests.config.card_limit + v
+    end
+'''
+match_indent = true
 
 # G.FUNCS.use_card()
 # As the maintainer of the fork, couldn't tell ya what this is for
@@ -432,4 +467,43 @@ payload = '''
 if self.config.center.set == 'Cine' then
     self:flip()
 end
+'''
+
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = "G.shared_shadow = self.sprite_facing == 'front' and self.children.center or self.children.back"
+position = 'after'
+match_indent = true
+payload = '''
+if (self.reverie_custom_shadow) and G.SETTINGS.GRAPHICS.shadows == 'On' and ((layer == 'shadow' or layer == 'both') and (self.ability.effect ~= 'Glass Card' and not self.greyed) and ((self.area and self.area ~= G.discard and self.area.config.type ~= 'deck') or not self.area or self.states.drag.is)) then
+    self.ARGS.send_to_shader[3] = self.omit_top_half or 0
+    self.ARGS.send_to_shader[4] = self.omit_bottom_half or 0
+
+    self.shadow_height = 0 * (0.08 + 0.4 * math.sqrt(self.velocity.x ^ 2)) + ((((self.highlighted and self.area == G.play) or self.states.drag.is) and 0.35) or (self.area and self.area.config.type == 'title_2') and 0.04 or 0.1)
+    G.shared_shadow:draw_shader('dvrprv_ticket', self.shadow_height, self.ARGS.send_to_shader)
+end
+'''
+
+# Disable edition shaders for cine cards (they mess up purchase animation)
+[[patches]]
+[patches.regex]
+target = "card.lua"
+pattern = '''(?<indent>[\t ]*)(?<cond>if self\.edition then)(?<post>\n[\t ]*for k, v in pairs\(G\.P_CENTER_POOLS\.Edition\) do\n[\t ]*if self\.edition\[v\.key:sub\(3\)\] and v\.shader then)'''
+position = "at"
+line_prepend = "$indent"
+payload = '''
+    if self.edition and not Reverie.is_cine_or_reverie(self) then
+        $post
+'''
+
+# Disable edition shaders for cine cards (they mess up purchase animation)
+[[patches]]
+[patches.regex]
+target = "card.lua"
+pattern = '''(?<indent>[\t ]*)if \(self\.edition and self\.edition\.negative\)(?<post>.*)'''
+position = "at"
+line_prepend = "$indent"
+payload = '''
+if (self.edition and self.edition.negative and not Reverie.is_cine_or_reverie(self))$post
 '''

@@ -1,7 +1,7 @@
 return {
     descriptions = {
         Cine = {
-            c_ive_no_shape_quest = {
+            c_dvrprv_ive_no_shape_quest = {
                 name = "교환권",
                 text = {
                     "필요한 칩의 {C:attention}#1#{}배 이상을 획득해",
@@ -10,7 +10,7 @@ return {
                     "{C:inactive}(현재 {C:attention}#3#{C:inactive}/#2#)"
                 }
             },
-            c_ive_no_shape = {
+            c_dvrprv_ive_no_shape = {
                 name = "허무한 허무함을 보라",
                 text = {
                     "이번 상점 동안에는",
@@ -19,7 +19,7 @@ return {
                     "새로고침 비용 {C:red}+$#1#"
                 }
             },
-            c_unseen_quest = {
+            c_dvrprv_unseen_quest = {
                 name = "교환권",
                 text = {
                     "{C:attention}#2#{} 라운드 동안 {C:attention}조커{} 슬롯 {C:attention}#1#{}개를",
@@ -27,7 +27,7 @@ return {
                     "{C:inactive}(현재 {C:attention}#3#{C:inactive}/#2#)"
                 }
             },
-            c_unseen = {
+            c_dvrprv_unseen = {
                 name = "불가시",
                 text = {
                     "이번 상점 동안에는",
@@ -37,7 +37,7 @@ return {
                     "{s:0.8}카드 새로고침"
                 }
             },
-            c_gem_heist_quest = {
+            c_dvrprv_gem_heist_quest = {
                 name = "교환권",
                 text = {
                     "{C:attention}에디션{} 있는 {C:attention}조커 #1#{}장을 판매하면",
@@ -45,7 +45,7 @@ return {
                     "{C:inactive}(현재 {C:attention}#2#{C:inactive}/#1#)"
                 }
             },
-            c_gem_heist = {
+            c_dvrprv_gem_heist = {
                 name = "보석 강탈 사건",
                 text = {
                     "이번 상점 동안에는",
@@ -54,7 +54,7 @@ return {
                     "{s:0.8}카드 새로고침"
                 }
             },
-            c_crazy_lucky_quest = {
+            c_dvrprv_crazy_lucky_quest = {
                 name = "교환권",
                 text = {
                     "{C:attention}부스터 팩 #1#{}개를 열면",
@@ -62,7 +62,7 @@ return {
                     "{C:inactive}(현재 {C:attention}#2#{C:inactive}/#1#)"
                 }
             },
-            c_crazy_lucky = {
+            c_dvrprv_crazy_lucky = {
                 name = "크레이지 럭키",
                 text = {
                     "이번 상점 동안에는",
@@ -70,7 +70,7 @@ return {
                     "{s:0.8,C:attention}부스터 팩 {s:0.8}새로고침"
                 }
             },
-            c_tag_or_die_quest = {
+            c_dvrprv_tag_or_die_quest = {
                 name = "교환권",
                 text = {
                     "{C:attention}블라인드 #1#{}개를 건너뛰면",
@@ -78,7 +78,7 @@ return {
                     "{C:inactive}(현재 {C:attention}#2#{C:inactive}/#1#)"
                 }
             },
-            c_tag_or_die = {
+            c_dvrprv_tag_or_die = {
                 name = "위기일발",
                 text = {
                     "이번 상점 동안에는",
@@ -87,7 +87,7 @@ return {
                     "{s:0.8,C:attention}부스터 팩 {s:0.8}새로고침"
                 }
             },
-            c_let_it_moon_quest = {
+            c_dvrprv_let_it_moon_quest = {
                 name = "교환권",
                 text = {
                     "{C:planet}행성{} 또는 {C:tarot}타로{} 카드를 {C:attention}#1#{}장",
@@ -95,7 +95,7 @@ return {
                     "{C:inactive}(현재 {C:attention}#2#{C:inactive}/#1#)"
                 }
             },
-            c_let_it_moon = {
+            c_dvrprv_let_it_moon = {
                 name = "렛 잇 문",
                 text = {
                     "이번 상점 동안에는",
@@ -104,7 +104,7 @@ return {
                     "{s:0.8,C:attention}부스터 팩 {s:0.8}새로고침"
                 }
             },
-            c_poker_face_quest = {
+            c_dvrprv_poker_face_quest = {
                 name = "교환권",
                 text = {
                     "{C:attention}플레잉 카드 #1#{}장을 {C:attention}강화{}하면",
@@ -112,7 +112,7 @@ return {
                     "{C:inactive}(현재 {C:attention}#2#{C:inactive}/#1#)"
                 }
             },
-            c_poker_face = {
+            c_dvrprv_poker_face = {
                 name = "포커 페이스",
                 text = {
                     "이번 상점 동안에는",
@@ -121,7 +121,7 @@ return {
                     "{s:0.8,C:attention}부스터 팩 {s:0.8}새로고침"
                 }
             },
-            c_eerie_inn_quest = {
+            c_dvrprv_eerie_inn_quest = {
                 name = "교환권",
                 text = {
                     "카드를 {C:attention}#1#{}장 파괴하면",
@@ -129,7 +129,7 @@ return {
                     "{C:inactive}(현재 {C:attention}#2#{C:inactive}/#1#)"
                 }
             },
-            c_eerie_inn = {
+            c_dvrprv_eerie_inn = {
                 name = "오싹한 여관",
                 text = {
                     "이번 상점 동안에는",
@@ -138,7 +138,7 @@ return {
                     "{s:0.8,C:attention}부스터 팩 {s:0.8}새로고침"
                 }
             },
-            c_adrifting_quest = {
+            c_dvrprv_adrifting_quest = {
                 name = "교환권",
                 text = {
                     "{C:attention}디버프{}됐거나 {C:attention}뒤집힌{} 카드 {C:attention}#1#{}장을",
@@ -146,7 +146,7 @@ return {
                     "{C:inactive}(현재 {C:attention}#2#{C:inactive}/#1#)"
                 }
             },
-            c_adrifting = {
+            c_dvrprv_adrifting = {
                 name = "파랑 끝에서",
                 text = {
                     "이번 상점 동안에는",
@@ -155,7 +155,7 @@ return {
                     "카드 및 {s:0.8,C:attention}부스터 팩 {s:0.8}새로고침"
                 }
             },
-            c_morsel_quest = {
+            c_dvrprv_morsel_quest = {
                 name = "교환권",
                 text = {
                     "{C:attention}음식 조커 #1#{}장을 획득하면",
@@ -163,7 +163,7 @@ return {
                     "{C:inactive}(현재 {C:attention}#2#{C:inactive}/#1#)"
                 }
             },
-            c_morsel = {
+            c_dvrprv_morsel = {
                 name = "식탁의 길이",
                 text = {
                     "이번 상점 동안에는",
@@ -172,7 +172,7 @@ return {
                     "{s:0.8,C:attention}부스터 팩 {s:0.8}새로고침"
                 }
             },
-            c_alchemist_quest = {
+            c_dvrprv_alchemist_quest = {
                 name = "교환권",
                 text = {
                     "{C:alchemical}연금술{} 카드를 {C:attention}#1#{}장 사용하면",
@@ -180,7 +180,7 @@ return {
                     "{C:inactive}(현재 {C:attention}#2#{C:inactive}/#1#)"
                 }
             },
-            c_alchemist = {
+            c_dvrprv_alchemist = {
                 name = "풀 메탈 알케미스트",
                 text = {
                     "이번 상점 동안에는",
@@ -189,7 +189,7 @@ return {
                     "{s:0.8,C:attention}부스터 팩 {s:0.8}새로고침"
                 }
             },
-            c_every_hue_quest = {
+            c_dvrprv_every_hue_quest = {
                 name = "교환권",
                 text = {
                     "{C:colourcard}색상{} 카드를 {C:attention}#1#{}장 사용하면",
@@ -197,7 +197,7 @@ return {
                     "{C:inactive}(현재 {C:attention}#2#{C:inactive}/#1#)"
                 }
             },
-            c_every_hue = {
+            c_dvrprv_every_hue = {
                 name = "모든 빛깔의",
                 text = {
                     "이번 상점 동안에는",
@@ -206,7 +206,7 @@ return {
                     "{s:0.8,C:attention}부스터 팩 {s:0.8}새로고침"
                 }
             },
-            c_radioactive_quest = {
+            c_dvrprv_radioactive_quest = {
                 name = "교환권",
                 text = {
                     "{C:colourcard}융합{} 조커를 {C:attention}#1#{}장 획득하면",
@@ -214,7 +214,7 @@ return {
                     "{C:inactive}(현재 {C:attention}#2#{C:inactive}/#1#)"
                 }
             },
-            c_radioactive = {
+            c_dvrprv_radioactive = {
                 name = "라디오액티브",
                 text = {
                     "이번 상점 동안에는",
@@ -232,7 +232,7 @@ return {
                     "두 개 생성합니다",
                 }
             },
-            j_dynamic_film = {
+            j_dvrprv_dynamic_film = {
                 name = "역동적인 필름",
                 text = {
                     "이 조커는 {C:cine}교환권{}에",
@@ -243,14 +243,14 @@ return {
             }
         },
         Back = {
-            b_filmstrip = {
+            b_dvrprv_filmstrip = {
                 name = "필름스트립 덱",
                 text = {
                     "{C:cine}영화{} 카드가 중첩될 수 있습니다",
                     "영화 슬롯 {C:attention}+#1#{}개"
                 }
             },
-            b_stamp = {
+            b_dvrprv_stamp = {
                 name = "스탬프 덱",
                 text = {
                     "{C:attention}블라인드{}를 건너뛰면",
@@ -259,21 +259,21 @@ return {
             }
         },
         Tag = {
-            tag_cine = {
+            tag_dvrprv_cine = {
                 name = "반쪽 태그",
                 text = {
                     "무료 {C:cine}영화 팩{}을",
                     "획득합니다"
                 }
             },
-            tag_tag = {
+            tag_dvrprv_jumbo_tag = {
                 name = "기호 태그",
                 text = {
                     "무료 {C:attention}태그 팩{}을",
                     "획득합니다"
                 }
             },
-            tag_mega_tag = {
+            tag_dvrprv_mega_tag = {
                 name = "도장 태그",
                 text = {
                     "무료 {C:attention}점보 태그 팩{}을",
@@ -282,7 +282,7 @@ return {
             }
         },
         Spectral = {
-            c_reverie = {
+            c_dvrprv_reverie = {
                 name = "몽상",
                 text = {
                     "이번 상점에",
@@ -292,7 +292,7 @@ return {
             }
         },
         Voucher = {
-            v_script = {
+            v_dvrprv_script = {
                 name = "각본",
                 text = {
                     "{C:cine}영화{} 카드가 활성화된 동안",
@@ -300,7 +300,7 @@ return {
                     "{C:attention}+#1#{}개 증가합니다"
                 }
             },
-            v_megaphone = {
+            v_dvrprv_megaphone = {
                 name = "확성기",
                 text = {
                     "{C:cine}교환권{} 달성 목표가",
@@ -317,56 +317,56 @@ return {
             }
         },
         Other = {
-            p_tag_normal = {
+            p_dvrprv_tag_normal = {
                 name = "태그 팩",
                 text = {
                     "최대 {C:attention}#2#{}개의 {C:attention}태그{} 중",
                     "{C:attention}#1#{}개를 선택합니다"
                 }
             },
-            p_tag_jumbo = {
+            p_dvrprv_tag_jumbo = {
                 name = "점보 태그 팩",
                 text = {
                     "최대 {C:attention}#2#{}개의 {C:attention}태그{} 중",
                     "{C:attention}#1#{}개를 선택합니다"
                 }
             },
-            p_tag_mega = {
+            p_dvrprv_tag_mega = {
                 name = "메가 태그 팩",
                 text = {
                     "최대 {C:attention}#2#{}개의 {C:attention}태그{} 중",
                     "{C:attention}#1#{}개를 선택합니다"
                 }
             },
-            p_crazy_lucky = {
+            p_dvrprv_crazy_lucky = {
                 name = "팩",
                 text = {
                     "최대 {C:attention}#2#{}개의 {C:attention,E:1}아무거나{} 중",
                     "{C:attention}#1#{}개를 선택해 보유합니다"
                 }
             },
-            p_adrifting = {
+            p_dvrprv_adrifting = {
                 name = "뒤집힌 팩",
                 text = {
                     "{C:attention}무언가{} 중",
                     "{C:attention}몇 개{}를 선택합니다"
                 }
             },
-            p_film_normal = {
+            p_dvrprv_film_normal = {
                 name = "영화 팩",
                 text = {
                     "최대 {C:attention}#2#{}개의 {C:cine}교환권{} 중",
                     "{C:attention}#1#{}개를 선택해 보유합니다"
                 }
             },
-            p_film_jumbo = {
+            p_dvrprv_film_jumbo = {
                 name = "점보 영화 팩",
                 text = {
                     "최대 {C:attention}#2#{}개의 {C:cine}교환권{} 중",
                     "{C:attention}#1#{}개를 선택해 보유합니다"
                 }
             },
-            p_film_mega = {
+            p_dvrprv_film_mega = {
                 name = "메가 영화 팩",
                 text = {
                     "최대 {C:attention}#2#{}개의 {C:cine}영화{} 카드 중",
@@ -403,11 +403,14 @@ return {
     misc = {
         dictionary = {
             k_cine = "영화",
-            k_tag = "태그",
-            k_tag_pack = "태그 팩",
-            k_crazy_pack = "팩",
-            k_film_pack = "영화 팩",
+            k_dvrprv_tag = "태그",
+            k_dvrprv_tag_pack = "태그 팩",
+            k_dvrprv_crazy_pack = "팩",
+            k_dvrprv_film_pack = "영화 팩",
             b_cine_cards = "영화 카드"
+        },
+        labels = {
+            morseled = "식탁의 길이"
         }
     }
 }

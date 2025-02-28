@@ -4,7 +4,7 @@
 	#define MY_HIGHP_OR_MEDIUMP mediump
 #endif
 
-extern MY_HIGHP_OR_MEDIUMP vec4 ticket_polychrome;
+extern MY_HIGHP_OR_MEDIUMP vec4 cine_negative;
 extern MY_HIGHP_OR_MEDIUMP number dissolve;
 extern MY_HIGHP_OR_MEDIUMP number time;
 extern MY_HIGHP_OR_MEDIUMP vec4 texture_details;
@@ -24,7 +24,7 @@ vec4 dissolve_mask(vec4 tex, vec2 texture_coords, vec2 uv)
 	float t = time * 10.0 + 2003.;
 	vec2 floored_uv = (floor((uv*texture_details.ba)))/max(texture_details.b, texture_details.a);
     vec2 uv_scaled_centered = (floored_uv - 0.5) * 2.3 * max(texture_details.b, texture_details.a);
-
+	
 	vec2 field_part1 = uv_scaled_centered + 50.*vec2(sin(-t / 143.6340), cos(-t / 99.4324));
 	vec2 field_part2 = uv_scaled_centered + 50.*vec2(cos( t / 53.1532),  cos( t / 61.4532));
 	vec2 field_part3 = uv_scaled_centered + 50.*vec2(sin(-t / 87.53218), sin(-t / 49.0000));
@@ -94,13 +94,44 @@ vec4 HSL(vec4 c)
 	return hsl;
 }
 
+vec4 shine_effect( vec4 colour, vec4 tex, vec2 uv, vec2 texture_coords ){
+
+    vec4 orig_rgba = tex.rgba;
+
+    number low = min(tex.r, min(tex.g, tex.b));
+    number high = max(tex.r, max(tex.g, tex.b));
+	number delta = high-low -0.1;
+
+    number fac = 0.8 + 0.9*sin(11.*uv.x+4.32*uv.y + cine_negative.r*12. + cos(cine_negative.r*5.3 + uv.y*4.2 - uv.x*4.));
+    number fac2 = 0.5 + 0.5*sin(8.*uv.x+2.32*uv.y + cine_negative.r*5. - cos(cine_negative.r*2.3 + uv.x*8.2));
+    number fac3 = 0.5 + 0.5*sin(10.*uv.x+5.32*uv.y + cine_negative.r*6.111 + sin(cine_negative.r*5.3 + uv.y*3.2));
+    number fac4 = 0.5 + 0.5*sin(3.*uv.x+2.32*uv.y + cine_negative.r*8.111 + sin(cine_negative.r*1.3 + uv.y*11.2));
+    number fac5 = sin(0.9*16.*uv.x+5.32*uv.y + cine_negative.r*12. + cos(cine_negative.r*5.3 + uv.y*4.2 - uv.x*4.));
+
+    number maxfac = 0.7*max(max(fac, max(fac2, max(fac3,0.0))) + (fac+fac2+fac3*fac4), 0.);
+
+    tex.rgb = tex.rgb*0.5 + vec3(0.4, 0.4, 0.8);
+
+    tex.r = tex.r-delta + delta*maxfac*(0.7 + fac5*0.27) - 0.1;
+    tex.g = tex.g-delta + delta*maxfac*(0.7 - fac5*0.27) - 0.1;
+    tex.b = tex.b-delta + delta*maxfac*0.7 - 0.1;
+    tex.a = tex.a*(0.5*max(min(1., max(0.,0.3*max(low*0.2, delta)+ min(max(maxfac*0.1,0.), 0.4)) ), 0.) + 0.15*maxfac*(0.1+delta));
+
+    tex.r = orig_rgba.r * (1 - tex.a) + tex.r * tex.a;
+    tex.g = orig_rgba.g * (1 - tex.a) + tex.g * tex.a;
+    tex.b = orig_rgba.b * (1 - tex.a) + tex.b * tex.a;
+    tex.a = orig_rgba.a;
+
+    return dissolve_mask(tex*colour, texture_coords, uv);
+}
+
 vec4 effect( vec4 colour, Image texture, vec2 texture_coords, vec2 screen_coords )
 {
     vec4 tex = Texel(texture, texture_coords);
 	vec2 uv = (((texture_coords)*(image_details)) - texture_details.xy*texture_details.ba)/texture_details.ba;
 
-    float omit_top_half = ticket_polychrome[2];
-    float omit_bottom_half = ticket_polychrome[3];
+    float omit_top_half = cine_negative[2];
+    float omit_bottom_half = cine_negative[3];
 
     if (uv.y <= 0.375 && omit_top_half > 0){
         tex.a = 0.;
@@ -110,52 +141,24 @@ vec4 effect( vec4 colour, Image texture, vec2 texture_coords, vec2 screen_coords
 
     vec4 orig_rgba = tex.rgba;
 
-    vec4 border_1 = vec4(255. / 255., 244. / 255., 180. / 255., 1.);
-    vec4 border_2 = vec4(189. / 255., 188. / 255., 132. / 255., 1.);
-    vec4 border_3 = vec4(171. / 255., 170. / 255., 120. / 255., 1.);
-    vec4 joker_black = vec4(79. / 255., 99. / 255., 103. / 255., 1.);
+    vec4 SAT = HSL(tex);
 
-    if (any(greaterThan(abs(tex.rgb - border_1.rgb), vec3(0.1))) &&
-        any(greaterThan(abs(tex.rgb - border_2.rgb), vec3(0.1))) &&
-        any(greaterThan(abs(tex.rgb - border_3.rgb), vec3(0.1))) &&
-        any(greaterThan(abs(tex.rgb - joker_black.rgb), vec3(0.1))))
-    {
-        number low = min(tex.r, min(tex.g, tex.b));
-        number high = max(tex.r, max(tex.g, tex.b));
-        number delta = high - low;
+	if (cine_negative.g > 0.0 || cine_negative.g < 0.0) {
+		SAT.b = (1.-SAT.b);
+	}
+	SAT.r = -SAT.r+0.2;
 
-        number saturation_fac = 1. - max(0., 0.05*(1.1-delta));
+    tex = RGB(SAT) + 0.8*vec4(79./255., 99./255.,103./255.,0.);
 
-        vec4 hsl = HSL(vec4(tex.r*saturation_fac, tex.g*saturation_fac, tex.b, tex.a));
-
-        float t = ticket_polychrome.y*2.221 + time;
-        vec2 floored_uv = (floor((uv*texture_details.ba)))/texture_details.ba;
-        vec2 uv_scaled_centered = (floored_uv - 0.5) * 50.;
-
-        vec2 field_part1 = uv_scaled_centered + 50.*vec2(sin(-t / 143.6340), cos(-t / 99.4324));
-        vec2 field_part2 = uv_scaled_centered + 50.*vec2(cos( t / 53.1532),  cos( t / 61.4532));
-        vec2 field_part3 = uv_scaled_centered + 50.*vec2(sin(-t / 87.53218), sin(-t / 49.0000));
-
-        float field = (1.+ (
-            cos(length(field_part1) / 19.483) + sin(length(field_part2) / 33.155) * cos(field_part2.y / 15.73) +
-            cos(length(field_part3) / 27.193) * sin(field_part3.x / 21.92) ))/2.;
-
-        float res = (.5 + .5* cos( (ticket_polychrome.x) * 2.612 + ( field + -.5 ) *3.14));
-        hsl.x = hsl.x+ res + ticket_polychrome.y*0.04;
-        hsl.y = min(0.6,hsl.y+0.5);
-
-        tex.rgb = RGB(hsl).rgb;
-    }
-
-    if (tex[3] < 0.7)
-        tex[3] = tex[3]/3.;
+	if (tex[3] < 0.7)
+		tex[3] = tex[3]/3.;
 
     tex.r = orig_rgba.r * (1 - tex.a) + tex.r * tex.a;
     tex.g = orig_rgba.g * (1 - tex.a) + tex.g * tex.a;
     tex.b = orig_rgba.b * (1 - tex.a) + tex.b * tex.a;
     tex.a = orig_rgba.a;
-    
-	return dissolve_mask(tex*colour, texture_coords, uv);
+
+	return shine_effect(colour, tex, uv, texture_coords);
 }
 
 extern MY_HIGHP_OR_MEDIUMP vec2 mouse_screen_pos;

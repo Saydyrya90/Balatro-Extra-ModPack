@@ -1,4 +1,4 @@
-SMODS.UndiscoveredSprite{
+SMODS.UndiscoveredSprite {
     key = "Cine",
     atlas = "Cine",
     pos = {
@@ -28,7 +28,7 @@ local function your_collection_cine_page(args)
         table.insert(cines, v)
     end
 
-    table.sort(cines, function (a, b) return a.order < b.order end)
+    table.sort(cines, function(a, b) return a.order < b.order end)
 
     for j = 1, #G.your_collection do
         for i = 1, (1 + j) * 2 do
@@ -37,7 +37,8 @@ local function your_collection_cine_page(args)
                 break
             end
 
-            local card = Card(G.your_collection[j].T.x + G.your_collection[j].T.w / 2, G.your_collection[j].T.y, G.CARD_W, G.CARD_H, G.P_CARDS.empty, center)
+            local card = Card(G.your_collection[j].T.x + G.your_collection[j].T.w / 2, G.your_collection[j].T.y, G
+                .CARD_W, G.CARD_H, G.P_CARDS.empty, center)
             card:start_materialize(nil, i > 1 or j > 1)
             G.your_collection[j]:emplace(card)
         end
@@ -51,12 +52,13 @@ local function create_UIBox_your_collection_cines(self)
 
     G.your_collection = {}
     for j = 1, 2 do
-        G.your_collection[j] = CardArea(G.ROOM.T.x + 0.2 * G.ROOM.T.w / 2, G.ROOM.T.h, (4.25 + (j == 2 and 2 or 0)) * G.CARD_W, 1 * G.CARD_H, {
-            card_limit = (1 + j) * 2,
-            type = "voucher",
-            highlight_limit = 0,
-            collection = true
-        })
+        G.your_collection[j] = CardArea(G.ROOM.T.x + 0.2 * G.ROOM.T.w / 2, G.ROOM.T.h,
+            (4.25 + (j == 2 and 2 or 0)) * G.CARD_W, 1 * G.CARD_H, {
+                card_limit = (1 + j) * 2,
+                type = "voucher",
+                highlight_limit = 0,
+                collection = true
+            })
         table.insert(deck_tables, {
             n = G.UIT.R,
             config = {
@@ -83,17 +85,19 @@ local function create_UIBox_your_collection_cines(self)
         table.insert(cines, v)
     end
 
-    table.sort(cines, function (a, b) return a.order < b.order end)
+    table.sort(cines, function(a, b) return a.order < b.order end)
 
     local cine_options = {}
     for i = 1, math.ceil(#cines / (5 * #G.your_collection)) do
-        table.insert(cine_options, localize("k_page").." "..tostring(i).."/"..tostring(math.ceil(#cines / (5 * #G.your_collection))))
+        table.insert(cine_options,
+            localize("k_page") .. " " .. tostring(i) .. "/" .. tostring(math.ceil(#cines / (5 * #G.your_collection))))
     end
 
     for j = 1, #G.your_collection do
         for i = 1, (1 + j) * 2 do
             local center = cines[i + (j - 1) * 4]
-            local card = Card(G.your_collection[j].T.x + G.your_collection[j].T.w / 2, G.your_collection[j].T.y, G.CARD_W, G.CARD_H, nil, center)
+            local card = Card(G.your_collection[j].T.x + G.your_collection[j].T.w / 2, G.your_collection[j].T.y, G
+                .CARD_W, G.CARD_H, nil, center)
             card.ability.order = i + (j - 1) * 4
 
             card:start_materialize(nil, i > 1 or j > 1)
@@ -129,7 +133,8 @@ local function create_UIBox_your_collection_cines(self)
     end
 
     local t = create_UIBox_generic_options({
-        back_func = #type_buf>3 and 'your_collection_consumables' or G.ACTIVE_MOD_UI and "openModUI_"..G.ACTIVE_MOD_UI.id or 'your_collection',
+        back_func = #type_buf > 3 and 'your_collection_consumables' or
+            G.ACTIVE_MOD_UI and "openModUI_" .. G.ACTIVE_MOD_UI.id or 'your_collection',
         contents = {
             { n = G.UIT.R, config = { align = "cm", minw = 2.5, padding = 0.1, r = 0.1, colour = G.C.BLACK, emboss = 0.05 }, nodes = deck_tables },
             { n = G.UIT.R, config = { align = "cm", padding = 0 },                                                           nodes = option_nodes },
@@ -139,18 +144,13 @@ local function create_UIBox_your_collection_cines(self)
     return t
 end
 
-SMODS.ConsumableType{
+SMODS.ConsumableType {
     key = "Cine",
     collection_rows = { 4, 6 },
     primary_colour = G.C.SET.Joker,
     secondary_colour = Reverie.badge_colour,
-    loc_txt = {
-        collection = "Cine Cards",
-        name = "Cine",
-        label = "Cine"
-    },
     create_UIBox_your_collection = create_UIBox_your_collection_cines,
-    inject = function (self)
+    inject = function(self)
         SMODS.ConsumableType.inject(self)
 
         G.P_CENTER_POOLS.Cine = {}
@@ -158,7 +158,7 @@ SMODS.ConsumableType{
         G.C.SECONDARY_SET.Tag = HEX("a6b8ce")
         G.FUNCS.your_collection_cine_page = your_collection_cine_page
     end,
-    inject_card = function (self, center)
+    inject_card = function(self, center)
         SMODS.ConsumableType.inject_card(self, center)
 
         if center.reward then
@@ -166,17 +166,17 @@ SMODS.ConsumableType{
             SMODS.insert_pool(G.P_CENTER_POOLS.Cine_Quest, center)
         end
     end,
-    delete_card = function (self, center)
+    delete_card = function(self, center)
         SMODS.ConsumableType.delete_card(self, center)
         SMODS.remove_pool(G.P_CENTER_POOLS[center.reward and "Cine_Quest" or "Cine"], center.key)
     end
 }
 
 SMODS.ObjectTypes["Cine"].default = "c_dvrprv_gem_heist"
-SMODS.ObjectTypes["Cine_Quest"] = {default = "c_dvrprv_gem_heist_quest"}
+SMODS.ObjectTypes["Cine_Quest"] = { default = "c_dvrprv_gem_heist_quest" }
 
 local function can_use(self, card)
-    if card.reward then
+    if card.config.center.reward then
         return false
     else
         return G.STATE == G.STATES.SHOP and G.shop
@@ -187,11 +187,11 @@ local function loc_vars_cine(self, info_queue, card)
     local vars = nil
 
     if self.name == "Tag or Die" then
-        vars = {card.ability.extra.cost}
+        vars = { card.ability.extra.cost }
     elseif self.name == "The Unseen" or self.name == "Eerie Inn" then
-        vars = {card.ability.extra.mult}
+        vars = { card.ability.extra.mult }
     elseif self.name == "I Sing, I've No Shape" then
-        vars = {card.ability.extra.add}
+        vars = { card.ability.extra.add }
     elseif self.name == "Crazy Lucky" then
         local fake_card = G.P_CENTERS.p_dvrprv_crazy_lucky_1:create_fake_card()
         local info = G.P_CENTERS.p_dvrprv_crazy_lucky_1:loc_vars(info_queue, fake_card)
@@ -202,14 +202,14 @@ local function loc_vars_cine(self, info_queue, card)
             vars = info.vars
         }
     elseif self.name == "Fool Metal Alchemist" then
-        vars = {card.ability.extra.slot}
+        vars = { card.ability.extra.slot }
     elseif self.name == "Every Hue" then
-        vars = {card.ability.extra.rounds}
+        vars = { card.ability.extra.rounds }
     else
-        vars = {card.ability.extra}
+        vars = { card.ability.extra }
     end
 
-    return {vars = vars}
+    return { vars = vars }
 end
 
 local function loc_vars_quest(self, info_queue, card)
@@ -220,25 +220,25 @@ local function loc_vars_quest(self, info_queue, card)
     info_queue[#info_queue + 1] = G.P_CENTERS[reward_card]
 
     if reward_card == "c_dvrprv_unseen" then
-        vars = {card.ability.extra.slots, card.ability.extra.goal, card.ability.progress}
+        vars = { card.ability.extra.slots, card.ability.extra.goal, card.ability.progress }
     elseif reward_card == "c_dvrprv_ive_no_shape" then
-        vars = {card.ability.extra.chips, card.ability.extra.goal, card.ability.progress}
+        vars = { card.ability.extra.chips, card.ability.extra.goal, card.ability.progress }
     elseif reward_card == "c_dvrprv_jovial_m" then
         info_queue[#info_queue + 1] = {
             key = "j_jolly",
             set = "Joker",
-            specific_vars = {G.P_CENTERS.j_jolly.config.t_mult, G.P_CENTERS.j_jolly.config.type}
+            specific_vars = { G.P_CENTERS.j_jolly.config.t_mult, G.P_CENTERS.j_jolly.config.type }
         }
-        vars = {card.ability.extra.goal, card.ability.progress, localize{
+        vars = { card.ability.extra.goal, card.ability.progress, localize {
             type = "name_text",
             set = "Joker",
             key = "j_jolly"
-        }}
+        } }
     else
-        vars = {card.ability.extra.goal, card.ability.progress}
+        vars = { card.ability.extra.goal, card.ability.progress }
     end
 
-    return {vars = vars}
+    return { vars = vars }
 end
 
 local function inject(self)
@@ -583,7 +583,7 @@ Reverie.cines = {
             extra = {
                 slot = 2,
                 kind = {
-                    "p_alchemy_"
+                    SMODS.find_mod("ReduxArcanum") and "p_ReduxArcanum_alchemy_" or "p_alchemy_",
                 }
             }
         },
@@ -719,7 +719,7 @@ Reverie.cines = {
     }
 }
 
-table.sort(Reverie.cines, function (a, b) return a.order < b.order end)
+table.sort(Reverie.cines, function(a, b) return a.order < b.order end)
 
 for _, v in pairs(Reverie.cines) do
     v.set = "Cine"
@@ -728,9 +728,44 @@ for _, v in pairs(Reverie.cines) do
     v.loc_vars = v.reward and loc_vars_quest or loc_vars_cine
     v.inject = inject
     v.use = not v.reward and Reverie.use_cine or nil
+    v.set_sprites = function(self, card, front)
+        card.ignore_base_shader = { ticket = true }
+    end
+    v.draw = function(self, card, layer)
+        card.ARGS = card.ARGS or {}
+        if not card.ARGS.send_to_shader then
+            card.ARGS.send_to_shader = card.ARGS.send_to_shader or {}
+            card.ARGS.send_to_shader[1] = math.min(card.VT.r*3, 1) + math.sin(G.TIMERS.REAL/28) + 1 + (card.juice and card.juice.r*20 or 0) + card.tilt_var.amt
+            card.ARGS.send_to_shader[2] = G.TIMERS.REAL
+
+            for k, v in pairs(card.children) do
+                v.VT.scale = card.VT.scale
+            end
+        end
+        if not (card.edition and card.edition.negative) then
+            card.ARGS.send_to_shader = card.ARGS.send_to_shader or {}
+            card.ARGS.send_to_shader[3] = card.omit_top_half or 0
+            card.ARGS.send_to_shader[4] = card.omit_bottom_half or 0
+
+            if card.ability.name == "The Unseen" and (card.config.center.discovered or card.bypass_discovery_center) then
+                card.children.center:draw_shader("dvrprv_ticket_negative", nil, card.ARGS.send_to_shader)
+            elseif card.ability.name == "I Sing, I've No Shape" and card.config.center.discovered then
+                card.children.center:draw_shader("dvrprv_ticket_polychrome", nil, card.ARGS.send_to_shader)
+            else
+                card.children.center:draw_shader("dvrprv_ticket", nil, card.ARGS.send_to_shader)
+            end
+        end
+        if card.edition and card.edition.negative then
+            card.ARGS.send_to_shader[3] = card.omit_top_half or 0
+            card.ARGS.send_to_shader[4] = card.omit_bottom_half or 0
+
+            -- Different from "ticket_negative", this is a direct copy of negative with no intended visual changes
+            card.children.center:draw_shader("dvrprv_cine_negative", nil, card.ARGS.send_to_shader)
+        end
+    end
 
     -- Set cine card to its reward when flipped
-    -- Copies from Bunco's Cassette
+    -- Copied from Bunco's Cassette
     v.update = function(self, card)
         if card.VT.w <= 0 then
             if card.config.center.reward then

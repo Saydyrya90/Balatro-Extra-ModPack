@@ -1,5 +1,9 @@
 Reverie.shaders = {
     {
+        key = "cine_negative",
+        path = "cine_negative.fs"
+    },
+    {
         key = "ticket",
         path = "ticket.fs"
     },

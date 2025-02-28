@@ -4,7 +4,7 @@
 	#define MY_HIGHP_OR_MEDIUMP mediump
 #endif
 
-extern MY_HIGHP_OR_MEDIUMP vec2 ticket;
+extern MY_HIGHP_OR_MEDIUMP vec4 ticket;
 extern MY_HIGHP_OR_MEDIUMP number dissolve;
 extern MY_HIGHP_OR_MEDIUMP number time;
 extern MY_HIGHP_OR_MEDIUMP vec4 texture_details;
@@ -55,6 +55,16 @@ vec4 effect( vec4 colour, Image texture, vec2 texture_coords, vec2 screen_coords
 {
     vec4 tex = Texel( texture, texture_coords);
     vec2 uv = (((texture_coords)*(image_details)) - texture_details.xy*texture_details.ba)/texture_details.ba;
+
+    float omit_top_half = ticket[2];
+    float omit_bottom_half = ticket[3];
+
+    if (uv.y <= 0.375 && omit_top_half > 0){
+        tex.a = 0.;
+    } else if (uv.y > 0.375 && omit_bottom_half > 0) {
+        tex.a = 0.;
+    }
+
     vec4 border_1 = vec4(255. / 255., 244. / 255., 180. / 255., 1.);
     vec4 border_2 = vec4(189. / 255., 188. / 255., 132. / 255., 1.);
     vec4 border_3 = vec4(171. / 255., 170. / 255., 120. / 255., 1.);
@@ -77,6 +87,7 @@ vec4 effect( vec4 colour, Image texture, vec2 texture_coords, vec2 screen_coords
 
         number maxfac = 0.6*max(max(fac, max(fac2, max(fac3,0.0))) + (fac+fac2+fac3*fac4), 0.);
 
+        vec4 orig_rgba = tex.rgba;
         tex.rgb = tex.rgb*0.5 + vec3(0.4, 0.4, 0.8);
 
         tex.r = tex.r-delta + delta*maxfac*(0.7 + fac5*0.07) - 0.1;
@@ -85,6 +96,12 @@ vec4 effect( vec4 colour, Image texture, vec2 texture_coords, vec2 screen_coords
         tex.a = tex.a*(0.8*max(min(1., max(0.,0.3*max(low*0.2, delta)+ min(max(maxfac*0.1,0.), 0.4)) ), 0.) + 0.15*maxfac*(0.1+delta));
 
         tex.a *= 0.6;
+
+        tex.r = orig_rgba.r * (1 - tex.a) + tex.r * tex.a;
+        tex.g = orig_rgba.g * (1 - tex.a) + tex.g * tex.a;
+        tex.b = orig_rgba.b * (1 - tex.a) + tex.b * tex.a;
+        tex.a = orig_rgba.a;
+
     }
 
     return dissolve_mask(tex*colour, texture_coords, uv);

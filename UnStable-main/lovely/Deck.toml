@@ -1,0 +1,16 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+# Adds rank blacklist functionality for deck
+# function generate_card_ui()
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = "if self.GAME.starting_params.no_faces and SMODS.Ranks[v.value].face then keep = false end"
+position = "before"
+match_indent = true
+payload = """
+if self.GAME.starting_params.blacklisted_ranks and self.GAME.starting_params.blacklisted_ranks[v.value] then keep = false end
+"""

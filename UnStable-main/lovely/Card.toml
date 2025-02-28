@@ -1,0 +1,90 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+# Fix the nominal sorting (Suit for high ranks)
+[[patches]]
+[patches.regex]
+target = 'card.lua'
+pattern = '''if mod == 'suit' (.*)'''
+position = 'at'
+payload = '''
+if mod == 'suit' then mult = 30000 end'''
+
+# Fix the nominal sorting (For low ranks)
+[[patches]]
+[patches.regex]
+target = 'card.lua'
+pattern = '''return 10\*self.base.nominal\*rank_mult(.*)'''
+position = 'at'
+payload = '''
+--Temporary fix so the card with the lowest nominal can still be sorted properly
+	local nominal = self.base.nominal
+	
+	if self.base.value == 'unstb_???' then
+		nominal = 0.3
+	elseif nominal < 0.4 then
+		nominal = 0.31 + nominal*0.1
+	end
+	
+	--Hardcode this so it's sorted properly
+	if self.base.value == 'unstb_161' then
+		nominal = 30
+	end
+	
+	return 10*(nominal)*rank_mult + self.base.suit_nominal*mult + (self.base.suit_nominal_original or 0)*0.0001*mult + 10*self.base.face_nominal*rank_mult + 0.000001*self.unique_val'''
+
+
+# Adds ability text for decimal ranks
+# function generate_card_ui()
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "if main_end then"
+position = "before"
+match_indent = true
+payload = """
+local isCollection = (card and card.area and card.area.config.collection) or false
+if not isCollection and (_c.set == 'Default' or _c.set == 'Enhanced') and card and card.base and card.base.value and SMODS.Ranks[card.base.value].is_decimal and not card.config.center.no_rank and not card.debuff then
+	local rank_act = SMODS.Ranks[card.base.value].rank_act or {'0', '0', '0'}
+	if rank_act[3] then
+		localize{type = 'other', key = 'decimal_rank_ability', nodes = desc_nodes, vars = {rank_act[1], rank_act[2], rank_act[3]}}
+	else
+		localize{type = 'other', key = 'decimal_rank_ability_2', nodes = desc_nodes, vars = {rank_act[1], rank_act[2]}}
+	end
+end"""
+
+# Adds 'No Chips' text for certain ranks
+# function generate_card_ui()
+[[patches]]
+[patches.regex]
+target = "functions/common_events.lua"
+pattern = "specific_vars.nominal_chips then \n(.*)"
+position = "at"
+payload = """
+specific_vars.nominal_chips or (specific_vars.value == 'unstb_0' or specific_vars.value == 'unstb_???') then
+if (specific_vars.value == 'unstb_0' or specific_vars.value == 'unstb_???') and not specific_vars.nominal_chips then
+	localize{type = 'other', key = 'no_chip', nodes = desc_nodes, vars = {}}
+else
+	localize{type = 'other', key = 'card_chips', nodes = desc_nodes, vars = {specific_vars.nominal_chips}}
+end
+"""
+
+# Ranks unlocks from Booster Pack
+# function generate_card_ui()
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "elseif card.ability.set == 'Enhanced' or card.ability.set == 'Default' then "
+position = "after"
+match_indent = true
+payload = """
+if G.STATE == G.STATES.STANDARD_PACK or G.STATE == G.STATES.SMODS_BOOSTER_OPENED then
+	local rank = card.base.value
+	--Check if it's UnStable rank, if so then flips the flag
+	if rank:find('unstb_') then
+		setPoolRankFlagEnable(rank, true);
+	end
+end
+"""

@@ -1,3 +1,29 @@
+0.3.1
+----------------
+- Batty Joker and Underhanded Joker now function properly
+- Batty Joker and Underhanded Joker resprited
+- Blackjack hand is no longer hidden
+- Europa and Io are now called moons instead of planets
+
+0.3
+----------------
+[NEW HANDS!]
+- Two new hidden hands have been added (Blackjack and Blackjack Flush)
+
+[NEW PLANETS!]
+- Europa (Upgrade Blackjack +21 chips and +2 mult)
+- Io (Upgrade Blackjack flush +33 chips and +3 mult)
+
+[NEW JOKERS!]
+- Disco Queen (Each played 9, 10 or 11 gives that card's value as Mult)
+- Jimbo (Every played card scores 40 chips)
+- Batty Joker (+10 Mult if played hand contains a Blackjack)
+- Underhanded Joker (+100 Chips if played hand contains a Blackjack)
+- The Party (x2 Mult if played hand contains a Blackjack)
+
+[BALANCE CHANGES]
+- Random deck buffed slightly
+
 0.2.6b
 ----------------
 - Random deck nerfed AGAIN

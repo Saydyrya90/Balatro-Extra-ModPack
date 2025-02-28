@@ -1,7 +1,7 @@
 # dndj-mod
 Dungeons &amp; Degenerate Jokers (for Steamodded)
 
-CURRENT VERSION - 0.2.6b
+CURRENT VERSION - 0.3.1
 
 (Credit to eir_nya for the Killer Queen joker sprite)
 (Illegal cards implementation based on the UnStable mod by Kirbio)
@@ -12,3 +12,4 @@ with extra features maybe coming soon.
 To install this mod, simply download the code as zip, and drag the DnDJ folder into your mods folder
 
 ### STEAMODDED AND TALISMAN ARE REQUIRED FOR THIS MOD!!
+## COMPATIBILITY WITH OTHER MODS IS NOT GUARANTEED ##

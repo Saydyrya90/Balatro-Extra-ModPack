@@ -1,0 +1,44 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+# Adds triggers for destroyable enhancement after-play
+[[patches]]
+[patches.pattern]
+target = 'functions/state_events.lua'
+pattern = '''-- context.remove_playing_cards calculations'''
+position = 'before'
+match_indent = true
+payload = '''
+for i=1, #scoring_hand do
+	if scoring_hand[i].config.center.after_play and not scoring_hand[i].debuff and not unstb_global.table_has_value(cards_destroyed, scoring_hand[i]) then
+		local effect = scoring_hand[i].config.center:after_play(scoring_hand[i], {scoring_hand = scoring_hand})
+		if effect and effect.to_destroy then
+			if SMODS.shatters(scoring_hand[i]) then
+				scoring_hand[i].shattered = true
+			else 
+				scoring_hand[i].destroyed = true
+			end
+			cards_destroyed[#cards_destroyed+1] = scoring_hand[i]
+		end
+	end
+end
+'''
+
+# Enhancement Discard Overrides
+[[patches]]
+[patches.pattern]
+target = 'functions/state_events.lua'
+pattern = "draw_card(G.hand, G.discard, i*100/highlighted_count, 'down', false, G.hand.highlighted[i])"
+position = 'at'
+match_indent = true
+payload = '''
+
+if G.hand.highlighted[i].config.center.discard_override and not G.hand.highlighted[i].debuff then
+	G.hand.highlighted[i].config.center:discard_override(G.hand.highlighted[i], {delay = i*100/highlighted_count})
+else
+    draw_card(G.hand, G.discard, i*100/highlighted_count, 'down', false, G.hand.highlighted[i])
+end
+
+'''

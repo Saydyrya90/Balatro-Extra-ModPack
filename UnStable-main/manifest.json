@@ -1,0 +1,15 @@
+{
+    "name": "UnStable",
+    "id": "UnStable",
+    "version": "1.2",
+    "website_url": "https://github.com/kirbio/UnStable",
+    "description": "Mod with a lot of new but vanilla-style mechanics. Contains new Jokers, consumables, and other stuff!",
+    "prefix": "unstb",
+    "author": ["Kirbio, RamChops Games"],
+    "main_file": "Unstable.lua",
+    "priority": 777,
+    "badge_colour": "41c300",
+    "dependencies": [
+        "Steamodded (>=1.0.0~ALPHA-1318b)"
+    ]
+}

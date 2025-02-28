@@ -6,7 +6,7 @@
 --- DEPENDENCIES: [Talisman]
 --- PREFIX: dndj
 --- LOADER_VERSION_GEQ: 1.0.0
---- VERSION: 0.2.6b
+--- VERSION: 0.3.1
 --- BADGE_COLOR: 32751a
 
 local dndj_mod = SMODS.current_mod
@@ -63,6 +63,12 @@ SMODS.Atlas {
     py = 95
 }
 SMODS.Atlas {
+    key = 'planet',
+    path = 'Planets.png',
+    px = 71,
+    py = 95
+}
+SMODS.Atlas {
     key = 'decks',
     path = 'Backs.png',
     px = 71,
@@ -82,10 +88,7 @@ SMODS.Sound({key = 'badexplosion', path = 'snd_badexplosion.wav'})
 
 -- C O M P A T I B I L I T Y --
 
---Talisman
---to_big = to_big or function(num)
---    return num
---end
+local hit = next(SMODS.find_mod('Hit'))
 
 -- R A N K S --
 
@@ -303,7 +306,7 @@ SMODS.Rank {
     key = '0',
     card_key = '0',
     pos = {x = 20},
-    nominal = 0,
+    nominal = 0.0001,
     straight_edge = true,
 
 
@@ -350,6 +353,113 @@ end
 SMODS.Ranks['2'].prev = {'dndj_1','Ace'}
 
 --end
+
+--Taken from "Blackjack Hands" by Mathguy--
+function add_bj_count()
+    local total = 0
+    if (G.jokers ~= nil) and (G.jokers.cards ~= nil) and (G.jokers.cards[1] ~= nil) then
+        for i = 1, #G.jokers.cards do
+            if (G.jokers.cards[i].ability.name == "Ace up my Sleeve") and not G.jokers.cards[i].debuff then
+                total = total + 1
+            end
+        end
+    end
+    return total
+end
+local get_blackjack = function(hand)
+     if (#hand < 1) then
+        return {}
+    end
+    local ret = {}
+    local t = {}
+    local total = 0
+    local aces = 0
+    local tolerance = add_bj_count()
+    for i=1, #hand do
+        if (hand[i].base.nominal > 0) and (hand[i].ability.effect ~= 'Stone Card') then
+            total = total + hand[i].base.nominal
+            t[#t+1] = hand[i]
+            if hand[i].base.value == 'Ace' then
+                aces = aces + 1
+            end
+        end
+    end
+    if (total > (21 + tolerance)) then
+        while ((total > (21 + tolerance)) and (aces > 0)) do 
+            total = total - 10
+            aces = aces - 1
+        end
+    end
+    if (total >= (21 - tolerance)) and (total <= (21 + tolerance)) then
+        table.insert(ret, t)
+        return ret
+    end
+    return {}
+end
+
+-- H A N D S --
+--Check if "Hit" mod exists
+if not hit then
+    SMODS.PokerHand {
+        key = 'blackjack',
+        chips = 21,
+        l_chips = 21,
+        mult = 2,
+        l_mult = 2,
+        example = {
+            { 'S_A', true },
+            { 'D_K', true },
+        },
+        above_hand = "Two Pair",
+        --visible = false,
+        loc_txt = {
+            name = "Blackjack",
+            description = { 
+            "Any combination of cards whose", 
+            "ranks sum to 21"
+        },
+        },
+        evaluate = function(parts, hand)
+            local bj = get_blackjack(hand)
+            if next(bj) then
+                return bj
+            else
+                return {}
+            end
+        end,
+    }
+    SMODS.PokerHand {
+        key = 'flushjack',
+        chips = 77,
+        l_chips = 33,
+        mult = 7,
+        l_mult = 3,
+        example = {
+            {'H_5', true},
+            {'H_4', true},
+            {'H_7', true},
+            {'H_2', true},
+            {'H_3', true},
+        },
+        above_hand = "Four of a Kind",
+        visible = false,
+        loc_txt = {
+            name = "Blackjack Flush",
+            description = {
+                "Any combination of 5 cards that share",
+                "the same suit whose ranks add to 21"
+              },
+        },
+        evaluate = function(parts, hand)
+            local bj = get_blackjack(hand)
+            if next(bj) and next(parts._flush) then
+                return bj
+            else
+                return {}
+            end
+        end,
+    }
+end
 
 -- R A R I T I E S --
 
@@ -456,6 +566,70 @@ for i = 1, 4 do
     }
 end
 --end
+
+-- P L A N E T S --
+if not hit then
+SMODS.Consumable{
+    set = 'Planet', atlas = 'planet',
+    pos = {x = 0, y = 0},
+    key = 'europa',
+    name = "Europa",
+    loc_txt = {
+        name = "Europa",
+        text = {
+            "{S:0.8}({S:0.8,V:1}lvl.#1#{S:0.8}){} Level up",
+            "{C:attention}#2#",
+            "{C:mult}+#3#{} Mult and",
+            "{C:chips}+#4#{} chips"
+        }
+    },
+    config = {hand_type = 'dndj_blackjack'},
+    loc_vars = function(self, info_queue, card)
+        local hand = self.config.hand_type
+        return { vars = {G.GAME.hands[hand].level,localize(hand, 'poker_hands'), G.GAME.hands[hand].l_mult, G.GAME.hands[hand].l_chips, colours = {(G.GAME.hands[hand].level==1 and G.C.UI.TEXT_DARK or G.C.HAND_LEVELS[math.min(7, G.GAME.hands[hand].level)])}} }
+    end,
+    set_card_type_badge = function(self, card, badges)
+        badges[1] = create_badge('Moon', get_type_colour(self or card.config, card), nil, 1.2)
+    end
+    --in_pool = function(self)
+    --    if G.GAME.hands["dndj_blackjack"].played > 0 then
+    --        return true
+    --    end
+    --    return false
+    --end
+}
+SMODS.Consumable{
+    set = 'Planet', atlas = 'planet',
+    pos = {x = 1, y = 0},
+    key = 'io',
+    name = "Io",
+    loc_txt = {
+        name = "Io",
+        text = {
+            "{S:0.8}({S:0.8,V:1}lvl.#1#{S:0.8}){} Level up",
+            "{C:attention}#2#",
+            "{C:mult}+#3#{} Mult and",
+            "{C:chips}+#4#{} chips"
+        }
+    },
+    config = {hand_type = 'dndj_flushjack'},
+    loc_vars = function(self, info_queue, card)
+        local hand = self.config.hand_type
+        return { vars = {G.GAME.hands[hand].level,localize(hand, 'poker_hands'), G.GAME.hands[hand].l_mult, G.GAME.hands[hand].l_chips, colours = {(G.GAME.hands[hand].level==1 and G.C.UI.TEXT_DARK or G.C.HAND_LEVELS[math.min(7, G.GAME.hands[hand].level)])}} }
+    end,
+    set_card_type_badge = function(self, card, badges)
+        badges[1] = create_badge('Moon', get_type_colour(self or card.config, card), nil, 1.2)
+    end,
+    in_pool = function(self)
+        if G.GAME.hands["dndj_flushjack"].played > 0 then
+            return true
+        end
+        return false
+    end
+}
+end
+
+
 
 -- S P E C T R A L --
 
@@ -1519,6 +1693,384 @@ SMODS.Joker{
 
 }
 
+SMODS.Joker{
+    key = 'koi_no_disco_queen',
+    rarity = 2,
+    atlas = 'jokers_atlas',
+    cost = 6,
+    blueprint_compat = true,
+    pos = { x = 5, y = 1 },
+    config = { extra = {} },
+    loc_txt = {
+        name = "Disco Queen",
+        text = {
+            "Each played {C:attention}9{},{C:attention} 10{}, or {C:attention}11{}",
+            "gives that card's ",
+            "{C:chips}chip value{} as {C:mult}Mult{}"
+        },
+      },
+    loc_vars = function(self, info_queue, card)
+        return { vars = {} }
+    end,
+
+    calculate = function(self, card, context)
+        if context.individual and context.cardarea == G.play then
+            if context.other_card.base.value == '9' or context.other_card.base.value == '10' or context.other_card.base.value == 'dndj_11' or context.other_card.base.value == 'unstb_11' then
+                return {
+                    mult = context.other_card.base.nominal + context.other_card.ability.perma_bonus,
+                    card = card
+                }
+            end
+        end
+    end
+
+}
+
+SMODS.Joker{
+    key = 'jimbo',
+    rarity = 2,
+    atlas = 'jokers_atlas',
+    cost = 4,
+    blueprint_compat = true,
+    pos = { x = 6, y = 1 },
+    config = { extra = {chips = 40} },
+    loc_txt = {
+        name = "Jimbo",
+        text = {
+            "Played cards give",
+            "{C:chips}+#1#{} Chips when scored"
+        },
+      },
+    loc_vars = function(self, info_queue, card)
+        return { vars = {card.ability.extra.chips} }
+    end,
+
+    calculate = function(self, card, context)
+        if context.individual and context.cardarea == G.play then
+            return {
+                chips = card.ability.extra.chips,
+                card = card
+            }
+        end
+    end
+
+}
+
+if not hit then
+SMODS.Joker{
+    key = 'batty_joker',
+    loc_txt = {
+        name = "Batty Joker",
+        text = {
+            "{C:mult}+#1#{} Mult if played hand",
+            "contains a {C:attention}Blackjack{}"
+        },
+    },
+    rarity = 1,
+    atlas = 'jokers_atlas',
+    cost = 4,
+    blueprint_compat = true,
+    pos = { x = 7, y = 1 },
+    config = {extra = {mult = 10}},
+
+    loc_vars = function(self, info_queue, card)
+        return { vars = {card.ability.extra.mult} }
+    end,
+
+    calculate = function(self, card, context)
+        --Code from Blackjack Hands by Mathguy
+        if context.joker_main then
+            local get_blackjack = function(hand)
+                if (#hand < 1) then
+                    return {}
+                end
+                local ret = {}
+                local t = {}
+                local total = 0
+                local aces = 0
+                local tolerance = add_bj_count()
+                for i=1, #hand do
+                    if (hand[i].base.nominal > 0) and (hand[i].ability.effect ~= 'Stone Card') then
+                        total = total + hand[i].base.nominal
+                        t[#t+1] = hand[i]
+                        if hand[i].base.value == 'Ace' then
+                            aces = aces + 1
+                        end
+                    end
+                end
+                if (total > (21 + tolerance)) then
+                    while ((total > (21 + tolerance)) and (aces > 0)) do 
+                        total = total - 10
+                        aces = aces - 1
+                    end
+                end
+                if (total >= (21 - tolerance)) and (total <= (21 + tolerance)) then
+                    table.insert(ret, t)
+                    return ret
+                end
+                return {}
+            end
+
+            local hand = context.full_hand
+            local valid = false
+            local extent = function(table)
+                return (#table ~= 0)
+            end
+            if (#hand >= 1) then
+                if extent(get_blackjack(hand)) then
+                    valid = true
+                end
+            elseif (#hand == 4) then
+                if (extent(get_blackjack(hand)) or extent(get_blackjack({hand[1], hand[2], hand[3]})) or extent(get_blackjack({hand[4], hand[2], hand[3]})) or extent(get_blackjack({hand[1], hand[4], hand[3]})) or extent(get_blackjack({hand[1], hand[2], hand[4]}))) then
+                    valid = true
+                end
+            elseif (#hand == 5) then
+                if (extent(get_blackjack(hand)) or
+                extent(get_blackjack({hand[3], hand[4], hand[5]})) or 
+                extent(get_blackjack({hand[2], hand[4], hand[5]})) or 
+                extent(get_blackjack({hand[2], hand[3], hand[5]})) or 
+                extent(get_blackjack({hand[2], hand[3], hand[4]})) or
+                extent(get_blackjack({hand[1], hand[4], hand[5]})) or
+                extent(get_blackjack({hand[1], hand[3], hand[5]})) or
+                extent(get_blackjack({hand[1], hand[3], hand[4]})) or
+                extent(get_blackjack({hand[1], hand[2], hand[5]})) or
+                extent(get_blackjack({hand[1], hand[2], hand[4]})) or
+                extent(get_blackjack({hand[1], hand[2], hand[3]})) or
+                extent(get_blackjack({hand[1], hand[2], hand[3], hand[4]})) or
+                extent(get_blackjack({hand[1], hand[2], hand[3], hand[5]})) or
+                extent(get_blackjack({hand[1], hand[2], hand[5], hand[4]})) or
+                extent(get_blackjack({hand[1], hand[5], hand[3], hand[4]})) or
+                extent(get_blackjack({hand[5], hand[2], hand[3], hand[4]}))) then
+                    valid = true
+                end
+            end
+
+            if valid then
+                return {
+                    message = localize{type='variable',key='a_mult',vars={card.ability.extra.mult}},
+                    mult_mod = card.ability.extra.mult,
+                    card = card
+                }
+            else 
+                return
+            end
+        end
+    end
+
+}
+
+SMODS.Joker{
+    key = 'underhanded_joker',
+    loc_txt = {
+        name = "Underhanded Joker",
+        text = {
+            "{C:chips}+#1#{} Chips if played hand",
+            "contains a {C:attention}Blackjack{}"
+        },
+    },
+    rarity = 1,
+    atlas = 'jokers_atlas',
+    cost = 4,
+    blueprint_compat = true,
+    pos = {x = 8, y = 1},
+    config = {extra = {chips = 100}},
+
+    loc_vars = function(self, info_queue, card)
+        return { vars = {card.ability.extra.chips} }
+    end,
+
+    calculate = function(self, card, context)
+        --Code from Blackjack Hands by Mathguy
+        if context.joker_main then
+            local get_blackjack = function(hand)
+                if (#hand < 1) then
+                    return {}
+                end
+                local ret = {}
+                local t = {}
+                local total = 0
+                local aces = 0
+                local tolerance = add_bj_count()
+                for i=1, #hand do
+                    if (hand[i].base.nominal > 0) and (hand[i].ability.effect ~= 'Stone Card') then
+                        total = total + hand[i].base.nominal
+                        t[#t+1] = hand[i]
+                        if hand[i].base.value == 'Ace' then
+                            aces = aces + 1
+                        end
+                    end
+                end
+                if (total > (21 + tolerance)) then
+                    while ((total > (21 + tolerance)) and (aces > 0)) do 
+                        total = total - 10
+                        aces = aces - 1
+                    end
+                end
+                if (total >= (21 - tolerance)) and (total <= (21 + tolerance)) then
+                    table.insert(ret, t)
+                    return ret
+                end
+                return {}
+            end
+
+            local hand = context.full_hand
+            local valid = false
+            local extent = function(table)
+                return (#table ~= 0)
+            end
+            if (#hand >= 1) then
+                if extent(get_blackjack(hand)) then
+                    valid = true
+                end
+            elseif (#hand == 4) then
+                if (extent(get_blackjack(hand)) or extent(get_blackjack({hand[1], hand[2], hand[3]})) or extent(get_blackjack({hand[4], hand[2], hand[3]})) or extent(get_blackjack({hand[1], hand[4], hand[3]})) or extent(get_blackjack({hand[1], hand[2], hand[4]}))) then
+                    valid = true
+                end
+            elseif (#hand == 5) then
+                if (extent(get_blackjack(hand)) or
+                extent(get_blackjack({hand[3], hand[4], hand[5]})) or 
+                extent(get_blackjack({hand[2], hand[4], hand[5]})) or 
+                extent(get_blackjack({hand[2], hand[3], hand[5]})) or 
+                extent(get_blackjack({hand[2], hand[3], hand[4]})) or
+                extent(get_blackjack({hand[1], hand[4], hand[5]})) or
+                extent(get_blackjack({hand[1], hand[3], hand[5]})) or
+                extent(get_blackjack({hand[1], hand[3], hand[4]})) or
+                extent(get_blackjack({hand[1], hand[2], hand[5]})) or
+                extent(get_blackjack({hand[1], hand[2], hand[4]})) or
+                extent(get_blackjack({hand[1], hand[2], hand[3]})) or
+                extent(get_blackjack({hand[1], hand[2], hand[3], hand[4]})) or
+                extent(get_blackjack({hand[1], hand[2], hand[3], hand[5]})) or
+                extent(get_blackjack({hand[1], hand[2], hand[5], hand[4]})) or
+                extent(get_blackjack({hand[1], hand[5], hand[3], hand[4]})) or
+                extent(get_blackjack({hand[5], hand[2], hand[3], hand[4]}))) then
+                    valid = true
+                end
+            end
+
+            if valid then
+                return {
+                    message = localize{type='variable',key='a_chips',vars={card.ability.extra.chips}},
+                    chip_mod = card.ability.extra.chips,
+                    card = card
+                }
+            else 
+                return
+            end
+        end
+    end
+
+}
+
+SMODS.Joker{
+    key = 'the_party',
+    loc_txt = {
+        name = "The Party",
+        text = {
+            "{X:mult,C:white}X#1#{} Mult if played hand",
+            "contains a {C:attention}Blackjack{}"
+        },
+        unlock = {
+            "Win a run",
+            "without playing",
+            "a {C:attention}Blackjack{}."
+        },
+    },
+    rarity = 1,
+    atlas = 'jokers_atlas',
+    cost = 8,
+    blueprint_compat = true,
+    pos = {x = 9, y = 1},
+    config = {extra = {xmult = 2}},
+    unlock_condition = {type = 'win_no_hand', extra = 'dndj_blackjack'},
+    unlocked = false,
+
+    loc_vars = function(self, info_queue, card)
+        return { vars = {card.ability.extra.xmult} }
+    end,
+
+    calculate = function(self, card, context)
+        --Code from Blackjack Hands by Mathguy
+        if context.joker_main then
+            local get_blackjack = function(hand)
+                if (#hand < 1) then
+                    return {}
+                end
+                local ret = {}
+                local t = {}
+                local total = 0
+                local aces = 0
+                local tolerance = add_bj_count()
+                for i=1, #hand do
+                    if (hand[i].base.nominal > 0) and (hand[i].ability.effect ~= 'Stone Card') then
+                        total = total + hand[i].base.nominal
+                        t[#t+1] = hand[i]
+                        if hand[i].base.value == 'Ace' then
+                            aces = aces + 1
+                        end
+                    end
+                end
+                if (total > (21 + tolerance)) then
+                    while ((total > (21 + tolerance)) and (aces > 0)) do 
+                        total = total - 10
+                        aces = aces - 1
+                    end
+                end
+                if (total >= (21 - tolerance)) and (total <= (21 + tolerance)) then
+                    table.insert(ret, t)
+                    return ret
+                end
+                return {}
+            end
+
+            local hand = context.full_hand
+            local valid = false
+            local extent = function(table)
+                return (#table ~= 0)
+            end
+            if (#hand >= 1) then
+                if extent(get_blackjack(hand)) then
+                    valid = true
+                end
+            elseif (#hand == 4) then
+                if (extent(get_blackjack(hand)) or extent(get_blackjack({hand[1], hand[2], hand[3]})) or extent(get_blackjack({hand[4], hand[2], hand[3]})) or extent(get_blackjack({hand[1], hand[4], hand[3]})) or extent(get_blackjack({hand[1], hand[2], hand[4]}))) then
+                    valid = true
+                end
+            elseif (#hand == 5) then
+                if (extent(get_blackjack(hand)) or
+                extent(get_blackjack({hand[3], hand[4], hand[5]})) or 
+                extent(get_blackjack({hand[2], hand[4], hand[5]})) or 
+                extent(get_blackjack({hand[2], hand[3], hand[5]})) or 
+                extent(get_blackjack({hand[2], hand[3], hand[4]})) or
+                extent(get_blackjack({hand[1], hand[4], hand[5]})) or
+                extent(get_blackjack({hand[1], hand[3], hand[5]})) or
+                extent(get_blackjack({hand[1], hand[3], hand[4]})) or
+                extent(get_blackjack({hand[1], hand[2], hand[5]})) or
+                extent(get_blackjack({hand[1], hand[2], hand[4]})) or
+                extent(get_blackjack({hand[1], hand[2], hand[3]})) or
+                extent(get_blackjack({hand[1], hand[2], hand[3], hand[4]})) or
+                extent(get_blackjack({hand[1], hand[2], hand[3], hand[5]})) or
+                extent(get_blackjack({hand[1], hand[2], hand[5], hand[4]})) or
+                extent(get_blackjack({hand[1], hand[5], hand[3], hand[4]})) or
+                extent(get_blackjack({hand[5], hand[2], hand[3], hand[4]}))) then
+                    valid = true
+                end
+            end
+
+            if valid then
+                return {
+                    message = localize{type='variable',key='a_xmult',vars={card.ability.extra.xmult}},
+                    Xmult_mod = card.ability.extra.xmult,
+                    card = card
+                }
+            else 
+                return
+            end
+        end
+    end
+
+}
+end
+
 
 
 
@@ -1633,12 +2185,12 @@ SMODS.Back{
     end
 }
 
--- RANDOMIZATION for Random deck (unable to get this to work)
+-- RANDOMIZATION for Random deck
 local a = math.random(0,5)
 local b = math.random(0,8)
 local c = math.random(0,8)
 local d = math.random(0,10)
-local e = math.random(0,10)
+local e = math.random(0,8)
 local f = math.random(0,5)
 
 --local function zero_out()
@@ -1656,15 +2208,15 @@ local function distribute_stats()
     b = math.random(0,8)
     c = math.random(0,8)
     d = math.random(0,10)
-    e = math.random(0,10)
+    e = math.random(0,8)
     f = math.random(0,5)
---If the stat total is below 14 or above 18, randomize again
-while a + b + c + d + e + f <= 14 or a + b + c + d + e + f >= 18 do
+--If the stat total is below 12 or above 16, randomize again
+while a + b + c + d + e + f <= 12 or a + b + c + d + e + f >= 16 do
     a = math.random(0,5)
     b = math.random(0,8)
     c = math.random(0,8)
     d = math.random(0,10)
-    e = math.random(0,10)
+    e = math.random(0,8)
     f = math.random(0,5)
 end
 return true
@@ -1698,7 +2250,7 @@ SMODS.Back{
         G.GAME.starting_params.hands = b+2
         G.GAME.starting_params.discards = c+2
         G.GAME.starting_params.hand_size = d+5
-        G.GAME.starting_params.joker_slots = e
+        G.GAME.starting_params.joker_slots = e+2
         G.GAME.starting_params.consumable_slots = f
         --G.GAME.starting_params.ante_scaling = 0.5+math.random()*1.5
         --G.GAME.win_ante = math.random(6,10)

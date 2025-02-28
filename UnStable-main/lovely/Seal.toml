@@ -1,0 +1,15 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+# Shiny Seal
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = "if self.seal == 'Gold' then G.shared_seals[self.seal]:draw_shader('voucher', nil, self.ARGS.send_to_shader, nil, self.children.center) end"
+position = "before"
+match_indent = true
+payload = '''
+if SMODS.Seals[self.seal] and SMODS.Seals[self.seal].shiny then G.shared_seals[self.seal]:draw_shader('voucher', nil, self.ARGS.send_to_shader, nil, self.children.center) end
+'''

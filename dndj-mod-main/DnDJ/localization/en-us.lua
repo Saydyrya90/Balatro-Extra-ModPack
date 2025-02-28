@@ -5,8 +5,10 @@ return {
 				["name"] = "Dun. & Degen. Jokers",
 				["text"] = {
 					"This mod aims to re-imagine cards from Dungeons & Degenerate Gamblers as jokers.",
-					"Credit to {C:eir}eir_nya{} for the Killer Queen joker art",
-					"Illegal card implementation based on the UnStable mod by {C:dark_edition}Kirbio{}"
+					"Killer Queen joker art by {C:eir}eir_nya{}",
+					"Illegal card implementation based on the UnStable mod by {C:dark_edition}Kirbio{}",
+					"DNDG Jimbo sprite concept by {C:dark_edition}Hat Stack{}",
+					"Blackjack hands code by {C:dark_edition}Mathguy{}"
 				}
 			}
 		}

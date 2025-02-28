@@ -1,0 +1,82 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+# Blueprint Compat Jokers Part 1
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "elseif self.ability.name == 'Blueprint' then"
+position = "before"
+payload = '''
+elseif self.config.center.key == 'j_unstb_plagiarism' then
+    self.ability.blueprint_compat_ui_l = self.ability.blueprint_compat_ui_l or '';
+	self.ability.blueprint_compat_check_l = nil
+	
+	self.ability.blueprint_compat_ui_r = self.ability.blueprint_compat_ui_r or '';
+	self.ability.blueprint_compat_check_r = nil
+	
+    main_end = (self.area and self.area == G.jokers) and {
+        {n=G.UIT.C, config={align = "bm", minh = 0.4, padding = 0.06}, nodes={
+            {n=G.UIT.R, config={ref_table = self, align = "m", colour = G.C.JOKER_GREY, r = 0.05, padding = 0.06, func = 'blueprint_compat_dside_l'}, nodes={
+                {n=G.UIT.T, config={ref_table = self.ability, ref_value = 'blueprint_compat_ui_l',colour = G.C.UI.TEXT_LIGHT, scale = 0.32*0.8}},
+            }},
+			
+			{n=G.UIT.R, config={ref_table = self, align = "m", colour = G.C.JOKER_GREY, r = 0.05, padding = 0.06, func = 'blueprint_compat_dside_r'}, nodes={
+                {n=G.UIT.T, config={ref_table = self.ability, ref_value = 'blueprint_compat_ui_r',colour = G.C.UI.TEXT_LIGHT, scale = 0.32*0.8}},
+            }}
+        }}
+    } or nil
+'''
+match_indent = true 
+
+# Blueprint Compat Jokers Part 2
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "if self.ability.name == 'Blueprint' or self.ability.name == 'Brainstorm' then"
+position = "before"
+payload = '''
+if self.config.center.key == 'j_unstb_plagiarism' then
+	local other_joker_l = nil
+	local other_joker_r = nil
+    
+	for i = 1, #G.jokers.cards do
+		if G.jokers.cards[i] == self then
+			other_joker_l = G.jokers.cards[i-1]
+			other_joker_r = G.jokers.cards[i+1]
+		end
+	end
+	
+    if other_joker_l and other_joker_l ~= self and other_joker_l.config.center.blueprint_compat then
+        self.ability.blueprint_compat_l = 'compatible'
+    else
+        self.ability.blueprint_compat_l = 'incompatible'
+    end
+	
+	if other_joker_r and other_joker_r ~= self and other_joker_r.config.center.blueprint_compat then
+        self.ability.blueprint_compat_r = 'compatible'
+    else
+        self.ability.blueprint_compat_r = 'incompatible'
+    end
+end
+'''
+match_indent = true
+
+# Adds support for Virtual Money (used for IC Card)
+[[patches]]
+[patches.regex]
+target = 'functions/button_callbacks.lua'
+pattern = '''G.GAME.dollars[ ]*-[ ]*G.GAME.bankrupt_at'''
+position = 'at'
+payload = '''G.GAME.dollars + (G.GAME.virtual_dollars or 0) - G.GAME.bankrupt_at'''
+
+# Adds support for Virtual Money (used for IC Card)
+# (Talisman Variant)
+[[patches]]
+[patches.regex]
+target = 'functions/button_callbacks.lua'
+pattern = '''to_big\(G.GAME.dollars\)[ ]*-[ ]*to_big\(G.GAME.bankrupt_at\)'''
+position = 'at'
+payload = '''to_big(G.GAME.dollars) + to_big(G.GAME.virtual_dollars or 0) - to_big(G.GAME.bankrupt_at)'''

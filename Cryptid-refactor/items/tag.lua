@@ -156,6 +156,21 @@ local empoweredPack = {
 		end
 	end,
 	group_key = "k_spectral_pack",
+	cry_digital_hallucinations = {
+		colour = G.C.SECONDARY_SET.Spectral,
+		loc_key = "k_plus_spectral",
+		create = function()
+			local ccard
+			if pseudorandom(pseudoseed("diha")) < 0.5 then
+				ccard = create_card("Spectral", G.consumeables, nil, nil, true, true, "c_soul")
+			else
+				ccard = create_card("Spectral", G.consumeables, nil, nil, true, true, "c_cry_gateway")
+			end
+			ccard:set_edition({ negative = true }, true)
+			ccard:add_to_deck()
+			G.consumeables:emplace(ccard)
+		end,
+	},
 }
 local empowered = {
 	object_type = "Tag",
@@ -725,21 +740,7 @@ local double_m_tag = {
 	apply = function(self, tag, context)
 		if context.type == "store_joker_create" then
 			local card
-			local option = {}
-			for k, _ in pairs(Cryptid.M_jokers) do
-				if G.P_CENTERS[k] then
-					option[#option + 1] = k
-				end
-			end
-			card = create_card(
-				"Joker",
-				context.area,
-				nil,
-				nil,
-				nil,
-				nil,
-				pseudorandom_element(option, pseudoseed("M_is_love_M_is_life"))
-			)
+			card = create_card("M", context.area, nil, nil, nil, nil, nil, pseudoseed("M_is_love_M_is_life"))
 			card:set_edition({
 				cry_m = true,
 			})

@@ -101,7 +101,7 @@ local e_deck = {
 		return { vars = { localize({ type = "name_text", set = "Edition", key = "e_" .. aaa }) } }
 	end,
 	edeck_type = "edition",
-	config = {},
+	config = { cry_no_edition_price = true },
 	apply = function(self)
 		local aaa = cry_get_enchanced_deck_info(self)
 		G.GAME.modifiers.cry_force_edition = aaa
@@ -348,17 +348,6 @@ return {
 		function Card:change_suit(new_suit)
 			return cs(self, not self.no_forced_suit and G.GAME.modifiers.cry_force_suit or new_suit)
 		end
-		local sc = Card.set_cost
-		function Card:set_cost()
-			if self.edition and G.GAME.modifiers.cry_no_edition_price then
-				local m = cry_deep_copy(self.edition)
-				self.edition = nil
-				sc(self)
-				self.edition = m
-			else
-				sc(self)
-			end
-		end
 		local ccl = Card.click
 		function Card:click()
 			ccl(self)
@@ -381,6 +370,9 @@ return {
 			end
 		end
 		function cry_enhancement_config_UI(center)
+			if not center.edeck_type then
+				return
+			end
 			G.SETTINGS.paused = true
 			G.your_collection = {}
 			G.your_collection[1] = CardArea(

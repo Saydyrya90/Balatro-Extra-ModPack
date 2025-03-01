@@ -1358,7 +1358,7 @@ return {
 			j_cry_exoplanet = {
 				name = "Exoplanet",
 				text = {
-					"{C:dark_edition}Holographic{} cards",
+					"Other {C:dark_edition}Holographic{} cards",
 					"each give {C:mult}+#1#{} Mult",
 				},
 			},
@@ -1563,6 +1563,13 @@ return {
 				text = {
 					"Earn {C:money}$#1#{} when",
 					"using a {C:attention}consumable{}",
+				},
+			},
+			j_cry_huntingseason = {
+				name = "Hunting Season",
+				text = {
+					"If played hand contains exactly {C:attention}3{} cards,",
+					"{C:red}destroy{} the {C:attention}center{} card after scoring",
 				},
 			},
 			j_cry_iterum = {
@@ -1830,7 +1837,7 @@ return {
 			j_cry_meteor = {
 				name = "Meteor Shower",
 				text = {
-					"{C:dark_edition}Foil{} cards each",
+					"Other {C:dark_edition}Foil{} cards each",
 					"give {C:chips}+#1#{} Chip#<s>1#",
 				},
 			},
@@ -2212,6 +2219,7 @@ return {
 					"raise degree by {C:attention}#2#{}",
 					"at end of round",
 					"{C:inactive,s:0.8}({C:attention,s:0.8}Scalae{C:inactive,s:0.8} excluded)",
+					"{C:inactive,s:0.8}(ex. +1, +#3#, +#4#, +#5#)",
 				},
 			},
 			j_cry_scrabble = {
@@ -2315,7 +2323,7 @@ return {
 			j_cry_stardust = {
 				name = "Stardust",
 				text = {
-					"{C:dark_edition}Polychrome{} cards",
+					"Other {C:dark_edition}Polychrome{} cards",
 					"each give {X:mult,C:white}X#1#{} Mult",
 				},
 			},
@@ -2468,7 +2476,7 @@ return {
 			j_cry_universe = {
 				name = "Universe",
 				text = {
-					"{C:dark_edition}Astral{} cards",
+					"Other {C:dark_edition}Astral{} cards",
 					"each give {X:dark_edition,C:white}^#1#{} Mult",
 				},
 			},

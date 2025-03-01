@@ -7404,6 +7404,27 @@ local digitalhallucinations = {
 			)
 		then
 			local boosty = context.card
+			-- finally mod compat?
+			if boosty.config.center.cry_digital_hallucinations then
+				local conf = boosty.config.center.cry_digital_hallucinations
+				G.E_MANAGER:add_event(Event({
+					trigger = "before",
+					delay = 0.0,
+					func = function()
+						conf.create()
+						return true
+					end,
+				}))
+				card_eval_status_text(
+					context.blueprint_card or card,
+					"extra",
+					nil,
+					nil,
+					nil,
+					{ message = localize(conf.loc_key), colour = conf.colour }
+				)
+				return nil, true
+			end
 			local consums = { "Arcana", "Celestial", "Spectral" }
 			local short1 = { "tarot", "planet", "spectral" }
 			local short2 = { "Tarot", "Planet", "Spectral" }
@@ -7413,7 +7434,7 @@ local digitalhallucinations = {
 						trigger = "before",
 						delay = 0.0,
 						func = function()
-							local ccard = create_card(short2[i], G.consumables, nil, nil, nil, nil, nil, "diha")
+							local ccard = create_card(short2[i], G.consumeables, nil, nil, nil, nil, nil, "diha")
 							ccard:set_edition({ negative = true }, true)
 							ccard:add_to_deck()
 							G.consumeables:emplace(ccard)
@@ -7431,29 +7452,7 @@ local digitalhallucinations = {
 					return nil, true -- this triggers BEFORE a retrigger joker and looks like jank. i can't get a message showing up without status text so this is the best option rn
 				end
 			end
-			if boosty.ability.name:find("code") then
-				G.E_MANAGER:add_event(Event({
-					trigger = "before",
-					delay = 0.0,
-					func = function()
-						local ccard = create_card("Code", G.consumables, nil, nil, nil, nil, nil, "diha")
-						ccard:set_edition({ negative = true }, true)
-						ccard:add_to_deck()
-						G.consumeables:emplace(ccard)
-						return true
-					end,
-				}))
-				card_eval_status_text(
-					context.blueprint_card or card,
-					"extra",
-					nil,
-					nil,
-					nil,
-					{ message = localize("cry_plus_code"), colour = G.C.SET.Code }
-				)
-				return nil, true
-			end
-			if boosty.ability.name:find("Buffoon") or boosty.ability.name:find("meme") then
+			if boosty.ability.name:find("Buffoon") then
 				G.E_MANAGER:add_event(Event({
 					trigger = "before",
 					delay = 0.0,
@@ -7719,6 +7718,42 @@ local lebaron_james = {
 		end
 	end,
 }
+local huntingseason = { -- If played hand contains three cards, destroy the middle card after scoring
+	object_type = "Joker",
+	dependencies = {
+		items = {
+			"set_cry_misc_joker",
+		},
+	},
+	name = "cry-huntingseason",
+	key = "huntingseason",
+	pos = { x = 4, y = 0 },
+	order = 134,
+	immutable = true,
+	rarity = 2,
+	cost = 7,
+	blueprint_compat = false,
+	atlas = "placeholders",
+	calculate = function(self, card, context)
+		if
+			(context.cardarea == G.play or context.cardarea == "unscored")
+			and context.destroy_card == context.full_hand[2]
+			and #context.full_hand == 3 -- 3 cards in played hand
+			and not context.blueprint
+			and not context.retrigger_joker
+		then
+			return { remove = true }
+		end
+	end,
+	cry_credits = {
+		idea = {
+			"Nova",
+		},
+		code = {
+			"Nova",
+		},
+	},
+}
 local miscitems = {
 	jimball_sprite,
 	dropshot,
@@ -7831,6 +7866,7 @@ local miscitems = {
 	foolhardy,
 	translucent,
 	lebaron_james,
+	huntingseason,
 }
 return {
 	name = "Misc. Jokers",

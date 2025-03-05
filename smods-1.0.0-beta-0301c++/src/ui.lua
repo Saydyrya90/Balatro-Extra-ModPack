@@ -276,6 +276,39 @@ function buildModDescTab(mod)
                 custom_ui_func(modNodes)
             end
 
+            if not mod.can_load and not mod.disabled then
+                local _, _, msg_key, specific_vars = getModtagInfo(mod)
+                local text = localize { type = 'raw_descriptions', set = 'Other', key = msg_key, vars = specific_vars }
+                local text_nodes = {}
+                for _,v in ipairs(text) do
+                    text_nodes[#text_nodes+1] = {
+                        n = G.UIT.R, config = { align = 'cm' }, nodes = {
+                            { n = G.UIT.T, config = { text = v, colour = G.SETTINGS.reduced_motion and G.C.WHITE or SMODS.Gradients.warning_text, scale = 0.35, shadow = true } }
+                        }
+                    }
+                end
+                table.insert(modNodes, { n = G.UIT.R, config = { align = "cm" }, nodes = {
+                    { n = G.UIT.B, config = { w = 0.1, h = 0.1 }}
+                }})
+                table.insert(modNodes, {
+                    n = G.UIT.R, config = { align = "cm", r = 0.1, minw = 6, minh = 0.6, colour = G.SETTINGS.reduced_motion and G.C.RED or SMODS.Gradients.warning_bg, padding = 0.1 }, nodes={
+                        {
+                            n = G.UIT.C, config = { align = 'cm' }, nodes = {
+                                { n = G.UIT.O, config = { object = Sprite(0, 0, 0.8, 0.8, G.ASSET_ATLAS['mod_tags'], { x = 0, y = 0 }) } },
+                            }
+                        }, 
+                        { 
+                            n = G.UIT.C, config = { align = 'cm' }, nodes = text_nodes
+                        },
+                        {
+                            n = G.UIT.C, config = { align = 'cm' }, nodes = {
+                                { n = G.UIT.O, config = { object = Sprite(0, 0, 0.8, 0.8, G.ASSET_ATLAS['mod_tags'], { x = 0, y = 0 }) } },
+                            }
+                        }, 
+                    }
+                })
+            end
+
             return {
                 n = G.UIT.ROOT,
                 config = {
@@ -742,7 +775,7 @@ function UIBox_button(args)
     return button
 end
 
-function buildModtag(mod)
+function getModtagInfo(mod)
     local tag_pos, tag_message, tag_atlas = { x = 0, y = 0 }, "load_success", mod.prefix and mod.prefix .. '_modicon' or 'modicon'
     local specific_vars = {}
 
@@ -782,7 +815,11 @@ function buildModtag(mod)
             tag_message = 'load_disabled'
         end
     end
+    return tag_atlas, tag_pos, tag_message, specific_vars
+end
 
+function buildModtag(mod)
+    local tag_atlas, tag_pos, tag_message, specific_vars = getModtagInfo(mod)
 
     local tag_sprite_tab = nil
     
@@ -845,9 +882,12 @@ local function createClickableModBox(modInfo, scale)
         col = G.C.BOOSTER
     elseif modInfo.disabled then
         col = G.C.UI.BACKGROUND_INACTIVE
-    else
+    elseif G.SETTINGS.reduced_motion then
         col = mix_colours(G.C.RED, G.C.UI.BACKGROUND_INACTIVE, 0.7)
         text_col = G.C.TEXT_DARK
+    else
+        col = SMODS.Gradients.warning_bg
+        text_col = SMODS.Gradients.warning_text
     end
     local label =  { " " .. modInfo.name .. " " }
     if modInfo.lovely_only then
@@ -1294,7 +1334,8 @@ function create_UIBox_main_menu_buttons()
         minw = 1.85,
         col = true,
         button = "mods_button",
-        colour = G.C.BOOSTER,
+        colour = SMODS.mod_button_alert and (G.SETTINGS.reduced_motion and G.C.RED or SMODS.Gradients.warning_bg) or G.C.BOOSTER,
+        text_colour = (SMODS.mod_button_alert and not G.SETTINGS.reduced_motion) and SMODS.Gradients.warning_text or G.C.TEXT_LIGHT,
         label = {localize('b_mods_cap')},
         scale = 0.45 * 1.2
     })
@@ -1817,4 +1858,46 @@ create_UIBox_your_collection_stickers = function()
             center:apply(card, true)
         end,
     })
+end 
+
+-- warning for updating during run
+local igo = Game.init_game_object
+function Game:init_game_object()
+    local t = igo(self)
+    t.smods_version = SMODS.version
+    return t
+end
+
+local gurso = G.UIDEF.run_setup_option
+function G.UIDEF.run_setup_option(_type)
+    local ret = gurso(_type)
+    if _type == 'Continue' and V(G.SAVED_GAME.GAME.smods_version or '0.0.0') ~= V(SMODS.version) then
+        local text = localize { type = 'variable', key = 'smods_version_mismatch', vars = {G.SAVED_GAME.GAME.smods_version or '(unknown)', SMODS.version}}
+        local text_nodes = {}
+        for _,v in ipairs(text) do
+            text_nodes[#text_nodes+1] = {
+                n = G.UIT.R, config = { align = 'cm' }, nodes = {
+                    { n = G.UIT.T, config = { text = v, colour = G.SETTINGS.reduced_motion and G.C.WHITE or SMODS.Gradients.warning_text, scale = 0.35, shadow = true } }
+                }
+            }
+        end
+        table.insert(ret.nodes[1].nodes, 1, {
+            n = G.UIT.R, config = { align = "cm", r = 0.1, minw = 6, minh = 0.6, colour = G.SETTINGS.reduced_motion and G.C.RED or SMODS.Gradients.warning_bg, padding = 0.1 }, nodes={
+                {
+                    n = G.UIT.C, config = { align = 'cm' }, nodes = {
+                        { n = G.UIT.O, config = { object = Sprite(0, 0, 0.8, 0.8, G.ASSET_ATLAS['mod_tags'], { x = 0, y = 0 }) } },
+                    }
+                }, 
+                { 
+                    n = G.UIT.C, config = { align = 'cm' }, nodes = text_nodes
+                },
+                {
+                    n = G.UIT.C, config = { align = 'cm' }, nodes = {
+                        { n = G.UIT.O, config = { object = Sprite(0, 0, 0.8, 0.8, G.ASSET_ATLAS['mod_tags'], { x = 0, y = 0 }) } },
+                    }
+                }, 
+            }
+        })
+    end
+    return ret
 end

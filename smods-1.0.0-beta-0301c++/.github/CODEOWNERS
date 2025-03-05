@@ -1,6 +1,7 @@
 * @Aurelius7309
 
 src/crash_handler.lua @WilsontheWolf
-lib/https/ @WilsontheWolf
+libs/https/ @WilsontheWolf
 lovely/crash_handler.toml @WilsontheWolf
 lovely/libs.toml @WilsontheWolf
+lsp_def/ @GauntletGames-2086

@@ -38,7 +38,7 @@ function loadStackTracePlus()
     local table_concat = table.concat
 
     local _M = {
-        max_tb_output_len = 70 -- controls the maximum length of the 'stringified' table before cutting with ' (more...)'
+        max_tb_output_len = 140 -- controls the maximum length of the 'stringified' table before cutting with ' (more...)'
     }
 
     -- this tables should be weak so the elements in them won't become uncollectable
@@ -663,6 +663,9 @@ function injectStackTrace()
         if sanitizedmsg:find("Syntax error: game.lua:4: '=' expected near 'Game'") then
             table.insert(err,
                 'Duplicate installation of Steamodded detected! Please clean your installation: Steam Library > Balatro > Properties > Installed Files > Verify integrity of game files.')
+        elseif sanitizedmsg:find("Syntax error: game.lua:%d+: duplicate label 'continue'") then
+            table.insert(err,
+                'Duplicate installation of Steamodded detected! Please remove the duplicate steamodded/smods folder in your mods folder.')
         else
             table.insert(err, sanitizedmsg)
         end

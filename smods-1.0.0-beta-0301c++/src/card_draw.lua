@@ -12,6 +12,14 @@ SMODS.DrawStep = SMODS.GameObject:extend {
         both = true,
     },
     -- func = function(card, layer) end,
+    set = "Draw Step",
+    register = function(self)
+        if self.registered then
+            sendWarnMessage(('Detected duplicate register call on object %s'):format(self.key), self.set)
+            return
+        end
+        SMODS.DrawStep.super.register(self)
+    end,
     inject = function() end,
     post_inject_class = function(self)
         table.sort(self.obj_buffer, function(_self, _other) return self.obj_table[_self].order < self.obj_table[_other].order end)

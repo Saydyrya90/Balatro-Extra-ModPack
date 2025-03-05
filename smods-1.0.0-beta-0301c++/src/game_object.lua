@@ -3275,7 +3275,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
     }
 
     -------------------------------------------------------------------------------------------------
-    ------- API CODE GameObject.Achievements
+    ------- API CODE GameObject.Achievement
     -------------------------------------------------------------------------------------------------
 
     SMODS.Achievements = {}
@@ -3307,6 +3307,48 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
             SMODS.process_loc_text(G.localization.misc.achievement_descriptions, self.key, self.loc_txt, "description")
         end,
     }
+
+    -------------------------------------------------------------------------------------------------
+    ------- API CODE GameObject.Gradient
+    -------------------------------------------------------------------------------------------------
+
+    SMODS.Gradients = {}
+    SMODS.Gradient = SMODS.GameObject:extend {
+        obj_table = SMODS.Gradients,
+        obj_buffer = {},
+        required_params = { 'key' },
+        interpolation = 'trig',
+        cycle = 10,
+        colours = {},
+        inject = function(self) self[1], self[2], self[3], self[4] = 0,0,0,1 end,
+        update = function(self, dt)
+            if #self.colours < 2 then return end
+            local timer = G.TIMERS.REAL%self.cycle
+            local start_index = math.ceil(timer*#self.colours/self.cycle)
+            local end_index = start_index == #self.colours and 1 or start_index+1
+            local start_colour, end_colour = self.colours[start_index], self.colours[end_index]
+            local partial_timer = (timer%(self.cycle/#self.colours))*#self.colours/self.cycle
+            for i = 1, 4 do
+                if self.interpolation == 'linear' then
+
+                    self[i] = start_colour[i] + partial_timer*(end_colour[i]-start_colour[i])
+                elseif self.interpolation == 'trig' then
+                    self[i] = start_colour[i] + 0.5*(1-math.cos(partial_timer*math.pi))*(end_colour[i]-start_colour[i])
+                end
+            end
+        end,
+    }
+    SMODS.Gradient {
+        key = 'warning_bg',
+        colours = { G.C.RED, G.C.GREEN },
+        cycle = 1,
+    }
+    SMODS.Gradient {
+        key = 'warning_text',
+        colours = { G.C.WHITE, G.C.RED },
+        cycle = 1,
+    }
+
 
     -------------------------------------------------------------------------------------------------
     ----- API IMPORT GameObject.DrawStep

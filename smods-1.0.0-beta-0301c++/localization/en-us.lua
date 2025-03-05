@@ -223,6 +223,14 @@ return {
 			cashout_hidden = '...and #1# more',
             a_xchips = "X#1# Chips",
             a_xchips_minus = "-X#1# Chips",
+            smods_version_mismatch = {
+                "Your Steamodded version has changed",
+                "since this run was started!",
+                "Continuing it may lead to",
+                "unexpected behaviour and game crashes.",
+                "Starting version: #1#",
+                "Current version: #2#",
+            }
 		},
 	}
 }

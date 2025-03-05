@@ -216,6 +216,9 @@ if self.ability.effect == "Lucky Card" then
         ret = ret + self.ability.mult
     end
 end
+if self.ability.effect == "Mult Card" then
+    ret = ret + self.ability.mult
+end
 -- TARGET: get_chip_mult
 return ret'''
 

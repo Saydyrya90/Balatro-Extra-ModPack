@@ -22,7 +22,11 @@ Documentation for this project is currently incomplete. A collection of document
 
 ## Contributing
 
-This project is open for contribution; feel free to open a pull request. If you are adding new features, providing documentation is highly appreciated.
+This project is open for contribution; feel free to open a pull request. If you are adding new features, providing documentation is highly appreciated. 
+
+## Issues, Suggestions and more
+
+If you have any suggestions for this project, would like to report a bug, or just want to discuss something with us, you can get in touch by opening an issue or contacting us on [Discord](https://discord.gg/kU8cqCqwy3).
 
 ## License
 

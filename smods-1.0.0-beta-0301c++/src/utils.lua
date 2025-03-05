@@ -1319,6 +1319,7 @@ SMODS.calculate_retriggers = function(card, context, _ret)
                 if value.repetitions then
                     for h=1, value.repetitions do
                         value.retrigger_card = _card
+                        value.message_card = value.message_card or _card
                         value.message = value.message or (not value.remove_default_message and localize('k_again_ex'))
                         retriggers[#retriggers + 1] = value
                     end
@@ -1383,34 +1384,16 @@ function SMODS.calculate_context(context, return_table)
     end
     context.main_eval = nil
     if context.scoring_hand then
-        context.cardarea = G.play
-        for i=1, #context.scoring_hand do
+        for i=1, #G.play.cards do
+                if SMODS.in_scoring(G.play.cards[i], context.scoring_hand) then context.cardarea = G.play else context.cardarea = 'unscored' end
             --calculate the played card effects
             if return_table then
-                return_table[#return_table+1] = eval_card(context.scoring_hand[i], context)
-                SMODS.calculate_quantum_enhancements(context.scoring_hand[i], return_table, context)
+                return_table[#return_table+1] = eval_card(G.play.cards[i], context)
+                SMODS.calculate_quantum_enhancements(G.play.cards[i], return_table, context)
             else
-                local effects = {eval_card(context.scoring_hand[i], context)}
-                SMODS.calculate_quantum_enhancements(context.scoring_hand[i], effects, context)
-                SMODS.trigger_effects(effects, context.scoring_hand[i])
-            end
-        end
-        if SMODS.optional_features.cardareas.unscored then
-            context.cardarea = 'unscored'
-            local unscored_cards = {}
-            for _, played_card in pairs(G.play.cards) do
-                if not SMODS.in_scoring(played_card, context.scoring_hand) then unscored_cards[#unscored_cards + 1] = played_card end
-            end
-            for i=1, #unscored_cards do
-                --calculate the played card effects
-                if return_table then
-                    return_table[#return_table+1] = eval_card(unscored_cards[i], context)
-                    SMODS.calculate_quantum_enhancements(unscored_cards[i], return_table, context)
-                else
-                    local effects = {eval_card(unscored_cards[i], context)}
-                    SMODS.calculate_quantum_enhancements(unscored_cards[i], effects, context)
-                    SMODS.trigger_effects(effects, unscored_cards[i])
-                end
+                local effects = {eval_card(G.play.cards[i], context)}
+                SMODS.calculate_quantum_enhancements(G.play.cards[i], effects, context)
+                SMODS.trigger_effects(effects, G.play.cards[i])
             end
         end
     end
@@ -1484,13 +1467,21 @@ function SMODS.score_card(card, context)
                     --calculate the joker individual card effects
                     local eval, post = eval_card(_card, context)
                     if next(eval) then
-                        if eval.jokers then eval.jokers.juice_card = eval.jokers.juice_card or eval.jokers.card or _card end
+                        if eval.jokers then
+                            eval.jokers.juice_card = eval.jokers.juice_card or eval.jokers.card or _card
+                            eval.jokers.message_card = eval.jokers.message_card or eval.jokers.card or card
+                        end
+
                         table.insert(effects, eval)
                         for _, v in ipairs(post) do effects[#effects+1] = v end
                         if eval.retriggers then
-                            context.retrigger_joker = true
+                            context.retrigger_joker = eval.retriggers.retrigger_card
                             for rt = 1, #eval.retriggers do
                                 local rt_eval, rt_post = eval_card(_card, context)
+                                if rt_eval.jokers then
+                                    rt_eval.jokers.juice_card = rt_eval.jokers.juice_card or rt_eval.jokers.card or _card
+                                    rt_eval.jokers.message_card = rt_eval.jokers.message_card or rt_eval.jokers.card or card
+                                end
                                 table.insert(effects, { eval.retriggers[rt] })
                                 table.insert(effects, rt_eval)
                                 for _, v in ipairs(rt_post) do effects[#effects+1] = v end
@@ -1522,9 +1513,9 @@ function SMODS.score_card(card, context)
 end
 
 function SMODS.calculate_main_scoring(context, scoring_hand)
-    for _, card in ipairs(scoring_hand or context.cardarea.cards) do
+    for _, card in ipairs(context.cardarea.cards) do
         --add cards played to list
-        if scoring_hand and not SMODS.has_no_rank(card) then
+        if scoring_hand and not SMODS.has_no_rank(card) and SMODS.in_scoring(card, context.scoring_hand) then
             G.GAME.cards_played[card.base.value].total = G.GAME.cards_played[card.base.value].total + 1
             if not SMODS.has_no_suit(card) then
                 G.GAME.cards_played[card.base.value].suits[card.base.suit] = true
@@ -1539,6 +1530,9 @@ function SMODS.calculate_main_scoring(context, scoring_hand)
             }))
             card_eval_status_text(card, 'debuff')
         else
+            if scoring_hand then
+                if SMODS.in_scoring(card, context.scoring_hand) then context.cardarea = G.play else context.cardarea = 'unscored' end
+            end
             SMODS.score_card(card, context)
         end
     end
@@ -1615,11 +1609,19 @@ function SMODS.calculate_destroying_cards(context, cards_destroyed, scoring_hand
     for i,card in ipairs(scoring_hand or context.cardarea.cards) do
         local destroyed = nil
         --un-highlight all cards
-        if scoring_hand then highlight_card(card,(i-0.999)/(#scoring_hand-0.998),'down') end
+        if scoring_hand and SMODS.in_scoring(card, context.scoring_hand) then highlight_card(card,(i-0.999)/(#scoring_hand-0.998),'down') end
 
         -- context.destroying_card calculations
         context.destroy_card = card
-        context.destroying_card = scoring_hand and card
+        if scoring_hand then
+            if SMODS.in_scoring(card, context.scoring_hand) then
+                context.cardarea = G.play
+                context.destroying_card = card
+            else
+                context.cardarea = 'unscored'
+                context.destroying_card = nil
+            end
+        end
         for _, area in ipairs(SMODS.get_card_areas('jokers')) do
             local should_break
             for _, _card in ipairs(area.cards) do
@@ -1673,11 +1675,26 @@ function SMODS.calculate_destroying_cards(context, cards_destroyed, scoring_hand
     end
 end
 
+function SMODS.blueprint_effect(card, blueprint_card, context)
+    if card == blueprint_card then return end
+        context.blueprint = (context.blueprint and (context.blueprint + 1)) or 1
+        context.blueprint_card = context.blueprint_card or card
+        if context.blueprint > #G.jokers.cards + 1 then return end
+        local other_joker_ret = blueprint_card:calculate_joker(context)
+        context.blueprint = nil
+        local eff_card = context.blueprint_card or card
+        context.blueprint_card = nil
+        if other_joker_ret then
+            other_joker_ret.card = card
+            other_joker_ret.colour = G.C.BLUE
+            return other_joker_ret
+        end
+end
+
 function SMODS.get_card_areas(_type, _context)
     if _type == 'playing_cards' then
         local t = {}
         if _context ~= 'end_of_round' then t[#t+1] = G.play end
-        if _context ~= 'end_of_round' and SMODS.optional_features.cardareas.unscored then t[#t+1] = 'unscored' end
         t[#t+1] = G.hand
         if SMODS.optional_features.cardareas.deck then t[#t+1] = G.deck end
         if SMODS.optional_features.cardareas.discard then t[#t+1] = G.discard end
@@ -1799,8 +1816,10 @@ SMODS.get_optional_features = function()
 end
 
 G.FUNCS.can_select_from_booster = function(e)
-    local area = booster_obj and e.config.ref_table:selectable_from_pack(booster_obj)
-    if area and #G[area].cards < G[area].config.card_limit then
+    local card = e.config.ref_table
+    local area = booster_obj and card:selectable_from_pack(booster_obj)
+    local edition_card_limit = card.edition and card.edition.card_limit or 0
+    if area and #G[area].cards < G[area].config.card_limit + edition_card_limit then
         e.config.colour = G.C.GREEN
         e.config.button = 'use_card'
     else

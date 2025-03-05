@@ -6,10 +6,11 @@
 --- DEPENDENCIES: [Talisman]
 --- PREFIX: dndj
 --- LOADER_VERSION_GEQ: 1.0.0
---- VERSION: 0.3.1
+--- VERSION: 0.3.3
 --- BADGE_COLOR: 32751a
 
 local dndj_mod = SMODS.current_mod
+dndj_global = {}
 
 -- C O L O R S --
 loc_colour('eir')
@@ -19,7 +20,7 @@ loc_colour('explosive')
 G.ARGS.LOC_COLOURS.explosive = HEX'e07c2f'
 
 dndj_mod.description_loc_vars = function()
-    return { background_colour = G.C.CLEAR, text_colour = G.C.WHITE, scale = 1.2 }
+    return { background_colour = G.C.CLEAR, text_colour = G.C.WHITE, scale = 1 }
 end
 
 
@@ -88,7 +89,20 @@ SMODS.Sound({key = 'badexplosion', path = 'snd_badexplosion.wav'})
 
 -- C O M P A T I B I L I T Y --
 
+-- Talisman --
+to_big = to_big or function(num)
+    return num
+end
+
+to_number = to_number or function(num)
+    return num
+end
+
+-- Hit --
 local hit = next(SMODS.find_mod('Hit'))
+
+-- UnStable --
+local unstable = next(SMODS.find_mod('UnStable'))
 
 -- R A N K S --
 
@@ -116,6 +130,12 @@ G.FUNCS.get_poker_hand_info = function(_cards)
 
     return text, loc_disp_text, poker_hands, scoring_hand, disp_text
 end
+
+-- Function to add rounding because lua doesnt fucking have it for some reason!!!
+function round(num, numDecimalPlaces)
+    local mult = 10^(numDecimalPlaces or 0)
+    return math.floor(num * mult + 0.5) / mult
+  end
 
 -- "Prev" property, taken from UnStable --
 function init_prev_rank_data()
@@ -306,7 +326,12 @@ SMODS.Rank {
     key = '0',
     card_key = '0',
     pos = {x = 20},
-    nominal = 0.0001,
+    nominal = 0,
+    strength_effect = {
+        fixed = 2,
+        random = false,
+        ignore = false
+    },
     straight_edge = true,
 
 
@@ -542,7 +567,7 @@ for i = 1, 4 do
             -- return {set = 'Polymino', area = G.pack_cards, skip_materialize = nil, soulable = nil, key_append = 'vir'}
         end,
 
-        ease_background_colour = function(self) ease_background_colour{new_colour = HEX('62a1b4'), special_colour = HEX('fce1b6'), contrast = 2} end,
+        ease_background_colour = function(self) ease_background_colour{new_colour = HEX('3d3f40'), special_colour = HEX('2e3a4a'), contrast = 2} end,
 	    particles = function(self)
             G.booster_pack_sparkles = Particles(1, 1, 0,0, {
                 timer = 0.015,
@@ -821,6 +846,188 @@ SMODS.Sticker{
         card.ability[self.key] = val
     end,
 }
+
+-- O V E R R I D E S (Mostly taken from UnStable) --
+if not unstable then
+    dndj_global.fib = {}
+    function dndj_global.register_fibonacci(number_list)
+        for i = 1, #number_list do
+          dndj_global.fib[number_list[i]] = true
+        end
+    end
+    dndj_global.odd = {}
+    function dndj_global.register_odd(number_list)
+        for i = 1, #number_list do
+          dndj_global.odd[number_list[i]] = true
+        end
+    end
+    dndj_global.even = {}
+    function dndj_global.register_even(number_list)
+        for i = 1, #number_list do
+          dndj_global.even[number_list[i]] = true
+        end
+    end
+    dndj_global.hack = {}
+    function dndj_global.register_hack(rank_list)
+	    for i = 1, #rank_list do
+		 dndj_global.hack[rank_list[i]] = true
+	    end
+    end
+
+    dndj_global.register_hack({'unstb_0', 'dndj_0', 'unstb_1', 'dndj_1', '2', '3', '4', '5'})
+    dndj_global.register_fibonacci({0, 1, 2, 3, 5, 8, 13, 21})
+    dndj_global.register_odd({1, 3, 5, 7, 9, 11, 13, 21})
+    dndj_global.register_even({0, 2, 4, 6, 8, 10, 12})
+    
+    dndj_global.face = {Jack = true, Queen = true, King = true}
+
+    SMODS.Joker:take_ownership('fibonacci', {
+        config = {extra = {mult = 8}},
+        loc_txt = {
+            name = "Fibonacci",
+            text = {
+              "Each played {C:attention}0{}, {C:attention}1{}, {C:attention}2{}, {C:attention}3{},",
+                "{C:attention}5{}, {C:attention}8{}, {C:attention}13{}, {C:attention}21{} or {C:attention}Ace{} gives",
+                "{C:mult}+#1#{} Mult when scored",
+            },
+          },
+        loc_vars = function(self, info_queue, card)
+            local key = self.key
+            return { key = key, vars = {card and card.ability.extra.mult or self.config.extra.mult} }
+        end,
+        calculate = function(self, card, context)
+		
+            if context.individual and context.cardarea == G.play then
+                local nominal = context.other_card.base.nominal
+                
+                if not context.other_card.config.center.no_rank and (dndj_global.fib[nominal] or context.other_card.base.value == 'Ace') then
+                    return {
+                      mult = card.ability.extra.mult,
+                      card = card
+                    }
+                    
+                else
+                    --failsafe in case some shit fucks up lol
+                    return {
+                        mult = 0
+                    }
+                end
+            end
+            
+        end
+    }, true)
+
+    SMODS.Joker:take_ownership('odd_todd', {
+        config = {extra = {chips = 31}},
+        loc_txt = {
+            name = "Odd Todd",
+            text = {
+              "Played cards with",
+                    "{C:attention}odd{} rank give",
+                    "{C:chips}+#1#{} Chips when scored",
+                    "{C:inactive}(A, 21, 13, 11, 9, 7, 5, 3, 1)",
+            },
+          },
+        loc_vars = function(self, info_queue, card)
+            local key = self.key
+            return { key = key, vars = {card and card.ability.extra.chips or self.config.extra.chips} }
+        end,
+        calculate = function(self, card, context)
+		
+            if context.individual and context.cardarea == G.play then
+                local nominal = context.other_card.base.nominal
+                
+                if not context.other_card.ability.name == 'Stone Card' and (dndj_global.odd[nominal]) then
+                    return {
+                      chips = card.ability.extra.chips,
+                      card = card
+                    }
+                    
+                else
+                    --failsafe in case some shit fucks up lol
+                    return {
+                        mult = 0
+                    }
+                end
+            end
+            
+        end
+    }, true)
+
+    SMODS.Joker:take_ownership('even_steven', {
+        config = {extra = {mult = 4}},
+        loc_txt = {
+            name = "Even Steven",
+            text = {
+              "Played cards with",
+                    "{C:attention}even{} rank give",
+                    "{C:mult}+#1#{} Mult when scored",
+                    "{C:inactive}(12, 10, 8, 6, 4, 2, 0)",
+            },
+          },
+        loc_vars = function(self, info_queue, card)
+            local key = self.key
+            return { key = key, vars = {card and card.ability.extra.mult or self.config.extra.mult} }
+        end,
+        calculate = function(self, card, context)
+		
+            if context.individual and context.cardarea == G.play then
+                local nominal = context.other_card.base.nominal
+                local value = context.other_card.base.value
+                
+                if not context.other_card.ability.name == 'Stone Card' and not dndj_global.face[value] and (dndj_global.even[nominal]) then
+                    return {
+                      mult = card.ability.extra.mult,
+                      card = card
+                    }
+                    
+                else
+                    --failsafe in case some shit fucks up lol
+                    return {
+                        mult = 0
+                    }
+                end
+            end
+            
+        end
+    }, true)
+end
+
+SMODS.Joker:take_ownership('hack', {
+
+	config = { extra = 1 },
+    loc_txt = {
+        name = "Hack",
+        text = {
+          "Retrigger",
+          "each played",
+          "{C:attention}0{}, {C:attention}1{}, {C:attention}2{}, {C:attention}3{}, {C:attention}4{}, or {C:attention}5{}",
+        },
+      },
+	loc_vars = function(self, info_queue, card)
+		
+		local key = self.key
+		--if getPoolRankFlagEnable('unstb_0') or getPoolRankFlagEnable('unstb_1') then
+		--	key = self.key..'_ex'
+		--end
+	
+		return { key = key, vars = {card and card.ability.extra or self.config.extra} }
+	end,
+	
+	calculate = function(self, card, context)
+		if context.cardarea == G.play and context.repetition and not context.repetition_only then
+		  if not context.other_card.config.center.no_rank and dndj_global.hack[context.other_card.base.value] then
+				return {
+				  message = 'Again!',
+				  repetitions = card.ability.extra,
+				  card = context.blueprint_card or card
+				}
+		  end
+		end
+	end,
+	
+}, true)
+
 
 -- J O K E R S --
 
@@ -1115,7 +1322,8 @@ SMODS.Joker{
     config = { extra = {repetitions = 2} },
     loc_txt = {
         name = "Jack and the Beanstalk",
-        text = {"Retrigger each played {C:attention}Jack{} twice"},
+        text = {"Retrigger each",
+         "played {C:attention}Jack{} twice"},
     },
     loc_vars = function(self, info_queue, card)
         return { vars = {card.ability.extra.repetitions} }
@@ -1301,7 +1509,7 @@ SMODS.Joker{
     cost = 3,
     blueprint_compat = true,
     pos = { x = 9, y = 0 },
-    config = { extra = {chips = 77} },
+    config = { extra = {chips = 50} },
     in_pool = function(self)
         return false
     end,
@@ -1395,7 +1603,7 @@ SMODS.Joker{
         return { vars = {card.ability.extra.x_mult, card.ability.extra.x_mult_mod} }
     end,
     calculate = function(self, card, context)
-        if context.individual and context.cardarea == G.play then
+        if context.individual and context.cardarea == G.play and not context.blueprint then
             if context.other_card.base.value == "dndj_21" or context.other_card.base.value == "unstb_21" then
                 card.ability.extra.x_mult = card.ability.extra.x_mult + card.ability.extra.x_mult_mod
                 return {
@@ -1468,7 +1676,7 @@ SMODS.Joker{
     calculate = function(self, card, context)
             --local originalhand = G.hand.config.card_limit
             if context.first_hand_drawn and not context.blueprint then
-                card.ability.h_size = math.floor((G.hand.config.card_limit * card.ability.extra.Xhandsize)-G.hand.config.card_limit)
+                card.ability.h_size = round((G.hand.config.card_limit * card.ability.extra.Xhandsize)-G.hand.config.card_limit)
                 G.hand:change_size(card.ability.h_size) 
             end
             if context.joker_main then
@@ -1560,16 +1768,19 @@ SMODS.Joker{
     end,
 
     calculate = function(self, card, context)
-        if context.individual and context.cardarea == G.play and context.other_card.ability.name == 'Stone Card' then
+        if context.individual and context.cardarea == G.play and context.other_card.ability.name == 'Stone Card' and not context.blueprint then
             card.ability.extra.stones = card.ability.extra.stones + 1
         end
         if context.joker_main and card.ability.extra.stones > 0 then
-            card.ability.extra.stones = 0
             return {
-                x_mult_mod = card.ability.extra.x_mult
+                x_mult_mod = card.ability.extra.x_mult,
+                card = card
             }
             end
+        if context.after then
+            card.ability.extra.stones = 0
         end
+     end
 }
 
 SMODS.Joker{
@@ -1584,7 +1795,7 @@ SMODS.Joker{
         text = {
             "Creates {C:attention}#1#{} random {C:explosive}Explosive{} {C:dark_edition}Negative{}",
             "Jokers? at the end of the round",
-            "{C:inactive}Has an unmodifiable {C:green}1 in 10{}",
+            "{C:inactive}Has an unmodifiable {C:green}1 in 20{}",
             "{C:inactive}chance to generate a non-Joker{}",
             "{C:inactive}Boosters and Vouchers generated this way{}",
             "{C:inactive}add{}{C:attention} +1 permanent Joker slot{}{C:inactive} when destroyed{}"
@@ -1624,18 +1835,18 @@ SMODS.Joker{
                                         local random = math.random()
                                         local theFunny = 'Joker'
                                         local k = nil
-                                        if random < 0.9 then
+                                        if random < 0.95 then
                                             theFunny = 'Joker'
                                             k = G.P_CENTER_POOLS.Joker[math.random(#G.P_CENTER_POOLS.Joker)].key
-                                        elseif random < 0.93 then
+                                        elseif random < 0.965 then
                                             theFunny = 'Tarot'
-                                        elseif random < 0.96 then
+                                        elseif random < 0.98 then
                                             theFunny = 'Planet'
-                                        elseif random < 0.99 then
-                                            theFunny = 'Spectral'
                                         elseif random < 0.995 then
+                                            theFunny = 'Spectral'
+                                        elseif random < 0.998 then
                                             theFunny = 'Base'
-                                        elseif random < 0.9975 then
+                                        elseif random < 0.999 then
                                             theFunny = 'Voucher'
                                         elseif random < 1 then
                                             theFunny = 'Booster'
@@ -1734,6 +1945,7 @@ SMODS.Joker{
     blueprint_compat = true,
     pos = { x = 6, y = 1 },
     config = { extra = {chips = 40} },
+    pixel_size = {w = 58, h = 89},
     loc_txt = {
         name = "Jimbo",
         text = {
@@ -1975,7 +2187,7 @@ SMODS.Joker{
             "a {C:attention}Blackjack{}."
         },
     },
-    rarity = 1,
+    rarity = 3,
     atlas = 'jokers_atlas',
     cost = 8,
     blueprint_compat = true,
@@ -2071,6 +2283,76 @@ SMODS.Joker{
 }
 end
 
+SMODS.Joker{
+    key = 'scrooge_mcjoker',
+    loc_txt = {
+        name = "Scrooge McJoker",
+        text = {
+            "{X:money,C:white}$X#1#{} if played hand",
+            "is a {C:attention}Blackjack Flush{}"
+        },
+    },
+    rarity = 2,
+    atlas = 'jokers_atlas',
+    cost = 8,
+    blueprint_compat = true,
+    pos = { x = 0, y = 2 },
+    config = { extra = {xmoney = 1.25, dollars = 0} },
+
+    loc_vars = function(self, info_queue, card)
+        return { vars = {card.ability.extra.xmoney} }
+    end,
+
+    calculate = function(self, card, context)
+        if context.before and next(context.poker_hands['dndj_flushjack']) then
+            card.ability.extra.dollars = round(to_number((G.GAME.dollars*(card.ability.extra.xmoney-1))))
+        end
+        if context.joker_main and card.ability.extra.dollars > 0 then
+            return {
+                dollars = card.ability.extra.dollars
+            }
+        end
+    end
+
+}
+
+SMODS.Joker{
+    key = 'king_of_the_hill',
+    loc_txt = {
+        name = "King of the Hill",
+        text = {
+            "{X:mult,C:white}X#2#{} Mult if there is only",
+            "1 {C:attention}face{} card in your full deck",
+            "{C:inactive}(Currently {}{C:attention}#1#{}{C:inactive})"
+        },
+    },
+    rarity = 3,
+    atlas = 'jokers_atlas',
+    cost = 10,
+    blueprint_compat = true,
+
+    pos = { x = 1, y = 2 },
+
+    config = { extra = {face_tally = 0, xmult = 5} },
+
+    loc_vars = function(self, info_queue, card)
+        return { vars = {card.ability.extra.face_tally, card.ability.extra.xmult} }
+    end,
+
+    calculate = function(self, card, context)
+        card.ability.extra.face_tally = 0
+        for k, v in ipairs(G.playing_cards) do
+            if v:is_face() then card.ability.extra.face_tally = card.ability.extra.face_tally + 1 end end
+        if context.joker_main and card.ability.extra.face_tally == 1 then
+            return {
+                message = localize{type='variable',key='a_xmult',vars={card.ability.extra.xmult}},
+                Xmult_mod = card.ability.extra.xmult
+            }
+        end
+    end
+
+}
+
 
 
 
@@ -2084,8 +2366,9 @@ end
 SMODS.Back{
     key = 'nothings_deck',
     atlas = 'decks',
+    discovered = true,
     pos = {x = 0, y = 0},
-    config = {ante_scaling = 0.75, joker_slot = 0},
+    config = {ante_scaling = 1, joker_slot = 0},
     --config = { extra = {min_ante = 3} },
     loc_vars = function(self, info_queue, card)
         return { vars = {self.config.ante_scaling, self.config.joker_slot} }
@@ -2094,12 +2377,17 @@ SMODS.Back{
         name = "Nihilist Deck",
         text = {
             "Start with {C:attention}1{} card",
-            "{C:mult}0.75X{} base Blind size",
-            "{C:attention}The Pillar{} and {C:attention}The Psychic{}",
-            "cannot appear until Ante 3"
+            --"{C:mult}0.5X{} base Blind size",
+            "Starts at {C:attention}Ante 0{}",
+            "{C:attention}The Pillar{} cannot appear"
         },
       },
     apply = function(self)
+        --G.GAME.HUD:recalculate()
+        G.GAME.round_resets.ante = 0
+        G.GAME.round_resets.blind_ante = 0
+        ease_ante(0)
+        SMODS.Blind:take_ownership('bl_pillar', {boss = {min = 9e999, max = 9e999}})
         G.E_MANAGER:add_event(Event({
             func = function()
                 for k, v in pairs(G.playing_cards) do
@@ -2124,9 +2412,8 @@ SMODS.Back{
                 center = G.P_CENTERS.c_base}, G.deck, nil, nil, nil)
             _card:set_ability(G.P_CENTERS.m_stone, nil, true)
             _card:set_edition('e_holo', true)
+            --SMODS.Stickers['eternal']:apply(_card, true)
             G.GAME.starting_deck_size = #G.playing_cards
-            SMODS.Blind:take_ownership('bl_psychic', {boss = {min = 3, max = 10}})
-            SMODS.Blind:take_ownership('bl_pillar', {boss = {min = 3, max = 10}})
             return true
         end
         }))
@@ -2137,6 +2424,7 @@ SMODS.Back{
 -- Glitched Deck--
 SMODS.Back{
     key = 'glitched_deck',
+    discovered = true,
     atlas = 'decks',
     pos = {x = 1, y = 0},
     config = {hands = 0, discards = 0, hand_size = 0, ante_scaling = 1, joker_slot = 0},
@@ -2228,6 +2516,7 @@ SMODS.Back{
     --math.randomseed(os.time()),
     --distribute_stats(),
     key = 'random_deck',
+    discovered = true,
     atlas = 'decks',
     pos = {x = 2, y = 0},
     --config = {dollars = math.random(-4,6), hands = math.random(-2,6), discards = math.random(-1,7), hand_size = math.random(-3,7),  joker_slot = math.random(-5,5), consumable_slot = math.random(-2,3), ante_scaling = 0.5+math.random()*1.5, win_ante = math.random(6,10)},

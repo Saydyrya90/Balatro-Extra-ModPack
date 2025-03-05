@@ -1,3 +1,37 @@
+0.3.3
+----------------
+[BALANCE CHANGES]
+- Nihilist deck reworked yet again. Now, instead of 0.75x ante scaling, you start at ante 0. Also the pillar is now forbidden from appearing ever (or at least is supposed to be)
+  
+[BUGFIXES]
+- Jack and the Beanstalk formatting changed yet again
+- Fixed bug where Even Steven and Odd Todd works on Stone Cards
+
+0.3.2a
+----------------
+[BUGFIXES]
+- Fixed a bug where Blueprint would not work with Stone Age Joker
+
+0.3.2
+----------------
+[NEW JOKERS!]
+- Scrooge McJoker ($x1.25 if played hand contains a Blackjack Flush)
+- King of the Hill (x5 Mult if there is only 1 face card in your deck)
+  
+[VANILLA JOKER CHANGES!]
+- Fibonacci, Even Steven, Odd Todd, and Hack now account for modded ranks
+  
+[BALANCE CHANGES]
+- Pot and Glitched Joker nerfed
+  
+[BUGFIXES]
+- Fixed formatting for Jack and the Beanstalk description
+- Fixed bug where Musician would upgrade twice with Blueprint (at least i hope its fixed!!)
+- Attempted to fix bug where '0' cards are just completely non-functional
+  
+[OTHER STUFF]
+- Changed the colors for inside the Contraband Pack
+
 0.3.1
 ----------------
 - Batty Joker and Underhanded Joker now function properly

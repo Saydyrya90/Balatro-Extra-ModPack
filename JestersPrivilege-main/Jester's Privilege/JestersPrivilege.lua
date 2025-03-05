@@ -285,7 +285,7 @@ SMODS.Joker {
   pos = { x = 4, y = 1 },
   cost = 7,
   unlocked = true,
-  discovered = true,
+  discovered = true, -- change later
   blueprint_compat = true,
   eternal_compat = true,
   perishable_compat = true,
@@ -293,22 +293,17 @@ SMODS.Joker {
     return { vars = {}}
   end,
   calculate = function(self, card, context)
-    if context.individual and context.cardarea == G.play and not context.blueprint then
-      if context.scoring_hand and context.other_card then
-        -- Set the Mult ability without checking current ability
-        context.other_card:set_ability(G.P_CENTERS.m_mult)
-        G.E_MANAGER:add_event(Event({
-          func = function()
-            if context.other_card then
-              context.other_card:juice_up()
+		if context.individual and context.cardarea == G.play and not context.blueprint then
+            if context.scoring_hand then
+                if context.other_card.ability.name == 'Mult' then
+                    return nil
+                end
+                context.other_card:set_ability(G.P_CENTERS.m_mult, nil, true)
             end
-            return true
-          end
-        }))
-      end
-    end
-  end
+		end
+end
 }
+
 -- Receipt
 SMODS.Joker {
   key = 'JPReceipt', 

@@ -169,7 +169,8 @@ SMODS.ConsumableType {
     delete_card = function(self, center)
         SMODS.ConsumableType.delete_card(self, center)
         SMODS.remove_pool(G.P_CENTER_POOLS[center.reward and "Cine_Quest" or "Cine"], center.key)
-    end
+    end,
+    shop_rate = 0
 }
 
 SMODS.ObjectTypes["Cine"].default = "c_dvrprv_gem_heist"
@@ -320,7 +321,13 @@ Reverie.cines = {
         order = 2,
         name = "Gem Heist",
         config = {
-            extra = 25
+            extra = {
+                discount = 25,
+                kind = {
+                    "p_buffoon_",
+                    "p_standard_"
+                }
+            },
         },
         cost = 4,
         pos = {
@@ -518,7 +525,9 @@ Reverie.cines = {
         order = 14,
         name = "Adrifting",
         config = {
-            extra = 1
+            extra = {
+                discount = 100
+            }
         },
         cost = 4,
         pos = {
@@ -721,6 +730,38 @@ Reverie.cines = {
 
 table.sort(Reverie.cines, function(a, b) return a.order < b.order end)
 
+-- Custom DrawStep for shadows on cine cards
+SMODS.DrawStep {
+    key = 'cine_shadow',
+    order = -999,
+    layers = { shadow = true, both = true },
+    func = function(self)
+
+        if not Reverie.is_cine_or_reverie(self) then return end
+
+        self.ARGS.send_to_shader = self.ARGS.send_to_shader or {}
+        self.ARGS.send_to_shader[1] = math.min(self.VT.r*3, 1) + math.sin(G.TIMERS.REAL/28) + 1 + (self.juice and self.juice.r*20 or 0) + self.tilt_var.amt
+        self.ARGS.send_to_shader[2] = G.TIMERS.REAL
+        self.ARGS.send_to_shader[3] = self.omit_top_half or 0
+        self.ARGS.send_to_shader[4] = self.omit_bottom_half or 0
+
+        for k, v in pairs(self.children) do
+            v.VT.scale = self.VT.scale
+        end
+    
+        G.shared_shadow = self.sprite_facing == 'front' and self.children.center or self.children.back
+    
+        --Draw the shadow
+        if (self.reverie_custom_shadow) and G.SETTINGS.GRAPHICS.shadows == 'On' and ((self.ability.effect ~= 'Glass Card' and not self.greyed) and ((self.area and self.area ~= G.discard and self.area.config.type ~= 'deck') or not self.area or self.states.drag.is)) then
+            self.shadow_height = 0 * (0.08 + 0.4 * math.sqrt(self.velocity.x ^ 2)) + ((((self.highlighted and self.area == G.play) or self.states.drag.is) and 0.35) or (self.area and self.area.config.type == 'title_2') and 0.04 or 0.1)
+            G.shared_shadow:draw_shader('dvrprv_ticket', self.shadow_height, self.ARGS.send_to_shader)
+        end
+
+        self.ARGS.send_to_shader[4] = nil
+        self.ARGS.send_to_shader[3] = nil
+    end,
+}
+
 for _, v in pairs(Reverie.cines) do
     v.set = "Cine"
     v.atlas = "Cine"
@@ -747,13 +788,20 @@ for _, v in pairs(Reverie.cines) do
             card.ARGS.send_to_shader[3] = card.omit_top_half or 0
             card.ARGS.send_to_shader[4] = card.omit_bottom_half or 0
 
-            if card.ability.name == "The Unseen" and (card.config.center.discovered or card.bypass_discovery_center) then
+            if card.ability.name == "The Unseen" and card.ability.progress == nil and (card.config.center.discovered or card.bypass_discovery_center) then
                 card.children.center:draw_shader("dvrprv_ticket_negative", nil, card.ARGS.send_to_shader)
-            elseif card.ability.name == "I Sing, I've No Shape" and card.config.center.discovered then
+            elseif card.ability.name == "I Sing, I've No Shape" and card.ability.progress == nil and card.config.center.discovered then
                 card.children.center:draw_shader("dvrprv_ticket_polychrome", nil, card.ARGS.send_to_shader)
             else
                 card.children.center:draw_shader("dvrprv_ticket", nil, card.ARGS.send_to_shader)
             end
+        end
+        if card.edition and card.edition.polychrome then
+            card.ARGS.send_to_shader[3] = card.omit_top_half or 0
+            card.ARGS.send_to_shader[4] = card.omit_bottom_half or 0
+
+            -- Different from "ticket_negative", this is a direct copy of negative with no intended visual changes
+            card.children.center:draw_shader("dvrprv_cine_polychrome", nil, card.ARGS.send_to_shader)
         end
         if card.edition and card.edition.negative then
             card.ARGS.send_to_shader[3] = card.omit_top_half or 0
@@ -768,10 +816,8 @@ for _, v in pairs(Reverie.cines) do
     -- Copied from Bunco's Cassette
     v.update = function(self, card)
         if card.VT.w <= 0 then
-            if card.config.center.reward then
-                card:set_ability(G.P_CENTERS[card.config.center.reward], true)
-                card.ability.progress = nil
-            end
+            card.children.center:set_sprite_pos(G.P_CENTERS[card.config.center.key].pos)
+            card.ability.progress = nil
         end
     end
 

@@ -51,7 +51,7 @@ return {
                     "이번 상점 동안에는",
                     "모든 카드가 {C:dark_edition}홀로그래픽{}이",
                     "되고 {C:attention}25%{} 할인됩니다",
-                    "{s:0.8}카드 새로고침"
+                    "카드 및 {s:0.8,C:attention}부스터 팩 {s:0.8}새로고침"
                 }
             },
             c_dvrprv_crazy_lucky_quest = {

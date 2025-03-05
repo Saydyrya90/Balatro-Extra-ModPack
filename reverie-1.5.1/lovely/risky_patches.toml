@@ -1,0 +1,96 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 101
+
+# This file is for patches that are more likely to break other mods, and thus are being patched later in the priority queue
+# "breaking patches" are patches that replace code (position = "at" and pattern not present in payload), thus causing other patch patterns to not match where they should
+
+# Tag:get_uibox_table
+# Make skip tag show correctly in the shop (by default it adds one to the tag, now it won't do so if in shop/pack)
+[[patches]]
+[patches.pattern]
+target = "tag.lua"
+pattern = '''elseif name_to_check == 'Skip Tag' then*'''
+position = "at"
+payload = '''
+elseif name_to_check == 'Skip Tag' then loc_vars = {self.config.skip_bonus, self.config.skip_bonus*((G.GAME.skips or 0)+(self.ability.as_card and 0 or 1))}
+'''
+match_indent = true
+
+
+
+# Card:redeem()
+# Dont play coin sfx if card has no cost
+[[patches]]
+[patches.regex]
+target = "card.lua"
+pattern = '''(?<indent>[ \t]*)(?<capture>bot_dynatext = DynaText\(\{string = localize\('k_redeemed_ex'\).*(\n.*?)*)(?<target>play_sound\('coin1'\))'''
+position = "at"
+line_prepend = "$indent"
+payload = '''
+$capture
+if self.cost ~= 0 then
+    $target
+end
+'''
+
+
+
+# Card:add_to_deck()
+# Make negative cine cards change card_limit correctly when added to deck as negative
+[[patches]]
+[patches.regex]
+target = "card.lua"
+pattern = '''(?<indent>[\t ]*)(?<pre>if self.edition and self.edition.card_limit then.*)\n[\t ]*(?<cond>if self.ability.consumeable then)\n[\t ]*G\.consumeables\.config\.card_limit = G\.consumeables\.config\.card_limit \+ self\.edition\.card_limit(?<post>(\n.*?)*end)'''
+position = "at"
+line_prepend = "$indent"
+payload = '''
+$pre
+    $cond
+        if Reverie.is_cine_or_reverie(self) then
+            G.cine_quests.config.card_limit = G.cine_quests.config.card_limit + self.edition.card_limit
+        else
+            G.consumeables.config.card_limit = G.consumeables.config.card_limit + self.edition.card_limit
+        end
+    $post
+'''
+
+# Card:set_edition()
+# Make negative cine cards change card_limit correctly when negative is applied to it
+[[patches]]
+[patches.regex]
+target = "card.lua"
+pattern = '''(?<indent>[\t ]*)(?<pre>self.edition = \{\}\n.*if self.added_to_deck then.*)\n[\t ]*(?<cond>if self.ability.consumeable then)\n[\t ]*G\.consumeables\.config\.card_limit = G\.consumeables\.config\.card_limit \+ 1(?<post>(\n.*?)*end)'''
+position = "at"
+line_prepend = "$indent"
+payload = '''
+$pre
+    $cond
+        if Reverie.is_cine_or_reverie(self) then
+            G.cine_quests.config.card_limit = G.cine_quests.config.card_limit + 1
+        else
+            G.consumeables.config.card_limit = G.consumeables.config.card_limit + 1
+        end
+    $post
+'''
+
+# Card:remove_from_deck() and Card:remove()
+# Make removed negative cine cards modify card limit
+[[patches]]
+[patches.regex]
+target = "card.lua"
+pattern = '''(?<indent>[\t ]*)(?<pre>if self.edition and self.edition.card_limit then.*)\n[\t ]*(?<cond>if self.ability.consumeable then)\n[\t ]*G\.consumeables\.config\.card_limit = G\.consumeables\.config\.card_limit - self\.edition\.card_limit(?<post>(\n.*?)*end)'''
+position = "at"
+line_prepend = "$indent"
+payload = '''
+$pre
+    $cond
+        if Reverie.is_cine_or_reverie(self) then
+            G.cine_quests.config.card_limit = G.cine_quests.config.card_limit - self.edition.card_limit
+        else
+            G.consumeables.config.card_limit = G.consumeables.config.card_limit - self.edition.card_limit
+        end
+    $post
+'''
+times = 2

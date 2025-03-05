@@ -62,18 +62,6 @@ end
 '''
 match_indent = true
 
-# Tag:get_uibox_table
-# Make skip tag show correctly in the shop (by default it adds one to the tag, now it won't do so if in shop/pack)
-[[patches]]
-[patches.pattern]
-target = "tag.lua"
-pattern = '''elseif name_to_check == 'Skip Tag' then*'''
-position = "at"
-payload = '''
-elseif name_to_check == 'Skip Tag' then loc_vars = {self.config.skip_bonus, self.config.skip_bonus*((G.GAME.skips or 0)+(self.ability.as_card and 0 or 1))}
-'''
-match_indent = true
-
 # G.FUNCS.check_for_buy_space()
 # Disable buy space check for Tags
 [[patches]]
@@ -88,6 +76,7 @@ match_indent = true
 
 # G.FUNCS.buy_from_shop
 # Prevent Tags from being added to the deck
+# Position = "at" but not risky because it includes pattern in the payload, so other mods' patches should still work
 [[patches]]
 [patches.pattern]
 target = "functions/button_callbacks.lua"
@@ -231,21 +220,6 @@ if is_pack_card and (Reverie.is_in_reverie_pack() or is_cine) then
 end'''
 match_indent = true
 
-# Card:redeem()
-# Dont play coin sfx if card has no cost
-[[patches]]
-[patches.regex]
-target = "card.lua"
-pattern = '''(?<indent>[ \t]*)(?<capture>bot_dynatext = DynaText\(\{string = localize\('k_redeemed_ex'\).*(\n.*?)*)(?<target>play_sound\('coin1'\))'''
-position = "at"
-line_prepend = "$indent"
-payload = '''
-$capture
-if self.cost ~= 0 then
-    $target
-end
-'''
-
 # card_eval_status_text()
 # Position card tooltips for cine cards
 [[patches]]
@@ -287,64 +261,6 @@ if self.ability.morseled then
 end
 '''
 match_indent = true
-
-# Card:add_to_deck()
-# Make negative cine cards change card_limit correctly when added to deck as negative
-[[patches]]
-[patches.regex]
-target = "card.lua"
-pattern = '''(?<indent>[\t ]*)(?<pre>if self.edition and self.edition.card_limit then.*)\n[\t ]*(?<cond>if self.ability.consumeable then)\n[\t ]*G\.consumeables\.config\.card_limit = G\.consumeables\.config\.card_limit \+ self\.edition\.card_limit(?<post>(\n.*?)*end)'''
-position = "at"
-line_prepend = "$indent"
-payload = '''
-$pre
-    $cond
-        if Reverie.is_cine_or_reverie(self) then
-            G.cine_quests.config.card_limit = G.cine_quests.config.card_limit + self.edition.card_limit
-        else
-            G.consumeables.config.card_limit = G.consumeables.config.card_limit + self.edition.card_limit
-        end
-    $post
-'''
-
-# Card:set_edition()
-# Make negative cine cards change card_limit correctly when negative is applied to it
-[[patches]]
-[patches.regex]
-target = "card.lua"
-pattern = '''(?<indent>[\t ]*)(?<pre>self.edition = \{\}\n.*if self.added_to_deck then.*)\n[\t ]*(?<cond>if self.ability.consumeable then)\n[\t ]*G\.consumeables\.config\.card_limit = G\.consumeables\.config\.card_limit \+ 1(?<post>(\n.*?)*end)'''
-position = "at"
-line_prepend = "$indent"
-payload = '''
-$pre
-    $cond
-        if Reverie.is_cine_or_reverie(self) then
-            G.cine_quests.config.card_limit = G.cine_quests.config.card_limit + 1
-        else
-            G.consumeables.config.card_limit = G.consumeables.config.card_limit + 1
-        end
-    $post
-'''
-
-# Card:remove_from_deck() and Card:remove()
-# Make removed negative cine cards modify card limit
-[[patches]]
-[patches.regex]
-target = "card.lua"
-pattern = '''(?<indent>[\t ]*)(?<pre>if self.edition and self.edition.card_limit then.*)\n[\t ]*(?<cond>if self.ability.consumeable then)\n[\t ]*G\.consumeables\.config\.card_limit = G\.consumeables\.config\.card_limit - self\.edition\.card_limit(?<post>(\n.*?)*end)'''
-position = "at"
-line_prepend = "$indent"
-payload = '''
-$pre
-    $cond
-        if Reverie.is_cine_or_reverie(self) then
-            G.cine_quests.config.card_limit = G.cine_quests.config.card_limit - self.edition.card_limit
-        else
-            G.consumeables.config.card_limit = G.consumeables.config.card_limit - self.edition.card_limit
-        end
-    $post
-'''
-times = 2
 
 # Card:set_edition() SMOD override
 [[patches]]
@@ -469,41 +385,28 @@ if self.config.center.set == 'Cine' then
 end
 '''
 
+# Tag:set_ability()
+# Fixes orbital tags
+# Stolen from Ortalab, clearly they ran into the same problems as I
 [[patches]]
 [patches.pattern]
-target = 'card.lua'
-pattern = "G.shared_shadow = self.sprite_facing == 'front' and self.children.center or self.children.back"
-position = 'after'
-match_indent = true
-payload = '''
-if (self.reverie_custom_shadow) and G.SETTINGS.GRAPHICS.shadows == 'On' and ((layer == 'shadow' or layer == 'both') and (self.ability.effect ~= 'Glass Card' and not self.greyed) and ((self.area and self.area ~= G.discard and self.area.config.type ~= 'deck') or not self.area or self.states.drag.is)) then
-    self.ARGS.send_to_shader[3] = self.omit_top_half or 0
-    self.ARGS.send_to_shader[4] = self.omit_bottom_half or 0
-
-    self.shadow_height = 0 * (0.08 + 0.4 * math.sqrt(self.velocity.x ^ 2)) + ((((self.highlighted and self.area == G.play) or self.states.drag.is) and 0.35) or (self.area and self.area.config.type == 'title_2') and 0.04 or 0.1)
-    G.shared_shadow:draw_shader('dvrprv_ticket', self.shadow_height, self.ARGS.send_to_shader)
+target = 'tag.lua'
+pattern = '''
+if G.GAME.orbital_choices and G.GAME.orbital_choices[G.GAME.round_resets.ante][self.ability.blind_type] then
+    self.ability.orbital_hand = G.GAME.orbital_choices[G.GAME.round_resets.ante][self.ability.blind_type]
 end
 '''
-
-# Disable edition shaders for cine cards (they mess up purchase animation)
-[[patches]]
-[patches.regex]
-target = "card.lua"
-pattern = '''(?<indent>[\t ]*)(?<cond>if self\.edition then)(?<post>\n[\t ]*for k, v in pairs\(G\.P_CENTER_POOLS\.Edition\) do\n[\t ]*if self\.edition\[v\.key:sub\(3\)\] and v\.shader then)'''
-position = "at"
-line_prepend = "$indent"
+position = 'at'
+match_indent = true
 payload = '''
-    if self.edition and not Reverie.is_cine_or_reverie(self) then
-        $post
-'''
-
-# Disable edition shaders for cine cards (they mess up purchase animation)
-[[patches]]
-[patches.regex]
-target = "card.lua"
-pattern = '''(?<indent>[\t ]*)if \(self\.edition and self\.edition\.negative\)(?<post>.*)'''
-position = "at"
-line_prepend = "$indent"
-payload = '''
-if (self.edition and self.edition.negative and not Reverie.is_cine_or_reverie(self))$post
+if G.GAME.orbital_choices and G.GAME.orbital_choices[G.GAME.round_resets.ante] and G.GAME.orbital_choices[G.GAME.round_resets.ante][self.ability.blind_type] then
+    self.ability.orbital_hand = G.GAME.orbital_choices[G.GAME.round_resets.ante][self.ability.blind_type]       
+else
+    local _poker_hands = {}
+    for k, v in pairs(G.GAME.hands) do
+        if v.visible then _poker_hands[#_poker_hands+1] = k end
+    end
+    G.GAME.orbital_choices[G.GAME.round_resets.ante] = G.GAME.orbital_choices[G.GAME.round_resets.ante] or {}
+    G.GAME.orbital_choices[G.GAME.round_resets.ante][self.ability.blind_type] = pseudorandom_element(_poker_hands, pseudoseed('orbital'))
+end
 '''

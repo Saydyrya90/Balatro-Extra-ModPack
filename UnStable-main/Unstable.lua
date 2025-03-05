@@ -747,19 +747,19 @@ function init_prev_rank_data()
 		--Initialize
 		--In case the rank table does not have prev existed
 		--Base rank and UNSTB one has them defined manually by default
-		if not rank.prev then
-			rank.prev = {}
+		if not rank.unstb_prev then
+			rank.unstb_prev= {}
 		end
 		
 		next_rank_list = rank.next
 		
 		for i=1, #next_rank_list do
 			local next_rank = SMODS.Ranks[next_rank_list[i]]
-			local prev = next_rank.prev or {}
+			local unstb_prev = next_rank.unstb_prev or {}
 			
-			if not table_has_value(prev, rank.key) then
-				table.insert(prev, rank.key)
-				next_rank.prev = prev
+			if not table_has_value(unstb_prev, rank.key) then
+				table.insert(unstb_prev, rank.key)
+				next_rank.unstb_prev= unstb_prev
 			end
 		end
 	end
@@ -804,7 +804,7 @@ function get_next_x_rank(rank, step)
 				new_rank = currentRank.next[ii]
 			else
 				local ii = (behavior.fixed and currentRank.prev[behavior.fixed]) and behavior.fixed or 1
-				new_rank = currentRank.prev and currentRank.prev[ii] or currentRank.key
+				new_rank = currentRank.unstb_prev and currentRank.prev[ii] or currentRank.key
 			end
 			
 		end
@@ -1902,7 +1902,7 @@ SMODS.Rank {
         },
     next = { 'unstb_0.5', 'unstb_1', 'unstb_r2' },
 	
-    prev = { 'unstb_???' },
+    unstb_prev= { 'unstb_???' },
 	
     shorthand = '0',
 	
@@ -1925,7 +1925,7 @@ SMODS.Rank {
 	
     next = {'unstb_1', 'unstb_r2', '2', 'unstb_e' },
 	
-	prev = { 'unstb_0' },
+	unstb_prev= { 'unstb_0' },
 	
     shorthand = '0.5',
 	
@@ -1953,7 +1953,7 @@ SMODS.Rank {
         },
     next = {'unstb_r2', '2', 'unstb_e' },
 	
-	prev = { 'unstb_0' },
+	unstb_prev= { 'unstb_0' },
 	
     shorthand = '1',
 	
@@ -1973,7 +1973,7 @@ SMODS.Rank {
     nominal = 1.41,
 	
     next = {'2', 'unstb_e', '3', 'unstb_Pi' },
-	prev = { 'unstb_1' },
+	unstb_prev= { 'unstb_1' },
 	
     shorthand = '/2',
 	
@@ -1996,7 +1996,7 @@ SMODS.Rank {
     nominal = 2.72,
 	
     next = { '3', 'unstb_Pi', '4' },
-	prev = { '2' },
+	unstb_prev= { '2' },
 	
     shorthand = 'e',
 	
@@ -2019,7 +2019,7 @@ SMODS.Rank {
     nominal = 3.14,
 	
     next = { '4', '5' },
-	prev = { '3' },
+	unstb_prev= { '3' },
 	
     shorthand = 'Pi',
 	
@@ -2041,7 +2041,7 @@ SMODS.Rank {
     pos = { x = 1 },
     nominal = 0,
     next = { 'unstb_???' },
-	prev = { 'unstb_???' },
+	unstb_prev= { 'unstb_???' },
     shorthand = '?',
 	
 	in_pool = unstb_rankCheck,
@@ -2059,7 +2059,7 @@ SMODS.Rank {
     pos = { x = 0 }, -- x position on the card atlas
     nominal = 21,  -- the number of chips this card scores
     next = { 'unstb_???' }, -- the next rank directly above it, used for Strength Tarot
-	prev = { 'unstb_???' }, -- UNSTB addition: the previous rank directly below it
+	unstb_prev= { 'unstb_???' }, -- UNSTB addition: the previous rank directly below it
     shorthand = '21', -- used for deck preview
 	
 	in_pool = unstb_rankCheck,
@@ -2077,7 +2077,7 @@ SMODS.Rank {
     pos = { x = 0 },
     nominal = 11,
     next = { 'unstb_12' },
-	prev = {'10'},
+	unstb_prev= {'10'},
     shorthand = '11',
 	
 	in_pool = unstb_rankCheck,
@@ -2094,7 +2094,7 @@ SMODS.Rank {
     pos = { x = 1 },
     nominal = 12,
     next = { 'unstb_13' },
-	prev = {'unstb_11'},
+	unstb_prev= {'unstb_11'},
     shorthand = '12',
 	
 	in_pool = unstb_rankCheck,
@@ -2111,7 +2111,7 @@ SMODS.Rank {
     pos = { x = 2 },
     nominal = 13,
     next = { 'Ace' },
-	prev = {'unstb_12'},
+	unstb_prev= {'unstb_12'},
     shorthand = '13',
 	
 	in_pool = unstb_rankCheck,
@@ -2128,7 +2128,7 @@ SMODS.Rank {
     pos = { x = 3 },
     nominal = 25,
     next = { 'unstb_???' },
-	prev = { 'unstb_???' },
+	unstb_prev= { 'unstb_???' },
     shorthand = '25',
 	
 	in_pool = unstb_rankCheck,
@@ -2145,7 +2145,7 @@ SMODS.Rank {
     pos = { x = 4 },
     nominal = 161,
     next = { 'unstb_???' },
-	prev = { 'unstb_???' },
+	unstb_prev= { 'unstb_???' },
     shorthand = '161',
 	
 	in_pool = unstb_rankCheck,
@@ -2182,9 +2182,9 @@ SMODS.Ranks['10'].next = {'Jack', 'unstb_11'}
 local vanilla_rank_list = {'2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace'}
 
 for i=#vanilla_rank_list, 2, -1 do
-	SMODS.Ranks[vanilla_rank_list[i]].prev = {vanilla_rank_list[i-1]}
+	SMODS.Ranks[vanilla_rank_list[i]].unstb_prev= {vanilla_rank_list[i-1]}
 end
-SMODS.Ranks['2'].prev = {'Ace'}
+SMODS.Ranks['2'].unstb_prev= {'Ace'}
 
 --Add a custom in_pool for high vanilla ranks, so they can be hidden from appearing in Lowkey Combo Decks HUD
 
@@ -2448,7 +2448,7 @@ function ustb_get_straight(hand)
 end
 
 SMODS.PokerHandPart:take_ownership('_straight', {
-	func = function(hand) return ustb_get_straight(hand) end
+	func = function(hand) return get_straight(hand, next(SMODS.find_card('j_four_fingers')) and 4 or 5, next(SMODS.find_card('j_shortcut')), next(SMODS.find_card('j_unstb_portal'))) end
 })
 
 --Generic consumable selection check utility function

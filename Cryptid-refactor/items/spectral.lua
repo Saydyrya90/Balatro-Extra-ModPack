@@ -1,4 +1,15 @@
 local white_hole = {
+	cry_credits = {
+		idea = {
+			"y_not_tony",
+		},
+		art = {
+			"5381",
+		},
+		code = {
+			"Math",
+		},
+	},
 	object_type = "Consumable",
 	dependencies = {
 		items = {
@@ -39,7 +50,7 @@ local white_hole = {
 					-- Due to how these poker hands are loaded they still techically exist even if Poker Hand Stuff is disabled
 					-- Because they still exist, While Hole needs to ignore levels from these if disabled (via Black Hole, Planet.lua, etc...)
 					(v ~= "cry_Bulwark" and v ~= "cry_Clusterfuck" and v ~= "cry_UltPair" and v ~= "cry_WholeDeck")
-					or cry_card_enabled("set_cry_poker_hand_stuff") == true
+					or Cryptid.enabled("set_cry_poker_hand_stuff") == true
 				then
 					if v ~= _hand or not modest then
 						removed_levels = removed_levels + this_removed_levels
@@ -107,6 +118,17 @@ local white_hole = {
 	end,
 }
 local vacuum = {
+	cry_credits = {
+		idea = {
+			"Mjiojio",
+		},
+		art = {
+			"Linus Goof Balls",
+		},
+		code = {
+			"jenwalter666",
+		},
+	},
 	object_type = "Consumable",
 	dependencies = {
 		items = {
@@ -183,6 +205,17 @@ local vacuum = {
 	end,
 }
 local hammerspace = {
+	cry_credits = {
+		idea = {
+			"jenwalter666",
+		},
+		art = {
+			"AlexZGreat",
+		},
+		code = {
+			"jenwalter666",
+		},
+	},
 	object_type = "Consumable",
 	dependencies = {
 		items = {
@@ -233,7 +266,7 @@ local hammerspace = {
 				delay = 0.15,
 				func = function()
 					CARD:flip()
-					CARD:set_ability(get_random_consumable("cry_hammerspace", nil, "c_cry_hammerspace", nil, true))
+					CARD:set_ability(Cryptid.random_consumable("cry_hammerspace", nil, "c_cry_hammerspace", nil, true))
 					play_sound("tarot2", percent)
 					CARD:juice_up(0.3, 0.3)
 					return true
@@ -243,6 +276,17 @@ local hammerspace = {
 	end,
 }
 local lock = {
+	cry_credits = {
+		idea = {
+			"Ein13",
+		},
+		art = {
+			"Jevonn",
+		},
+		code = {
+			"jenwalter666",
+		},
+	},
 	object_type = "Consumable",
 	dependencies = {
 		items = {
@@ -305,10 +349,8 @@ local lock = {
 						CARD:set_eternal(nil)
 					end
 					CARD.ability.banana = nil
-					if Cryptid.enabled["Spooky"] then
-						CARD.ability.cry_possessed = nil
-						SMODS.Stickers.cry_flickering:apply(CARD, nil)
-					end
+					CARD.ability.cry_possessed = nil
+					SMODS.Stickers.cry_flickering:apply(CARD, nil)
 					play_sound("card1", percent)
 					CARD:juice_up(0.3, 0.3)
 					return true
@@ -358,6 +400,17 @@ local lock = {
 	end,
 }
 local trade = {
+	cry_credits = {
+		idea = {
+			"5381",
+		},
+		art = {
+			"RattlingSnow353",
+		},
+		code = {
+			"Math",
+		},
+	},
 	object_type = "Consumable",
 	dependencies = {
 		items = {
@@ -481,6 +534,17 @@ local trade = {
 	end,
 }
 local analog = {
+	cry_credits = {
+		idea = {
+			"y_not_tony",
+		},
+		art = {
+			"RattlingSnow353",
+		},
+		code = {
+			"Math",
+		},
+	},
 	object_type = "Consumable",
 	dependencies = {
 		items = {
@@ -541,6 +605,19 @@ local analog = {
 	end,
 }
 local summoning = {
+	cry_credits = {
+		idea = {
+			"AlexZGreat",
+		},
+		art = {
+			--Summoning's sprite takes some parts from an unused sprite by Rattlingsnow so i'm crediting both users
+			"Kailen",
+			"RattlingSnow353",
+		},
+		code = {
+			"Jevonn",
+		},
+	},
 	object_type = "Consumable",
 	dependencies = {
 		items = {
@@ -557,8 +634,8 @@ local summoning = {
 	loc_vars = function(self, info_queue, center)
 		return {
 			vars = {
-				cry_card_enabled("set_cry_epic") == true and localize("k_cry_epic") or localize("k_rare"),
-				colours = { G.C.RARITY[cry_card_enabled("set_cry_epic") == true and "cry_epic" or 3] },
+				Cryptid.enabled("set_cry_epic") == true and localize("k_cry_epic") or localize("k_rare"),
+				colours = { G.C.RARITY[Cryptid.enabled("set_cry_epic") == true and "cry_epic" or 3] },
 			},
 		}
 	end,
@@ -566,7 +643,7 @@ local summoning = {
 		return #G.jokers.cards > 0
 			and #G.jokers.cards <= G.jokers.config.card_limit
 			--Prevent use if slots are full and all jokers are eternal (would exceed limit)
-			and #advanced_find_joker(nil, nil, nil, { "eternal" }, true, "j") < G.jokers.config.card_limit
+			and #Cryptid.advanced_find_joker(nil, nil, nil, { "eternal" }, true, "j") < G.jokers.config.card_limit
 	end,
 	use = function(self, card, area, copier)
 		local used_consumable = copier or card
@@ -577,7 +654,7 @@ local summoning = {
 			end
 		end
 		local chosen_joker = pseudorandom_element(G.jokers.cards, pseudoseed("cry_summoning"))
-		local value = cry_card_enabled("set_cry_epic") == true and "cry_epic" or 0.99
+		local value = Cryptid.enabled("set_cry_epic") == true and "cry_epic" or 0.99
 		local _first_dissolve = nil
 		G.E_MANAGER:add_event(Event({
 			trigger = "before",
@@ -608,6 +685,17 @@ local summoning = {
 	end,
 }
 local replica = {
+	cry_credits = {
+		idea = {
+			"Mystic Misclick",
+		},
+		art = {
+			"RattlingSnow353",
+		},
+		code = {
+			"Math",
+		},
+	},
 	object_type = "Consumable",
 	dependencies = {
 		items = {
@@ -713,16 +801,15 @@ local ritual = {
 	atlas = "atlasnotjokers",
 	pos = { x = 5, y = 1 },
 	can_use = function(self, card)
-		--TODO: CCD card compat
-		if #G.hand.highlighted > card.ability.max_highlighted then
-			return false
-		end
-		for _, v in ipairs(G.hand.highlighted) do
-			if v.edition then
-				return false
+		if card.area ~= G.hand then
+			return G.hand and (#G.hand.highlighted == 1) and G.hand.highlighted[1] and not G.hand.highlighted[1].edition
+		else
+			local idx = 1
+			if G.hand.highlighted[1] == card then
+				idx = 2
 			end
+			return (#G.hand.highlighted == 2) and not G.hand.highlighted[idx].edition
 		end
-		return true
 	end,
 	use = function(self, card, area, copier)
 		local used_consumable = copier or card

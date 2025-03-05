@@ -81,36 +81,6 @@ local dropshot = {
 			"Math",
 		},
 	},
-	init = function(self)
-		local gigo = Game.init_game_object
-		function Game:init_game_object()
-			local g = gigo(self)
-			g.current_round.cry_dropshot_card = { suit = "Spades" }
-			return g
-		end
-		local rcc = reset_castle_card
-		function reset_castle_card()
-			rcc()
-			if not G.GAME.current_round.cry_dropshot_card then
-				G.GAME.current_round.cry_dropshot_card = {}
-			end
-			G.GAME.current_round.cry_dropshot_card.suit = "Spades"
-			local valid_castle_cards = {}
-			for k, v in ipairs(G.playing_cards) do
-				if v.ability.effect ~= "Stone Card" then
-					valid_castle_cards[#valid_castle_cards + 1] = v
-				end
-			end
-			if valid_castle_cards[1] then
-				local castle_card =
-					pseudorandom_element(valid_castle_cards, pseudoseed("cry_dro" .. G.GAME.round_resets.ante))
-				if not G.GAME.current_round.cry_dropshot_card then
-					G.GAME.current_round.cry_dropshot_card = {}
-				end
-				G.GAME.current_round.cry_dropshot_card.suit = castle_card.base.suit
-			end
-		end
-	end,
 }
 local happyhouse = {
 	object_type = "Joker",
@@ -144,9 +114,15 @@ local happyhouse = {
 			if
 				card.ability.extra.check == 114
 				and G.GAME.round_resets.ante < 8
-				and not (
-					G.GAME.selected_back.effect.center.key == "antimatter"
-					or G.GAME.selected_back.effect.center.key == "equilibrium"
+				and not (G.GAME.selected_back.effect.center.key == "antimatter" or G.GAME.selected_back.effect.center.key == "equilibrium")
+				and (
+					not CardSleeves
+					or (
+						CardSleeves
+						and G.GAME.selected_sleeve
+						--	and G.GAME.selected_sleeve ~= "sleeve_cry_antimatter_sleeve"	TODO: Add check if Antimatter sleeve gets added
+						and G.GAME.selected_sleeve ~= "sleeve_cry_equilibrium_sleeve"
+					)
 				)
 			then --Yes, the cut off point is boss blind Ante 7. I'm evil >:3.
 				check_for_unlock({ type = "home_realtor" })
@@ -326,7 +302,8 @@ local queensgambit = {
 		if context.destroying_card and not context.blueprint then
 			if
 				G.GAME.current_round.current_hand.handname == "Royal Flush"
-				and SMODS.Ranks[context.destroying_card.base.value].key == "Queen"
+				and context.destroying_card:get_id() == 12
+				and not context.destroying_card.ability.eternal
 			then
 				card_eval_status_text(
 					card,
@@ -971,7 +948,7 @@ local compound_interest = {
 			local bonus = math.max(0, math.floor(0.01 * card.ability.extra.percent * (G.GAME.dollars or 1)))
 			local old = card.ability.extra.percent
 			card.ability.extra.percent = card.ability.extra.percent + card.ability.extra.percent_mod
-			compound_interest_scale_mod(card, card.ability.extra.percent_mod, old, card.ability.extra.percent)
+			Cryptid.compound_interest_scale_mod(card, card.ability.extra.percent_mod, old, card.ability.extra.percent)
 			if bonus > to_big(0) then
 				return bonus
 			end
@@ -1190,10 +1167,10 @@ local seal_the_deal = {
 	end,
 	set_ability = function(self, card, initial, delay_sprites)
 		local sealtable = { "blue", "red", "purple" }
-		if cry_card_enabled("cry_azure") then
+		if Cryptid.enabled("cry_azure") then
 			sealtable[#sealtable + 1] = "azure"
 		end
-		if cry_card_enabled("cry_green") then
+		if Cryptid.enabled("cry_green") then
 			sealtable[#sealtable + 1] = "green"
 		end
 		card.ability.extra = pseudorandom_element(sealtable, pseudoseed("abc"))
@@ -1316,7 +1293,7 @@ local jimball = {
 	end,
 	add_to_deck = function(self, card, from_debuff)
 		if not from_debuff then
-			create_cryptid_notif_overlay("jimball")
+			Cryptid.notification_overlay("jimball")
 		end
 	end,
 	atlas = "jimball",
@@ -1498,7 +1475,6 @@ local fspinner = {
 	order = 77,
 	blueprint_compat = true,
 	perishable_compat = false,
-	atlas = "fspinner",
 	calculate = function(self, card, context)
 		if context.before and not context.blueprint then
 			local play_more_than = (G.GAME.hands[context.scoring_name].played or 0)
@@ -1751,16 +1727,19 @@ local gardenfork = {
 		return { vars = { center.ability.extra.money } }
 	end,
 	calculate = function(self, card, context)
-		if context.cardarea == G.jokers and context.before then
+		if context.cardarea == G.jokers and context.before and context.full_hand then
+			local has_ace = false
+			local has_7 = false
 			for i = 1, #context.full_hand do
 				if context.full_hand[i]:get_id() == 14 then
-					for j = 1, #context.full_hand do
-						if context.full_hand[j]:get_id() == 7 then -- :( ekshpenshive
-							ease_dollars(card.ability.extra.money)
-							return { message = "$" .. card.ability.extra.money, colour = G.C.MONEY }
-						end
-					end
+					has_ace = true
+				elseif context.full_hand[i]:get_id() == 7 then
+					has_7 = true
 				end
+			end
+			if has_ace and has_7 then
+				ease_dollars(card.ability.extra.money)
+				return { message = "$" .. card.ability.extra.money, colour = G.C.MONEY }
 			end
 		end
 	end,
@@ -2067,7 +2046,7 @@ local redbloon = {
 			"Roguefort Cookie",
 		},
 		art = {
-			"Jevonn",
+			"Darren_The_Frog",
 		},
 		code = {
 			"Jevonn",
@@ -2565,8 +2544,8 @@ local sapling = {
 			vars = {
 				center.ability.extra.score,
 				center.ability.extra.req,
-				cry_card_enabled("set_cry_epic") == true and localize("k_cry_epic") or localize("k_rare"),
-				colours = { G.C.RARITY[cry_card_enabled("set_cry_epic") == true and "cry_epic" or 3] },
+				Cryptid.enabled("set_cry_epic") == true and localize("k_cry_epic") or localize("k_rare"),
+				colours = { G.C.RARITY[Cryptid.enabled("set_cry_epic") == true and "cry_epic" or 3] },
 			},
 		}
 	end,
@@ -2590,7 +2569,7 @@ local sapling = {
 			end
 		elseif context.selling_self and not context.blueprint and not context.retrigger_joker then
 			if card.ability.extra.score >= card.ability.extra.req then
-				local value = cry_card_enabled("set_cry_epic") == true and "cry_epic" or 0.99
+				local value = Cryptid.enabled("set_cry_epic") == true and "cry_epic" or 0.99
 				card_eval_status_text(
 					card,
 					"extra",
@@ -2703,7 +2682,7 @@ local spaceglobe = {
 			"Jevonn",
 		},
 		art = {
-			"Jevonn",
+			"Selicre",
 		},
 		code = {
 			"Jevonn",
@@ -3085,7 +3064,7 @@ local rnjoker = {
 	blueprint_compat = true,
 	set_ability = function(self, card, initial, delay_sprites)
 		card.ability.abilities = {}
-		rnjoker_randomize(card)
+		Cryptid.rnjoker_randomize(card)
 	end,
 	calculate = function(self, card, context)
 		if card.ability and card.ability.abilities then
@@ -3742,7 +3721,7 @@ local rnjoker = {
 				end
 			end
 			G.hand:change_size(-hand_size)
-			rnjoker_randomize(card)
+			Cryptid.rnjoker_randomize(card)
 			return {
 				message = localize("k_reset"),
 				colour = G.C.RED,
@@ -3814,7 +3793,7 @@ local rnjoker = {
 			}
 			localize(target)
 		else
-			localalize_with_direct(new_loc, target)
+			Cryptid.direct_localize(new_loc, target)
 		end
 	end,
 	calc_dollar_bonus = function(self, card)
@@ -3841,7 +3820,7 @@ local rnjoker = {
 		},
 	},
 	init = function(self)
-		function rnjoker_randomize(card)
+		function Cryptid.rnjoker_randomize(card)
 			card.ability.abilities = {}
 			card.ability.extra = {}
 			card.ability.extra.value = {}
@@ -4210,7 +4189,7 @@ local rnjoker = {
 			values.text_parsed = text_parsed
 			card.ability.abilities = { values }
 		end
-		function localalize_with_direct(loc_target, args, misc_cat)
+		function Cryptid.direct_localize(loc_target, args, misc_cat)
 			if loc_target then
 				for _, lines in
 					ipairs(
@@ -6862,8 +6841,13 @@ local tropical_smoothie = {
 			for i, v in pairs(G.jokers.cards) do
 				if v ~= card then
 					if not Card.no(v, "immutable", true) then
-						cry_with_deck_effects(v, function(cards)
-							cry_misprintize(cards, { min = card.ability.extra, max = card.ability.extra }, nil, true)
+						Cryptid.with_deck_effects(v, function(cards)
+							Cryptid.misprintize(
+								cards,
+								{ min = card.ability.extra, max = card.ability.extra },
+								nil,
+								true
+							)
 						end)
 						check = true
 					end
@@ -7210,8 +7194,8 @@ local oil_lamp = { --You want it? It's yours my friend
 					if i < #G.jokers.cards then
 						if not Card.no(G.jokers.cards[i + 1], "immutable", true) then
 							check = true
-							cry_with_deck_effects(G.jokers.cards[i + 1], function(cards)
-								cry_misprintize(
+							Cryptid.with_deck_effects(G.jokers.cards[i + 1], function(cards)
+								Cryptid.misprintize(
 									cards,
 									{ min = card.ability.extra.increase, max = card.ability.extra.increase },
 									nil,
@@ -7271,8 +7255,8 @@ local tax_fraud = {
 		return { vars = { center.ability.extra.money } }
 	end,
 	calc_dollar_bonus = function(self, card)
-		if #advanced_find_joker(nil, nil, nil, { "rental" }, true) ~= 0 then
-			return card.ability.extra.money * #advanced_find_joker(nil, nil, nil, { "rental" }, true)
+		if #Cryptid.advanced_find_joker(nil, nil, nil, { "rental" }, true) ~= 0 then
+			return card.ability.extra.money * #Cryptid.advanced_find_joker(nil, nil, nil, { "rental" }, true)
 		end
 	end,
 	cry_credits = {
@@ -7560,7 +7544,7 @@ local arsonist = {
 		if context.destroying_card then
 			local eval = evaluate_poker_hand(context.full_hand)
 			if next(eval["Full House"]) then
-				return true
+				return not context.destroying_card.ability.eternal
 			end
 		end
 	end,
@@ -7646,9 +7630,10 @@ local lebaron_james = {
 		},
 	},
 	name = "cry-LeBaron James",
+	pools = { ["Meme"] = true },
 	key = "lebaron_james",
 	pos = { x = 2, y = 5 },
-	config = { extra = { h_mod = 1, h_size = 0 } },
+	config = { extra = { h_mod = 1 } },
 	rarity = 3,
 	cost = 6,
 	atlas = "atlasone",
@@ -7656,34 +7641,23 @@ local lebaron_james = {
 	no_dbl = true,
 	immutable = true, -- has issues with value manip and not easy to fix
 	loc_vars = function(self, info_queue, center)
-		return { vars = { center.ability.extra.h_mod, math.min(1000, center.ability.extra.h_size) } }
+		return { vars = { center.ability.extra.h_mod } }
 	end,
 	calculate = function(self, card, context)
 		if context.cardarea == G.play and context.individual then
-			if SMODS.Ranks[context.other_card.base.value].key == "King" then
-				local h_size = math.max(0, math.min(1000 - card.ability.extra.h_size, card.ability.extra.h_mod))
-				G.hand:change_size(h_size)
-				card.ability.extra.h_size = card.ability.extra.h_size + h_size
-				if h_size > 0 then
+			if context.other_card:get_id() == 13 then
+				local h_size = math.max(0, math.min(1000 - 0, card.ability.extra.h_mod))
+				G.hand:change_size(math.floor(h_size))
+				G.GAME.round_resets.temp_handsize = (G.GAME.round_resets.temp_handsize or 0) + math.floor(h_size)
+				if math.floor(h_size) > 0 then
 					return {
-						message = localize({ type = "variable", key = "a_handsize", vars = { h_size } }),
+						message = localize({ type = "variable", key = "a_handsize", vars = { math.floor(h_size) } }),
 						colour = G.C.FILTER,
 						card = card,
 					}
 				end
 			end
 		end
-		if context.end_of_round and not context.individual and not context.repetition then
-			G.hand:change_size(-1 * math.min(1000, card.ability.extra.h_size))
-			card.ability.extra.h_size = 0
-			return {
-				card = card,
-				message = localize("k_reset"),
-			}
-		end
-	end,
-	remove_from_deck = function(self, card, from_debuff)
-		G.hand:change_size(-1 * math.min(1000, card.ability.extra.h_size))
 	end,
 	cry_credits = {
 		idea = {
@@ -7727,13 +7701,13 @@ local huntingseason = { -- If played hand contains three cards, destroy the midd
 	},
 	name = "cry-huntingseason",
 	key = "huntingseason",
-	pos = { x = 4, y = 0 },
+	pos = { x = 4, y = 5 },
 	order = 134,
 	immutable = true,
 	rarity = 2,
 	cost = 7,
 	blueprint_compat = false,
-	atlas = "placeholders",
+	atlas = "atlasone",
 	calculate = function(self, card, context)
 		if
 			(context.cardarea == G.play or context.cardarea == "unscored")
@@ -7742,10 +7716,13 @@ local huntingseason = { -- If played hand contains three cards, destroy the midd
 			and not context.blueprint
 			and not context.retrigger_joker
 		then
-			return { remove = true }
+			return { remove = not context.destroy_card.ability.eternal }
 		end
 	end,
 	cry_credits = {
+		art = {
+			"Unexian",
+		},
 		idea = {
 			"Nova",
 		},

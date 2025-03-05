@@ -1,9 +1,7 @@
 --[[
 Progress:
 
-Decks: Almost [ChatSigna]
-    Beta Deck TODO
-    Note from Jevonn: Enchanced decks are planned to have their localization done differently, don't worry about these for now
+Decks: Yes [ChatSigna]
 Jokers: Yes [HastagGuigui]
 Code Cards: Yes [ChatSigna]
 Deck Sleeves (requires Decksleeves Mod): Yes [HastagGuigui]
@@ -14,7 +12,7 @@ Planets: Yes [HastagGuigui]
 Dictonary: Yes [HastagGuigui]
 Editions: Yes [HastagGuigui]
 Vouchers: Yes [HastagGuigui]
-Enhancements (aka echo card): Yes [HastagGuigui]
+Enhancements: Yes [HastagGuigui]
 Tags: Yes [HastagGuigui]
 Other (packs, stickers, etc): Yes [HastagGuigui]
 Misc: Yes [HastagGuigui]
@@ -1634,7 +1632,6 @@ return {
 					"Les {C:attention}Rois{} comptés donnent",
 					"{C:attention}+#1#{} à la taille de la main cette manche",
 					"et redéclenchent les effets des cartes {C:attention}tenues en main{}",
-					"{C:inactive}(Actuellement {C:attention}+#2#{C:inactive} taille de main)",
 				},
 			},
 			j_cry_lightupthenight = {
@@ -1778,7 +1775,7 @@ return {
 					"{X:mult,C:white}X#1#{} Multi pour chaque membre",
 					"dans le {C:attention}serveur Discord{} de {C:attention}Cryptid{}",
 					"{C:inactive}(Actuellement {X:mult,C:white}X#2#{C:inactive} Multi)",
-					"{C:blue,s:0.7}https://discord.gg/eUf9Ur6RyB{}",
+					"{C:blue,s:0.7}https://discord.gg/cryptid{}",
 				},
 			},
 			j_cry_membershipcardtwo = {
@@ -1787,7 +1784,7 @@ return {
 					"{C:chips}+#1#{} Jeton#<s>1# pour chaque membre",
 					"dans le {C:attention}serveur Discord{} de {C:attention}Cryptid{}",
 					"{C:inactive}(Actuellement {C:chips}+#2#{C:inactive} Jeton#<s>2#)",
-					"{C:blue,s:0.7}https://discord.gg/eUf9Ur6RyB{}",
+					"{C:blue,s:0.7}https://discord.gg/cryptid{}",
 				},
 			},
 			j_cry_meteor = {

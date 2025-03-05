@@ -1677,7 +1677,6 @@ return {
 					"Played and scoring {C:attention}Kings{} give",
 					"{C:attention}+#1#{} hand size for the round",
 					"and trigger {C:attention}held in hand{} effects",
-					"{C:inactive}(Currently {C:attention}+#2#{C:inactive} hand size)",
 				},
 			},
 			j_cry_lightupthenight = {
@@ -1822,7 +1821,7 @@ return {
 					"{X:mult,C:white}X#1#{} Mult for each member",
 					"in the {C:attention}Cryptid Discord{}",
 					"{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)",
-					"{C:blue,s:0.7}https://discord.gg/eUf9Ur6RyB{}",
+					"{C:blue,s:0.7}https://discord.gg/cryptid{}",
 				},
 			},
 			j_cry_membershipcardtwo = {
@@ -1831,7 +1830,7 @@ return {
 					"{C:chips}+#1#{} Chip#<s>1# for each member",
 					"in the {C:attention}Cryptid Discord{}",
 					"{C:inactive}(Currently {C:chips}+#2#{C:inactive} Chip#<s>2#)",
-					"{C:blue,s:0.7}https://discord.gg/eUf9Ur6RyB{}",
+					"{C:blue,s:0.7}https://discord.gg/cryptid{}",
 				},
 			},
 			j_cry_meteor = {
@@ -1954,7 +1953,7 @@ return {
 				},
 			},
 			j_cry_notebook = {
-				name = "Notebook",
+				name = "The Motebook",
 				text = {
 					"{C:green} #1# in #2#{} chance to gain {C:dark_edition}+#6#{} Joker",
 					"slot#<s>6# per {C:attention}reroll{} in the shop",
@@ -2726,6 +2725,29 @@ return {
 			},
 		},
 		Sleeve = {
+			sleeve_cry_beige_sleeve = {
+				name = "Beige Sleeve",
+				text = {
+					"{C:attention}Common{} Jokers have",
+					"{C:attention}quadrupled{} values",
+				},
+			},
+			sleeve_cry_beige_sleeve_alt = {
+				name = "Beige Sleeve",
+				text = {
+					"{C:attention}Uncommon{} Jokers have",
+					"{C:attention}quadrupled{} values",
+				},
+			},
+			sleeve_cry_beta_sleeve = {
+				name = "Nostalgic Sleeve",
+				text = {
+					"{C:attention}Joker{} and {C:attention}Consumable{}",
+					"slots are {C:attention}combined",
+					"{C:attention}Nostalgic{} Blinds replace",
+					"their updated Blind",
+				},
+			},
 			sleeve_cry_bountiful_sleeve = {
 				name = "Bountiful Sleeve",
 				text = {
@@ -2775,6 +2797,15 @@ return {
 					"{C:attention,T:v_overstock_plus}+2 Shop Slots",
 				},
 			},
+			sleeve_cry_glowing_sleeve = {
+				name = "Glowing Sleeve",
+				text = {
+					"Multiply the values of",
+					"all Jokers by {X:dark_edition,C:white} X1.25 {}",
+					"when Boss Blind is defeated",
+					"{X:cry_jolly,C:white,s:0.8} Jolly#1#Open#1#Winner#1#-#1#wawa#1#person", --peak loc_vars right here
+				},
+			},
 			sleeve_cry_infinite_sleeve = {
 				name = "Unlimited Sleeve",
 				text = {
@@ -2805,6 +2836,15 @@ return {
 					"{C:cry_candy}Candy{} or {X:cry_cursed,C:white}Cursed{} Joker",
 				},
 			},
+			sleeve_cry_very_fair_sleeve = {
+				name = "Very Fair Sleeve",
+				text = {
+					"{C:blue}-2{} hands, {C:red}-2{} discards",
+					"every round",
+					"{C:attention}Vouchers{} no longer",
+					"appear in the shop",
+				},
+			},
 			sleeve_cry_wormhole_sleeve = {
 				name = "Wormhole Sleeve",
 				text = {
@@ -2820,6 +2860,15 @@ return {
 					"Start with an {C:legendary}Legendary{C:legendary} Joker",
 					"{C:green}1 in 5{} chance to create another",
 					"when Boss Blind is defeated {C:inactive}(must have room){}",
+				},
+			},
+			sleeve_cry_antimatter_sleeve = {
+				name = "Antimatter Sleeve",
+				text = {
+					"applies the {C:attention}effects{}",
+					"and {C:attention}special effects{}",
+					"of all deck sleeves",
+					"{C:red}WIP",
 				},
 			},
 		},

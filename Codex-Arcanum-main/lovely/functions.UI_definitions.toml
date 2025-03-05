@@ -1,8 +1,0 @@
-manifest = { version = "1.0.0", dump_lua = true, priority = -10 }
-
-patches = [
-    ## Replace locked back for Alchemicals in Achievement view
-    { regex = { target = "functions/UI_definitions.lua", pattern = "(?<orig>card_center.set == 'Voucher' and G.v_locked or G.j_locked)", position = "at", times = 1, payload = "card_center.set == 'Alchemical' and G.c_alchemy_locked or ($orig)" } },
-    ## Replace 'Joker' for 'Alchemical' for Alchemicals in Achievement view
-    { regex = { target = "functions/UI_definitions.lua", pattern = "(?<orig>card_center.set == 'Voucher' and localize\\('k_voucher'\\) or localize\\('k_joker'\\))", position = "at", times = 1, payload = "card_center.set == 'Alchemical' and localize('k_alchemical') or ($orig)" } }
-]

@@ -1,0 +1,23 @@
+{
+	"id": "ReduxArcanum",
+	"name": "Redux Arcanum",
+	"display_name": "Arcanum",
+	"author": ["itayfeder", "Lyman", "Jumbo"],
+	"description": "Adds a new set of cards: Alchemy!",
+	"prefix": "ReduxArcanum",
+	"main_file": "ReduxArcanum.lua",
+	"badge_colour": "C09D75",
+	"badge_text_colour": "FFFFFF",
+	"version": "2.0.0~PreRelease3",
+	"dependencies": [
+		"Steamodded (>=1.0.0~ALPHA-1306a)"
+	],
+	"conflicts": [
+		"CardSleeves (<<1.6.0)",
+		"CodexArcanum",
+		"Lovely (==0.7.0)"
+	],
+	"provides": [
+		"CodexArcanum"
+	]
+}

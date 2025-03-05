@@ -1,0 +1,319 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 1 # Go after steammodded
+
+## Patch to add Alchemical tab to stats screen
+# G.UIDEF.usage_tabs()
+[[patches]]
+[patches.pattern]
+target = 'functions/UI_definitions.lua'
+pattern = '''{
+          label = localize('b_stat_spectrals'),
+          tab_definition_function = create_UIBox_usage,
+          tab_definition_function_args = {'consumeable_usage', 'Spectral'},
+        },'''
+position = 'after'
+match_indent = true
+times = 1
+payload = '''
+{
+  label = localize('b_stat_alchemicals'),
+  tab_definition_function = create_UIBox_usage,
+  tab_definition_function_args = {'consumeable_usage', 'Alchemical'},
+},
+'''
+
+
+
+## Patch to prevent oiled cards from flipping face down
+## Patch stolen from Bunco
+# Card:flip()
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = "if self.facing == 'front' then"
+position = 'after'
+match_indent = true
+payload = '''
+if (self.area == G.hand or self.area == G.jokers or self.area == G.consumeables) and self.ability.ra_oil then
+    return
+end
+'''
+
+
+
+
+## Patch for classic Philo stone
+# eval_card()
+[[patches]]
+[patches.pattern]
+target = 'functions/common_events.lua'
+pattern = '''if context.repetition_only then'''
+position = 'after'
+match_indent = true
+times = 1
+payload = '''
+if G.deck.config.ra_philo_stone_classic and G.deck.config.ra_philo_stone_classic > 0 then 
+    ret.ra_philo_stone = {
+      message = localize('k_again_ex'),
+      repetitions = G.deck.config.ra_philo_stone_classic,
+      card = card
+    }
+end
+'''
+
+
+
+
+
+
+## Patches to add philo stone to score calculation
+
+## Part 1 - This adds the start of the loop
+# G.FUNCS.evaluate_play()
+[[patches]]
+[patches.pattern]
+target = 'functions/state_events.lua'
+pattern = '''if modded then update_hand_text({sound = 'chips2', modded = modded}, {chips = hand_chips, mult = mult}) end'''
+position = 'after'
+match_indent = true
+times = 1
+payload = '''
+for ra_philo_stone_repeats=0, ((G.deck.config.ra_philo_stone or 0)) do
+'''
+
+## Part 2 - This adds the end of the loop, and handling the between-loops
+# G.FUNCS.evaluate_play()
+[[patches]]
+[patches.pattern]
+target = 'functions/state_events.lua'
+pattern = '''local nu_chip, nu_mult = G.GAME.selected_back:trigger_effect{context = 'final_scoring_step', chips = hand_chips, mult = mult}'''
+position = 'before'
+match_indent = true
+# line_prepend = ''
+times = 1
+payload = '''
+-- Do a "fake out" unhighlight
+if ra_philo_stone_repeats < (G.deck.config.ra_philo_stone or 0) then
+  for i=1, #scoring_hand do
+    highlight_card(scoring_hand[i],(i-0.999)/(#scoring_hand-0.998),'down')
+  end
+  G.E_MANAGER:add_event(Event({
+    func = (function()
+      play_sound('gong', 0.94, 0.3)
+        play_sound('gong', 0.94*1.5, 0.2)
+        play_sound('tarot1', 1.5)
+        attention_text({
+          text = localize('k_again_ex'),
+          scale = 1.0, 
+          hold = 1.4,
+          major = G.play,
+          backdrop_colour = G.C.SECONDARY_SET.Spectral,
+          align = 'cm',
+          offset = {x = 0, y = -3.2},
+          silent = true
+          })
+      return true
+    end)
+  }))
+  delay(0.7)
+  for i=1, #scoring_hand do
+      --Highlight all the cards used in scoring and play a sound indicating highlight
+      highlight_card(scoring_hand[i],(i-0.999)/5,'up')
+  end
+end
+end
+G.deck.config.ra_philo_stone = 0
+'''
+
+
+
+
+
+## Card Unlocks
+
+## Patch for Alchemical Tycoon unlock
+# G.FUNCS.buy_from_shop()
+[[patches]]
+[patches.pattern]
+target = 'functions/button_callbacks.lua'
+pattern = '''elseif c1.config.center.set == 'Tarot' then'''
+position = 'before'
+match_indent = true
+times = 1
+payload = '''
+elseif c1.config.center.set == 'Alchemical' then
+  inc_career_stat('c_ReduxArcanum_alchemicals_bought', 1)
+  check_for_unlock({type = 'career_stat', statname = 'c_ReduxArcanum_alchemicals_bought'})
+'''
+
+## Patch for Catalyst unlock
+# CardArea:emplace()
+[[patches]]
+[patches.pattern]
+target = 'cardarea.lua'
+pattern = '''if self == G.deck then check_for_unlock({type = 'modify_deck', deck = self}) end'''
+position = 'after'
+match_indent = true
+times = 2
+payload = '''
+if self == G.consumeables then check_for_unlock({ type = 'ReduxArcanum_modify_cards', location = location }) end
+'''
+
+
+
+
+## Debuffed consumables
+
+## Patch to prevent debuffed consumables from being used
+# Card:can_use_consumeable()
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''function Card:can_use_consumeable(any_state, skip_check)'''
+position = 'after'
+match_indent = true
+times = 1
+payload = '''
+    if self.debuff then return false end
+'''
+
+
+
+
+
+## Vanilla functionality causes booster tags created mid-blind by salt to be very funky
+## This mod tries to fix this by letting booster tags trigger immediately, which requires some patching below
+
+## Patch to prevent cards being returned during a blind
+# G.FUNCS.end_consumeable()
+[[patches]]
+[patches.pattern]
+target = 'functions/button_callbacks.lua'
+pattern = '''G.FUNCS.draw_from_hand_to_deck()'''
+position = 'at'
+match_indent = true
+times = 1
+payload = '''
+if G.GAME.PACK_INTERRUPT ~= G.STATES.SELECTING_HAND then G.FUNCS.draw_from_hand_to_deck() end
+'''
+
+## Following two patches will cause the hand cardarea to be lifted when a standard or buffoon pack is opened mid-blind (otherwise they will cover the buttons to add cards to the deck)
+# CardArea:align_cards()
+[[patches]]
+[patches.pattern]
+target = "cardarea.lua"
+pattern = "if self.config.type == 'hand' and (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.PLANET_PACK or G.STATE == G.STATES.SMODS_BOOSTER_OPENED) then"
+position = "at"
+payload = "if self.config.type == 'hand' and (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.PLANET_PACK or G.STATE == G.STATES.SMODS_BOOSTER_OPENED or G.STATE == G.STATES.STANDARD_PACK or G.STATE == G.STATES.BUFFOON_PACK) then"
+match_indent = true
+# CardArea:align_cards()
+[[patches]]
+[patches.pattern]
+target = "cardarea.lua"
+pattern = "if self.config.type == 'hand' and not (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.PLANET_PACK or G.STATE == G.STATES.SMODS_BOOSTER_OPENED) then"
+position = "at"
+payload = "if self.config.type == 'hand' and not (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.PLANET_PACK or G.STATE == G.STATES.SMODS_BOOSTER_OPENED or G.STATE == G.STATES.STANDARD_PACK or G.STATE == G.STATES.BUFFOON_PACK) then"
+match_indent = true
+
+
+
+
+
+
+## Patches for polychrome alchemical UI
+## Functionality is dealt in ReduxArcanum.lua
+
+# G.UIDEF.card_h_popup()
+[[patches]]
+[patches.pattern]
+target = 'functions/UI_definitions.lua'
+pattern = '''badges[#badges + 1] = create_badge(localize(v, "labels"), get_badge_colour(v))'''
+position = 'before'
+match_indent = true
+times = 1
+payload = '''
+if v == 'polychrome_alchemical' then v = 'polychrome' end
+'''
+
+# generate_card_ui()
+[[patches]]
+[patches.pattern]
+target = 'functions/common_events.lua'
+pattern = '''v = (v == 'holographic' and 'holo' or v)'''
+position = 'after'
+match_indent = true
+times = 1
+payload = '''
+if v == 'polychrome_alchemical' then info_queue[#info_queue+1] = {key = 'e_polychrome_alchemical', set = 'Edition', config = {extra = 1.5}} end
+'''
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "badges[#badges + 1] = 'negative_consumable'"
+position = "after"
+payload = """
+elseif self.edition.type == 'polychrome' and (self.ability.set == 'Alchemical') then
+    badges[#badges + 1] = 'polychrome_alchemical'"""
+match_indent = true
+
+
+
+## Patches to cause selected alchemical cards in boosters to be added to the Consumable area instead of used
+## Blatantly copied from Reverie's patches
+
+# G.FUNCS.use_card()
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = '''elseif card.ability.set == 'Enhanced' or card.ability.set == 'Default'*'''
+position = "before"
+payload = '''
+::arcanum_use_card_consumable_skip::'''
+match_indent = true
+
+# G.FUNCS.use_card()
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = '''if card:check_use() then '''
+position = "before"
+payload = '''
+local is_alchemy_pack_card = (card.ability.set == "Alchemical" or card.ability.name == "c_ReduxArcanum_philosopher_stone") and card.area and card.area == G.pack_cards'''
+match_indent = true
+
+# G.FUNCS.use_card()
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = '''*G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.PLANET_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.SMODS_BOOSTER_OPENED*'''
+position = "before"
+payload = '''
+if is_alchemy_pack_card then
+    if card.ability.set == "Alchemical" then
+      inc_career_stat('c_ReduxArcanum_alchemy_pack_used', 1)
+      check_for_unlock({type = 'career_stat', statname = 'c_ReduxArcanum_alchemy_pack_used'})
+    end
+    G.consumeables:emplace(card)
+    card:add_to_deck()
+    play_sound('card1', 0.8, 0.6)
+    play_sound('generic1')
+    dont_dissolve = true
+    delay_fac = 0.2
+
+    goto arcanum_use_card_consumable_skip
+end'''
+match_indent = true
+
+# G.FUNCS.use_card()
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = '''if G.booster_pack and not G.booster_pack.alignment.offset.py and (card.ability.consumeable or not (G.GAME.pack_choices and G.GAME.pack_choices > 1)) then'''
+position = "at"
+payload = '''
+if G.booster_pack and not G.booster_pack.alignment.offset.py and ((card.ability.consumeable and not is_alchemy_pack_card) or not (G.GAME.pack_choices and G.GAME.pack_choices > 1)) then
+'''
+match_indent = true

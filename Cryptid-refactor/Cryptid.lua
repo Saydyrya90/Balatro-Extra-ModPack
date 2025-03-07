@@ -1,4 +1,3 @@
---- STEAMODDED HEADER
 --- MOD_NAME: Cryptid
 --- MOD_ID: Cryptid
 --- PREFIX: cry
@@ -68,8 +67,13 @@ local function process_items(f, mod)
 						key = false,
 						atlas = false,
 					}
+					item.mod_path = mod.path
 					if item.key then
-						item.key = mod.prefix .. "_" .. item.key
+						if item.object_type and SMODS[item.object_type].class_prefix then
+							item.key = SMODS[item.object_type].class_prefix .. "_" .. mod.prefix .. "_" .. item.key
+						else
+							item.key = mod.prefix .. "_" .. item.key
+						end
 					end
 					if item.atlas then
 						item.atlas = mod.prefix .. "_" .. item.atlas
@@ -150,7 +154,7 @@ for _, mod in pairs(SMODS.Mods) do
 				end
 				process_items(f, mod)
 			end
-			if file == "Cryptid" then
+			if file == "Cryptid" and path .. "Cryptid/" ~= Cryptid.path then
 				local files = NFS.getDirectoryItems(path .. "Cryptid")
 				for _, file in ipairs(files) do
 					print("[CRYPTID] Loading file " .. file .. " from " .. mod.id)

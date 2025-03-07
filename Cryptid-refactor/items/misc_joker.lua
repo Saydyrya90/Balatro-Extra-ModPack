@@ -76,6 +76,7 @@ local dropshot = {
 		},
 		art = {
 			"Mystic Misclick",
+			"George the Rat",
 		},
 		code = {
 			"Math",
@@ -303,7 +304,6 @@ local queensgambit = {
 			if
 				G.GAME.current_round.current_hand.handname == "Royal Flush"
 				and context.destroying_card:get_id() == 12
-				and not context.destroying_card.ability.eternal
 			then
 				card_eval_status_text(
 					card,
@@ -324,7 +324,7 @@ local queensgambit = {
 						return true
 					end,
 				}))
-				return nil, true
+				return { remove = not context.destroying_card.ability.eternal }
 			end
 		end
 	end,
@@ -690,6 +690,7 @@ local pickle = {
 		},
 		art = {
 			"Mystic Misclick",
+			"unexian",
 		},
 		code = {
 			"Math",
@@ -918,6 +919,7 @@ local chili_pepper = {
 		},
 		art = {
 			"Mystic Misclick",
+			"George the Rat",
 		},
 		code = {
 			"Math",
@@ -1450,6 +1452,7 @@ local sus = {
 		},
 		art = {
 			"Jevonn",
+			"unexian",
 		},
 		code = {
 			"Math",
@@ -1502,6 +1505,7 @@ local fspinner = {
 		},
 		art = {
 			"Jevonn",
+			"George the Rat",
 		},
 		code = {
 			"Jevonn",
@@ -1908,6 +1912,10 @@ local hunger = {
 	name = "cry-hunger",
 	key = "hunger",
 	config = { extra = { money = 3 } },
+	extra_gamesets = { "exp_modest" },
+	gameset_config = {
+		exp_modest = { extra = { money = 2 } },
+	},
 	pos = { x = 3, y = 0 },
 	rarity = 2,
 	cost = 6,
@@ -2532,7 +2540,7 @@ local sapling = {
 	},
 	name = "cry-sapling",
 	key = "sapling",
-	pos = { x = 3, y = 2 },
+	pos = { x = 3, y = 2 }, --todo animations
 	config = { extra = { score = 0, req = 18, check = nil } },
 	rarity = 2,
 	cost = 6,
@@ -2546,6 +2554,7 @@ local sapling = {
 				center.ability.extra.req,
 				Cryptid.enabled("set_cry_epic") == true and localize("k_cry_epic") or localize("k_rare"),
 				colours = { G.C.RARITY[Cryptid.enabled("set_cry_epic") == true and "cry_epic" or 3] },
+				Cryptid.enabled("set_cry_epic") == true and localize("cry_sapling_an") or localize("cry_sapling_a"),
 			},
 		}
 	end,
@@ -2601,6 +2610,7 @@ local sapling = {
 		},
 		art = {
 			"Jevonn",
+			"George the Rat",
 		},
 		code = {
 			"Jevonn",
@@ -5667,6 +5677,7 @@ local coin = {
 		},
 		art = {
 			"Timetoexplode",
+			"George the Rat",
 		},
 		code = {
 			"Jevonn",
@@ -5898,6 +5909,7 @@ local oldblueprint = {
 		},
 		art = {
 			"Linus Goof Balls",
+			"unexian",
 		},
 		code = {
 			"Math",
@@ -6585,6 +6597,7 @@ local astral_bottle = {
 		},
 	},
 	name = "cry-astral_bottle",
+	extra_gamesets = { "exp_modest", "exp_mainline", "exp_madness" },
 	key = "astral_bottle",
 	eternal_compat = false,
 	pos = { x = 7, y = 0 },
@@ -6597,21 +6610,47 @@ local astral_bottle = {
 		if not center.edition or (center.edition and not center.edition.cry_astral) then
 			info_queue[#info_queue + 1] = G.P_CENTERS.e_cry_astral
 		end
+		return {
+			key = Cryptid.gameset_loc(
+				self,
+				{ exp_modest = "mainline", exp_mainline = "mainline", exp_madness = "madness" }
+			),
+		}
 	end,
 	calculate = function(self, card, context)
 		if context.selling_self and not context.retrigger_joker and not context.blueprint then
+			local g = Cryptid.gameset(card)
+			local effect = { { astral = true, perishable = true } }
+			if g == "exp_modest" or g == "exp_mainline" then
+				effect = { { astral = true }, { perishable = true } }
+			end
+			if g == "exp_madness" then
+				effect = { { astral = true } }
+			end
 			local jokers = {}
 			for i = 1, #G.jokers.cards do
 				if G.jokers.cards[i] ~= card and not G.jokers.cards[i].debuff and not G.jokers.cards[i].edition then
 					jokers[#jokers + 1] = G.jokers.cards[i]
 				end
 			end
-			if #jokers > 0 then
+			if #jokers >= #effect then
 				card_eval_status_text(card, "extra", nil, nil, nil, { message = localize("k_duplicated_ex") })
-				local chosen_joker = pseudorandom_element(jokers, pseudoseed("trans"))
-				chosen_joker:set_edition({ cry_astral = true })
-				chosen_joker.ability.perishable = true -- Done manually to bypass perish compat
-				chosen_joker.ability.perish_tally = G.GAME.perishable_rounds
+				for i = 1, #effect do
+					local chosen_joker = pseudorandom_element(jokers, pseudoseed("astral_bottle"))
+					if effect[i].astral then
+						chosen_joker:set_edition({ cry_astral = true })
+					end
+					if effect[i].perishable then
+						chosen_joker.ability.perishable = true -- Done manually to bypass perish compat
+						chosen_joker.ability.perish_tally = G.GAME.perishable_rounds
+					end
+					for i = 1, #jokers do
+						if jokers[i] == chosen_joker then
+							table.remove(jokers, i)
+							break
+						end
+					end
+				end
 				return nil, true
 			else
 				card_eval_status_text(card, "extra", nil, nil, nil, { message = localize("k_no_other_jokers") })
@@ -7092,6 +7131,7 @@ local necromancer = {
 			and context.card.sell_cost > 0
 			and context.card.config.center.set == "Joker"
 			and G.GAME.jokers_sold
+			and #G.GAME.jokers_sold > 0
 		then
 			local card = create_card(
 				"Joker",
@@ -7553,7 +7593,7 @@ local arsonist = {
 			"AlexZGreat",
 		},
 		art = {
-			"Darren_the_frog",
+			"Darren_The_Frog",
 		},
 		code = {
 			"AlexZGreat",

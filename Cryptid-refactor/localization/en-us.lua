@@ -836,6 +836,16 @@ return {
 					"{C:inactive,s:0.8}Does not copy Nostalgic Googol Play Cards{}",
 				},
 			},
+			j_cry_altgoogol_balanced = {
+				name = "Nostalgic Googol Play Card",
+				text = {
+					"Sell this card to create",
+					"{C:attention}#1#{} cop#<ies,y>1# of the leftmost {C:attention}Joker{}",
+					"{C:inactive,s:0.8}Does not copy Nostalgic Googol Play Cards{}",
+					"{C:inactive}(Must have room){}",
+					--todo: add "removes negative from copy" like Ankh/Invis Joker
+				},
+			},
 			j_cry_antennastoheaven = {
 				name = "...Like Antennas to Heaven",
 				text = {
@@ -864,6 +874,21 @@ return {
 					"When sold, apply {C:dark_edition}Astral{}",
 					"and {C:attention}Perishable{} to",
 					"a random {C:attention}Joker{}",
+				},
+			},
+			j_cry_astral_bottle_mainline = {
+				name = "Astral in a Bottle",
+				text = {
+					"When sold, apply {C:dark_edition}Astral{}",
+					"and {C:attention}Perishable{} to",
+					"different, random {C:attention}Jokers{}",
+				},
+			},
+			j_cry_astral_bottle_madness = {
+				name = "Astral in a Bottle",
+				text = {
+					"When sold, apply {C:dark_edition}Astral{}",
+					"to a random {C:attention}Joker{}",
 				},
 			},
 			j_cry_big_cube = {
@@ -1033,6 +1058,20 @@ return {
 					"in one hand",
 				},
 			},
+			j_cry_canvas_balanced = {
+				name = "Canvas",
+				text = {
+					"{C:attention}Retrigger{} all {C:attention}Jokers{} to the left",
+					"once for {C:attention}every{} non-{C:blue}Common{C:attention} Joker{}",
+					"to the right of this Joker",
+					"{C:inactive}(Up to 2 retriggers)",
+				},
+				unlock = {
+					"Retrigger a {C:attention}Joker",
+					"{C:attention}114{} times",
+					"in one hand",
+				},
+			},
 			j_cry_caramel = {
 				name = "Caramel",
 				text = {
@@ -1121,6 +1160,18 @@ return {
 					"{C:cry_code}Code Card",
 				},
 			},
+			j_cry_CodeJoker_modest = {
+				name = "Code Joker",
+				text = {
+					"Create a {C:dark_edition}Negative{}",
+					"{C:cry_code}Code Card{} when",
+					"{C:attention}Boss Blind{} is selected",
+				},
+				unlock = {
+					"Discover {C:attention}every",
+					"{C:cry_code}Code Card",
+				},
+			},
 			j_cry_coin = {
 				name = "Crypto Coin",
 				text = {
@@ -1147,7 +1198,15 @@ return {
 					"{C:inactive}(Must have room)",
 				},
 			},
-			j_cry_copypaste2 = {
+			j_cry_copypaste_modest = {
+				name = "Copy/Paste",
+				text = {
+					"Duplicate pulled",
+					"{C:cry_code}Code{} cards",
+					"{C:inactive}(Must have room)",
+				},
+			},
+			j_cry_copypaste_madness = {
 				name = "Copy/Paste",
 				text = {
 					"{C:green}#1# in #2#{} chance to duplicate",
@@ -1257,6 +1316,14 @@ return {
 					"scale {C:attention}quadratically",
 					"{C:inactive,s:0.8}(ex. +1, +3, +6, +10)",
 					"{C:inactive,s:0.8}(grows by +1, +2, +3)",
+				},
+			},
+			["j_cry_Double Scale_modest"] = {
+				name = "Double Scale",
+				text = {
+					"Scaling {C:attention}Jokers{}",
+					"scale {C:attention}twice{} as fast",
+					'{C:inactive,s:0.8}"It\'s called double scale, not quadratic scale!"',
 				},
 			},
 			j_cry_dropshot = {
@@ -1833,6 +1900,15 @@ return {
 					"{C:blue,s:0.7}https://discord.gg/cryptid{}",
 				},
 			},
+			j_cry_membershipcardtwo_balanced = {
+				name = "Old Membership Card", --Could probably have a diff Name imo
+				text = {
+					"{C:chips}+#1#{} Chip#<s>1# for every {C:attention}8{} members",
+					"in the {C:attention}Cryptid Discord{}",
+					"{C:inactive}(Currently {C:chips}+#2#{C:inactive} Chip#<s>2#)",
+					"{C:blue,s:0.7}https://discord.gg/cryptid{}",
+				},
+			},
 			j_cry_meteor = {
 				name = "Meteor Shower",
 				text = {
@@ -2199,7 +2275,7 @@ return {
 				text = {
 					"After scoring {C:attention}#2#{} {C:inactive}[#1#]{} Enhanced",
 					"cards, sell this card to",
-					"create a(n) {V:1}#3#{} {C:attention}Joker{}",
+					"create #4# {V:1}#3#{} {C:attention}Joker{}",
 				},
 			},
 			j_cry_savvy = {
@@ -2265,6 +2341,20 @@ return {
 				name = "One for All", --changed the name from latin because this isn't exotic
 				text = {
 					"{C:attention}+#1#{} Joker slot#<s>1#",
+					"{C:attention}+#1#{} Booster Pack slot#<s>1#",
+					"{C:attention}+#1#{} hand size",
+					"{C:attention}+#1#{} consumable slot#<s>1#",
+					"{C:attention}+#1#{} card#<s>1# in shop",
+					"{C:attention}+#1#{} voucher slot#<s>1#",
+				},
+				unlock = {
+					"Win a run with",
+					"only {C:attention}High Card",
+				},
+			},
+			j_cry_soccer_balanced = {
+				name = "One for All", --changed the name from latin because this isn't exotic
+				text = {
 					"{C:attention}+#1#{} Booster Pack slot#<s>1#",
 					"{C:attention}+#1#{} hand size",
 					"{C:attention}+#1#{} consumable slot#<s>1#",
@@ -2361,6 +2451,14 @@ return {
 				name = "Supercell",
 				text = {
 					"{C:chips}+#1#{} Chip#<s>1#, {C:mult}+#1#{} Mult,",
+					"{X:chips,C:white}X#2#{} Chips, {X:mult,C:white}X#2#{} Mult",
+					"Earn {C:money}$#3#{} at",
+					"end of round",
+				},
+			},
+			j_cry_supercell_balanced = {
+				name = "Supercell",
+				text = {
 					"{X:chips,C:white}X#2#{} Chips, {X:mult,C:white}X#2#{} Mult",
 					"Earn {C:money}$#3#{} at",
 					"end of round",
@@ -4218,7 +4316,7 @@ return {
 			["cry_Bulwark"] = "Bulwark",
 			["cry_Clusterfuck"] = Cryptid_config.family_mode and "Cluster" or "Clusterfuck",
 			["cry_UltPair"] = "Ultimate Pair",
-			["cry_WholeDeck"] = Cryptid_config.family_mode and "Fifty Two" or "The Entire Fucking Deck",
+			["cry_WholeDeck"] = Cryptid_config.family_mode and "The Entire Deck" or "The Entire Fucking Deck",
 		},
 		poker_hand_descriptions = {
 			["cry_Bulwark"] = {
@@ -4260,6 +4358,7 @@ return {
 			ach_cry_ult_full_skip = "Ultimate Full Skip",
 			ach_cry_used_crash = "We Told You Not To",
 			ach_cry_what_have_you_done = "WHAT HAVE YOU DONE?!",
+			ach_cry_pin = "Pin of Shame",
 		},
 		achievement_descriptions = {
 			ach_cry_ace_in_crash = 'check_for_unlock({type = "ace_in_crash"})',
@@ -4282,6 +4381,7 @@ return {
 			ach_cry_ult_full_skip = "Win in 1 round",
 			ach_cry_used_crash = "Use ://CRASH",
 			ach_cry_what_have_you_done = "Delete or Sacrifice an Exotic Joker",
+			ach_cry_pin = "Lose a run to The Pin",
 		},
 		challenge_names = {
 			c_cry_ballin = "Ballin'",
@@ -4439,12 +4539,15 @@ return {
 			cry_gameset_mainline = "Mainline",
 			cry_gameset_madness = "Madness",
 			cry_gameset_custom = "Modified",
-			cry_gameset_experimental = "Experimental",
-			cry_gameset_experimental_modest = "Experimental (Modest)",
-			cry_gameset_experimental_mainline = "Experimental (Mainline)",
-			cry_gameset_experimental_madness = "Experimental (Madness)",
+			cry_gameset_exp = "Experimental",
+			cry_gameset_exp_modest = "Experimental (Modest)",
+			cry_gameset_exp_mainline = "Experimental (Mainline)",
+			cry_gameset_exp_madness = "Experimental (Madness)",
 
 			cry_view_set_contents = "View Items in Set",
+
+			cry_sapling_an = "an",
+			cry_sapling_a = "a",
 
 			b_reset_gameset_modest = "Reset Gameset Config (Modest)",
 			b_reset_gameset_mainline = "Reset Gameset Config (Mainline)",
@@ -4652,17 +4755,33 @@ return {
 			{ "FREE EXOTICS", "GET THEM BEFORE ITS", "TOO LATE (sold out)" },
 			{ "PROVE THEM WRONG", "BUY BUYING AN INVISIBLE", "VOUCHER FOR $10" },
 			{ "", "no vouchers?", "" },
-			{ "see this ad?", "if you are, then it's working", "and you could have it for your own" },
+			{
+				"see this ad?",
+				"if you are, then it's working",
+				"and you could have it for your own",
+			},
 			{ "YOU'RE MISSING OUT ON", "AT LEAST 5 VOUCHERS RIGHT NOW", "tonktonktonktonktonk" },
 			{ "10", "20 NO VOUCHER XD", "30 GOTO 10" },
 			{ "VOUCHERS", "ARE A PREMIUM FEATURE", "$199.99 JOLLARS TO UNLOCK" },
 			{ "TRUE VOUCHERLESS!?!?", "ASCENDANT STAKE ONLY", "VERY FAIR DECK" },
 			{ "ENJOYING YOUR", "VOUCHER EXPERIENCE? GIVE US A", "FIVE STAR RATING ON JESTELP" },
-			{ "FREE VOUCHERS", "HOT VOUCHERS NEAR YOU", "GET VOUCHERS QUICK WITH THIS ONE TRICK" },
+			{
+				"FREE VOUCHERS",
+				"HOT VOUCHERS NEAR YOU",
+				"GET VOUCHERS QUICK WITH THIS ONE TRICK",
+			},
 			{ "INTRODUCING", "THE VERY FIRST TIER 0 VOUCHER!", "(coming to Cryptid 1.0 soon)" },
-			{ "A VOUCHER!", "IT'S JUST IMAGINARY", "WE IMAGINED YOU WOULD WANT IT, THAT IS" },
+			{
+				"A VOUCHER!",
+				"IT'S JUST IMAGINARY",
+				"WE IMAGINED YOU WOULD WANT IT, THAT IS",
+			},
 			{ "TURN OFF ADBLOCKER", "WITHOUT ADS, WE WOULDN'T", "BE ABLE TO SELL YOU VOUCHERS" },
-			{ "IF YOU HAVE", "A PROBLEM WITH THIS", "EMAIL IT TO US AT NORESPONSE@JMAIL.COM" },
+			{
+				"IF YOU HAVE",
+				"A PROBLEM WITH THIS",
+				"EMAIL IT TO US AT NORESPONSE@JMAIL.COM",
+			},
 			{ "NOT ENOUGH MONEY", "TO BUY THIS VOUCHER", "SO WHY WOULD WE PUT IT HERE?" },
 			{ "WANT A VOUCHER?", "WELL SHUT UP", "YOU CAN'T HAVE ANY LOL" },
 			{ "^$%& NO", "VOUCHERS ^%&% %&$^% FOR", "$%&%%$ %&$&*%$^ YOU" },

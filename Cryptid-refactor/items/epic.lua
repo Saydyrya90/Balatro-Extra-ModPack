@@ -17,7 +17,6 @@ One For all
 
 -- Supercell
 -- +15 Chips, +15 Mult, X2 Chips, X2 Mult, earn $3 at end of round
--- TODO: Modest description
 local supercell = {
 	object_type = "Joker",
 	name = "cry-supercell",
@@ -35,7 +34,10 @@ local supercell = {
 	blueprint_compat = true,
 	atlas = "atlasepic",
 	loc_vars = function(self, info_queue, center)
-		return { vars = { center.ability.extra.stat1, center.ability.extra.stat2, center.ability.extra.money } }
+		return {
+			key = Cryptid.gameset_loc(self, { modest = "balanced" }),
+			vars = { center.ability.extra.stat1, center.ability.extra.stat2, center.ability.extra.money },
+		}
 	end,
 	calculate = function(self, card, context)
 		if context.joker_main then
@@ -108,6 +110,7 @@ local membershipcardtwo = {
 			a = 8
 		end
 		return {
+			key = Cryptid.gameset_loc(self, { modest = "balanced" }),
 			vars = { card.ability.extra.chips, card.ability.extra.chips * math.floor(GLOBAL_cry_member_count / a) },
 		}
 	end,
@@ -248,6 +251,17 @@ local sync_catalyst = {
 			return {
 				message = localize("k_balanced"),
 				colour = { 0.8, 0.45, 0.85, 1 },
+				func = function()
+					G.E_MANAGER:add_event(Event({
+						trigger = "after",
+						func = function()
+							play_sound("gong", 0.94, 0.3)
+							play_sound("gong", 0.94 * 1.5, 0.2)
+							play_sound("tarot1", 1.5)
+							return true
+						end,
+					}))
+				end,
 			}
 		end
 	end,
@@ -326,6 +340,9 @@ local canvas = {
 	cost = 18,
 	blueprint_compat = true,
 	atlas = "atlasepic",
+	loc_vars = function(self, info_queue, center)
+		return { key = Cryptid.gameset_loc(self, { modest = "balanced" }) }
+	end,
 	calculate = function(self, card, context)
 		if context.retrigger_joker_check and not context.retrigger_joker then
 			local num_retriggers = 0
@@ -906,7 +923,12 @@ local double_scale = {
 	},
 	gameset_config = {
 		modest = { cost = 20, center = { rarity = 4 } },
+		exp_modest = { cost = 11 },
 	},
+	extra_gamesets = { "exp_modest" },
+	loc_vars = function(self, info_queue, center)
+		return { key = Cryptid.gameset_loc(self, { exp_modest = "modest" }) }
+	end,
 	order = 6,
 	rarity = "cry_epic",
 	cost = 18,
@@ -914,6 +936,10 @@ local double_scale = {
 	atlas = "atlasepic",
 	--todo: support jokers that scale multiple variables
 	cry_scale_mod = function(self, card, joker, orig_scale_scale, true_base, orig_scale_base, new_scale_base)
+		print(orig_scale_scale, true_base, orig_scale_base, new_scale_base)
+		if Cryptid.gameset(self) == "exp_modest" then
+			return true_base * 2
+		end
 		return orig_scale_scale + true_base
 	end,
 	cry_credits = {
@@ -1549,7 +1575,7 @@ local altgoogol = {
 		madness = { center = { blueprint_compat = true }, copies = 2 },
 	},
 	loc_vars = function(self, info_queue, center)
-		return { vars = { center.ability.copies } }
+		return { key = Cryptid.gameset_loc(self, { modest = "balanced" }), vars = { center.ability.copies } }
 	end,
 	calculate = function(self, card, context)
 		local gameset = Card.get_gameset(card)
@@ -1644,7 +1670,7 @@ local soccer = {
 	cost = 20,
 	atlas = "atlasepic",
 	loc_vars = function(self, info_queue, center)
-		return { vars = { center.ability.extra.holygrail } }
+		return { key = Cryptid.gameset_loc(self, { modest = "balanced" }), vars = { center.ability.extra.holygrail } }
 	end,
 	add_to_deck = function(self, card, from_debuff)
 		card.ability.extra.holygrail = math.floor(card.ability.extra.holygrail)
@@ -1866,6 +1892,11 @@ local spectrogram = {
 }
 local jtron = {
 	object_type = "Joker",
+	dependencies = {
+		items = {
+			"set_cry_epic",
+		},
+	},
 	name = "cry-jtron",
 	key = "jtron",
 	config = { extra = { bonus = 1, current = 0 } },
@@ -1898,7 +1929,7 @@ local jtron = {
 	end,
 	cry_credits = {
 		idea = { "AlexZGreat" },
-		art = { "Darren_the_frog" },
+		art = { "Darren_The_Frog" },
 		code = { "candycanearter" },
 	},
 }

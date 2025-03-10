@@ -140,6 +140,13 @@ function SMODS.calculate_retriggers(card, context, _ret) end
 ---@return table[] reps
 function SMODS.calculate_repetitions(card, context, reps) end
 
+---@param card Card|table
+---@param blueprint_card Card|table 
+---@param context CalcContext|table
+---@return table?
+--- Calculates blueprint-like effects.
+function SMODS.blueprint_effect(card, blueprint_card, context) end
+
 ---@param _type string
 ---@param _context string
 ---@return CardArea[]|table[]
@@ -199,6 +206,7 @@ function SMODS.never_scores(card) end
 --- Returns `true` if provided card is inside the scoring hand. 
 function SMODS.in_scoring(card, scoring_hand) end
 
+---@nodiscard
 ---@param path string Path to the file (excluding `mod.path`)
 ---@param id string? Key to Mod ID. Default to `SMODS.current_mod` if not provided. 
 ---@return function|nil 
@@ -251,9 +259,15 @@ function SMODS.remove_pool(pool, key) end
 --- Juices up blind. 
 function SMODS.juice_up_blind() end
 
+--- Change a card's suit, rank, or both.
+--- Accepts keys for both objects instead of needing to build a card key yourself.
+--- It is recommended to wrap this function in `assert` to prevent unnoticed errors.
+---@nodiscard
 ---@param card Card|table
 ---@param suit? string Key to the suit. 
 ---@param rank? string Key to the rank. 
+---@return Card|table? cardOrErr If successful the card. If it failed `nil`.
+---@return string? msg If it failed, a message describing what went wrong. 
 function SMODS.change_base(card, suit, rank) end
 
 ---@param key string

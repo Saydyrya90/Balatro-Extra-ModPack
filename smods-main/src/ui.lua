@@ -905,9 +905,11 @@ local function createClickableModBox(modInfo, scale)
         minh = 0.8,
         minw = 7
     }
+    local version_col = copy_table(G.C.WHITE)
+    version_col[4] = 0.6
     if modInfo.lovely_only then
         local config = but.nodes[1].nodes[2].nodes[1].config
-        config.colour = mix_colours(invert(col), G.C.UI.TEXT_INACTIVE, 0.8)
+        config.colour = version_col
         config.scale = scale * .8
     end
     if modInfo.version and modInfo.version ~= '0.0.0' then
@@ -916,7 +918,7 @@ local function createClickableModBox(modInfo, scale)
             config = {
                 text = ('(%s) '):format(modInfo.version),
                 scale = scale*0.8,
-                colour = mix_colours(invert(col), G.C.UI.TEXT_INACTIVE, 0.8),
+                colour = version_col,
                 shadow = true,
             },
         })

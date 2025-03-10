@@ -111,7 +111,10 @@ local membershipcardtwo = {
 		end
 		return {
 			key = Cryptid.gameset_loc(self, { modest = "balanced" }),
-			vars = { card.ability.extra.chips, card.ability.extra.chips * math.floor(GLOBAL_cry_member_count / a) },
+			vars = {
+				card.ability.extra.chips,
+				card.ability.extra.chips * math.floor(Cryptid.member_count / a),
+			},
 		}
 	end,
 	calculate = function(self, card, context)
@@ -124,9 +127,9 @@ local membershipcardtwo = {
 				message = localize({
 					type = "variable",
 					key = "a_chips",
-					vars = { card.ability.extra.chips * math.floor(GLOBAL_cry_member_count / a) },
+					vars = { card.ability.extra.chips * math.floor(Cryptid.member_count / a) },
 				}),
-				chip_mod = card.ability.extra.chips * math.floor(GLOBAL_cry_member_count / a),
+				chip_mod = card.ability.extra.chips * math.floor(Cryptid.member_count / a),
 			}
 		end
 	end,

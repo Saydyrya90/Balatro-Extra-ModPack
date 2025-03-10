@@ -763,6 +763,10 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
         inject = function(self)
             G.P_JOKER_RARITY_POOLS[self.key] = {}
             G.C.RARITY[self.key] = self.badge_colour
+            -- Called every frame, moving deprecated prints here
+            if self.gradient and type(self.gradient) == "function" then
+                sendWarnMessage(('Found `gradient` function on SMODS.Rarity object "%s". This field is deprecated; please use `SMODS.Gradient` API instead.'):format(obj.key), 'Rarity')
+            end
         end,
         process_loc_text = function(self)
             SMODS.process_loc_text(G.localization.misc.labels, "k_"..self.key:lower(), self.loc_txt, 'name')

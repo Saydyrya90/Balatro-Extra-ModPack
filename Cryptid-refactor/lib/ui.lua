@@ -8,7 +8,12 @@ SMODS.DrawStep({
 	order = 5,
 	func = function(self)
 		if Cryptid.safe_get(self, "area", "config", "type") == "deck" then
-			local currentBack = self.params.viewed_back and G.GAME.viewed_back or G.GAME.selected_back
+			-- following here is a horrendous mod compatability line
+			local currentBack = not self.params.galdur_selector
+					and ((Galdur and Galdur.config.use and type(self.params.galdur_back) == "table" and self.params.galdur_back) or type(
+						self.params.viewed_back
+					) == "table" and self.params.viewed_back or (self.params.viewed_back and G.GAME.viewed_back or G.GAME.selected_back))
+				or Back(G.P_CENTERS["b_red"])
 			if currentBack.effect.config.cry_force_edition and not currentBack.effect.config.cry_antimatter then
 				if currentBack.effect.config.cry_force_edition_shader then
 					self.children.back:draw_shader(
@@ -222,3 +227,72 @@ SMODS.DrawStep({
 	conditions = { vortex = false, facing = "front" },
 })
 SMODS.draw_ignore_keys.floating_sprite2 = true
+
+-- Make hover UI collidable - so we can detect collision and display tooltips
+local m = Card.move
+function Card:move(dt)
+	m(self, dt)
+	if self.children.h_popup then
+		self.children.h_popup.states.collide.can = true
+		if not self:force_popup() and not self.states.hover.is then
+			self.children.h_popup:remove()
+			self.children.h_popup = nil
+		end
+	end
+end
+
+-- This defines when we should show a card's description even when it's not hovered
+function Card:force_popup()
+	-- Must be selected
+	if self.highlighted then
+		-- Remove all popups in the pause menu (collection excluded)
+		if G.SETTINGS.paused and not self.area.config.collection then
+			return false
+		end
+		-- Playing cards
+		if
+			self.config.center.set == "Default"
+			or self.config.center.set == "Base"
+			or self.config.center.set == "Enhanced"
+		then
+			return false
+		end
+		-- Incantation mod compat
+		if SMODS.Mods["incantation"] and self.area == G.consumeables then
+			return false
+		end
+		-- Other areas where it doesn't work well
+		if self.area == G.pack_cards then
+			return false
+		end
+		return true
+	end
+end
+
+-- Hacky hook to make cards selectable in the collection
+-- Unfortunately this doesn't play nicely with gameset UI
+local cainit = CardArea.init
+function CardArea:init(X, Y, W, H, config)
+	if config.collection then
+		config.highlight_limit = config.card_limit
+	end
+	return cainit(self, X, Y, W, H, config)
+end
+
+-- Allow highlighting in the collection
+local cach = CardArea.can_highlight
+function CardArea:can_highlight(card)
+	if self.config.collection then
+		return true
+	end
+	return cach(self)
+end
+
+-- Prevent hover UI from being redrawn
+local ch = Card.hover
+function Card:hover()
+	if self.children.h_popup then
+		return
+	end
+	ch(self)
+end

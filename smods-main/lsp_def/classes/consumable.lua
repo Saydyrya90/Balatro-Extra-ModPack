@@ -2,7 +2,11 @@
 
 ---@class SMODS.Consumable: SMODS.Center
 ---@field super? SMODS.Center|table Parent class. 
----@field hidden? table|{soul_set: string, soul_rate: integer, can_repeat_soul: boolean} Used for legendary consumables. 
+---@field hidden? boolean Sets if this consumable is considered "legendary" (e.x. behaves like "The Soul"). 
+---@field soul_set? string Key to the ConsumableType set this consumable can replace. Requires `hidden` to be true.
+---@field soul_rate? number Chance this card replaces a consumable. Requires `hidden` to be true.
+---@field type? SMODS.ConsumableType|table ConsumableType this center belongs to. 
+---@field legendaries? (SMODS.Consumable|table)[] All injected "legendary" consumables. 
 ---@field __call? fun(self: SMODS.Consumable|table, o: SMODS.Consumable|table): nil|table|SMODS.Consumable
 ---@field extend? fun(self: SMODS.Consumable|table, o: SMODS.Consumable|table): table Primary method of creating a class. 
 ---@field check_duplicate_register? fun(self: SMODS.Consumable|table): boolean? Ensures objects already registered will not register. 

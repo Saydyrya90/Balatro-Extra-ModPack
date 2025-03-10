@@ -1369,7 +1369,12 @@ local sus = {
 		local function is_impostor(card)
 			return card.base.value and SMODS.Ranks[card.base.value].key == "King" and card:is_suit("Hearts")
 		end
-		if context.end_of_round and context.cardarea == G.jokers then
+		if
+			context.end_of_round
+			and context.cardarea == G.jokers
+			and not context.blueprint
+			and not context.retrigger_joker
+		then
 			if not card.ability.used_round or card.ability.used_round ~= G.GAME.round then
 				card.ability.chosen_card = nil
 			end
@@ -6189,17 +6194,17 @@ local membershipcard = {
 	blueprint_compat = true,
 	atlas = "atlasthree",
 	loc_vars = function(self, info_queue, card)
-		return { vars = { card.ability.extra.Xmult_mod, card.ability.extra.Xmult_mod * GLOBAL_cry_member_count } }
+		return { vars = { card.ability.extra.Xmult_mod, card.ability.extra.Xmult_mod * Cryptid.member_count } }
 	end,
 	calculate = function(self, card, context)
-		if context.joker_main and card.ability.extra.Xmult_mod * GLOBAL_cry_member_count > 1 then
+		if context.joker_main and card.ability.extra.Xmult_mod * Cryptid.member_count > 1 then
 			return {
 				message = localize({
 					type = "variable",
 					key = "a_xmult",
-					vars = { card.ability.extra.Xmult_mod * GLOBAL_cry_member_count },
+					vars = { card.ability.extra.Xmult_mod * Cryptid.member_count },
 				}),
-				Xmult_mod = card.ability.extra.Xmult_mod * GLOBAL_cry_member_count,
+				Xmult_mod = card.ability.extra.Xmult_mod * Cryptid.member_count,
 			}
 		end
 	end,

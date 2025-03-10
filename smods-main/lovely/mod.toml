@@ -13,6 +13,7 @@ pattern = '''(?<indent>[\t ]*)reset_castle_card\(\)'''
 line_prepend = '$indent'
 position = 'after'
 payload = '''
+
 for _, mod in ipairs(SMODS.mod_list) do
 	if mod.reset_game_globals and type(mod.reset_game_globals) == 'function' then
 		mod.reset_game_globals(false)
@@ -27,6 +28,7 @@ pattern = '''(?<indent>[\t ]*)reset_castle_card\(\)'''
 line_prepend = '$indent'
 position = 'after'
 payload = '''
+
 for _, mod in ipairs(SMODS.mod_list) do
 	if mod.reset_game_globals and type(mod.reset_game_globals) == 'function' then
 		mod.reset_game_globals(true)

@@ -282,12 +282,11 @@ end
 -- Change a card's suit, rank, or both.
 -- Accepts keys for both objects instead of needing to build a card key yourself.
 function SMODS.change_base(card, suit, rank)
-    if not card then return false end
+    if not card then return nil, "SMODS.change_base called with no card" end
     local _suit = SMODS.Suits[suit or card.base.suit]
     local _rank = SMODS.Ranks[rank or card.base.value]
     if not _suit or not _rank then
-        sendWarnMessage(('Tried to call SMODS.change_base with invalid arguments: suit="%s", rank="%s"'):format(suit, rank), 'Util')
-        return false
+        return nil, ('Tried to call SMODS.change_base with invalid arguments: suit="%s", rank="%s"'):format(suit, rank)
     end
     card:set_base(G.P_CARDS[('%s_%s'):format(_suit.card_key, _rank.card_key)])
     return card
@@ -856,8 +855,14 @@ function Card:calculate_sticker(context, key)
     end
 end
 
+function Card:can_calculate(ignore_debuff)
+    local is_available = (not self.debuff or ignore_debuff) and not self.getting_sliced
+    -- TARGET : Add extra conditions here
+    return is_available
+end
+
 function Card:calculate_enhancement(context)
-    if self.debuff or self.ability.set ~= 'Enhanced' then return nil end
+    if not self:can_calculate() or self.ability.set ~= 'Enhanced' then return nil end
     local center = self.config.center
     if center.calculate and type(center.calculate) == 'function' then
         local o = center:calculate(self, context)
@@ -1327,11 +1332,18 @@ SMODS.calculate_retriggers = function(card, context, _ret)
             end
         end
     end
+    local deck_effect = G.GAME.selected_back:trigger_effect({retrigger_joker_check = true, other_card = card, other_context = context, other_ret = _ret})
+    if deck_effect and deck_effect.repetitions then
+        deck_effect.retrigger_card = G.GAME.selected_back
+        deck_effect.message_card = deck_effect.message_card or G.deck.cards[1] or G.deck
+        deck_effect.message = deck_effect.message or (not deck_effect.remove_default_message and localize('k_again_ex'))
+        retriggers[#retriggers + 1] = deck_effect
+    end
     return retriggers
 end
 
 function Card:calculate_edition(context)
-    if self.debuff then return end
+    if not self:can_calculate() then return end
     if self.edition then
         local edition = G.P_CENTERS[self.edition.key]
         if edition.calculate and type(edition.calculate) == 'function' then
@@ -1606,10 +1618,17 @@ function SMODS.calculate_end_of_round_effects(context)
 end
 
 function SMODS.calculate_destroying_cards(context, cards_destroyed, scoring_hand)
-    for i,card in ipairs(scoring_hand or context.cardarea.cards) do
+    for i,card in ipairs(context.cardarea.cards) do
         local destroyed = nil
         --un-highlight all cards
-        if scoring_hand and SMODS.in_scoring(card, context.scoring_hand) then highlight_card(card,(i-0.999)/(#scoring_hand-0.998),'down') end
+        if scoring_hand and SMODS.in_scoring(card, context.scoring_hand) then 
+            -- Use index of card in scoring hand to determine pitch
+            local m = 1
+            for j, _card in pairs(scoring_hand) do
+                if card == _card then m = j break end
+            end
+            highlight_card(card,(m-0.999)/(#scoring_hand-0.998),'down')
+        end
 
         -- context.destroying_card calculations
         context.destroy_card = card
@@ -1644,7 +1663,7 @@ function SMODS.calculate_destroying_cards(context, cards_destroyed, scoring_hand
             if should_break then break end
         end
 
-        if scoring_hand and SMODS.has_enhancement(card, 'm_glass') and not card.debuff and pseudorandom('glass') < G.GAME.probabilities.normal/(card.ability.name == 'Glass Card' and card.ability.extra or G.P_CENTERS.m_glass.config.extra) then
+        if scoring_hand and SMODS.has_enhancement(card, 'm_glass') and card:can_calculate() and pseudorandom('glass') < G.GAME.probabilities.normal/(card.ability.name == 'Glass Card' and card.ability.extra or G.P_CENTERS.m_glass.config.extra) then
             destroyed = true
         end
 

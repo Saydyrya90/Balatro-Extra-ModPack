@@ -1,3 +1,24 @@
+0.3.4a
+----------------
+Contraband packs no longer appear on the Full deck
+
+0.3.4
+----------------
+[NEW JOKERS!]
+- King of Kings | For every played king, destroy it and gain 0.3x mult and 10 chips
+- King Cobra | 0.5x mult for every king in full deck, but -1 hand per round
+  
+[NEW DECKS!]
+- Striped Deck | Deck containing 26 Clubs and 26 Diamonds
+- Full Deck | A deck containing every card, including those of illegal ranks. Contraband cards spawn naturally
+
+[BUGFIXES]
+- Odd Todd, Even Steven and Fibonacci now work properly again
+- Scrooge McJoker no longer gives money infinitely even when played card is not a blackjack flush
+
+[KNOWN BUGS]
+- Raised Fist does not work with modded ranks. Have been unable to figure out a cause for this
+
 0.3.3
 ----------------
 [BALANCE CHANGES]

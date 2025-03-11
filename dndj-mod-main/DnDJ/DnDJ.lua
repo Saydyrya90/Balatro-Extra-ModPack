@@ -6,7 +6,7 @@
 --- DEPENDENCIES: [Talisman]
 --- PREFIX: dndj
 --- LOADER_VERSION_GEQ: 1.0.0
---- VERSION: 0.3.3
+--- VERSION: 0.3.4a
 --- BADGE_COLOR: 32751a
 
 local dndj_mod = SMODS.current_mod
@@ -22,7 +22,6 @@ G.ARGS.LOC_COLOURS.explosive = HEX'e07c2f'
 dndj_mod.description_loc_vars = function()
     return { background_colour = G.C.CLEAR, text_colour = G.C.WHITE, scale = 1 }
 end
-
 
 -- A T L A S E S --
 dndj = {}
@@ -103,6 +102,9 @@ local hit = next(SMODS.find_mod('Hit'))
 
 -- UnStable --
 local unstable = next(SMODS.find_mod('UnStable'))
+
+-- Ortalab --
+local ortalab = next(SMODS.find_mod('Ortalab'))
 
 -- R A N K S --
 
@@ -305,9 +307,9 @@ SMODS.Rank {
     hidden = true,
 
     key = 'Pi',
-    card_key = 'P',
+    card_key = 'Pi',
     pos = {x = 19},
-    nominal = 3.14,
+    nominal = 3.141592653,
     next = { '4', '5' },
     prev = {'3'},
     shorthand = 'Pi',
@@ -509,13 +511,15 @@ SMODS.Rarity{
 
 -- If Unstable is detected then do not generate these booster packs (OBSOLETE)
 --if not unstable then
+
 local contraband_booster_rate = {.5, .5, .25, .1}
 local contraband_booster_cost = {4, 4, 6, 8}
 local contraband_booster_name = {"Contraband Pack", "Contraband Pack", "Jumbo Contraband Pack", "Mega Contraband Pack"}
+local contraband_booster_key = {"contraband_1", "contraband_2", "contraband_3", "contraband_4"}
 
 for i = 1, 4 do
     SMODS.Booster{
-        key = 'contraband_'..(i <= 2 and i or i == 3 and 'jumbo' or 'mega'),
+        key = contraband_booster_key[i],
         loc_txt = {
             group_name = "Contraband Pack",
             name = contraband_booster_name[i],
@@ -525,7 +529,8 @@ for i = 1, 4 do
                 "{C:attention}an illegal rank{} to add to your deck"
             },
           },
-		cost = contraband_booster_cost[i],
+		--no_pool_flag = 'full_deck_exception',
+        cost = contraband_booster_cost[i],
         atlas = 'booster', pos = { x = i-1, y = 0 },
         config = {extra = i <= 2 and 3 or 5, choose =  i <= 3 and 1 or 2},
         draw_hand = false,
@@ -850,21 +855,21 @@ SMODS.Sticker{
 -- O V E R R I D E S (Mostly taken from UnStable) --
 if not unstable then
     dndj_global.fib = {}
-    function dndj_global.register_fibonacci(number_list)
-        for i = 1, #number_list do
-          dndj_global.fib[number_list[i]] = true
+    function dndj_global.register_fibonacci(rank_list)
+        for i = 1, #rank_list do
+          dndj_global.fib[rank_list[i]] = true
         end
     end
     dndj_global.odd = {}
-    function dndj_global.register_odd(number_list)
-        for i = 1, #number_list do
-          dndj_global.odd[number_list[i]] = true
+    function dndj_global.register_odd(rank_list)
+        for i = 1, #rank_list do
+          dndj_global.odd[rank_list[i]] = true
         end
     end
     dndj_global.even = {}
-    function dndj_global.register_even(number_list)
-        for i = 1, #number_list do
-          dndj_global.even[number_list[i]] = true
+    function dndj_global.register_even(rank_list)
+        for i = 1, #rank_list do
+          dndj_global.even[rank_list[i]] = true
         end
     end
     dndj_global.hack = {}
@@ -874,12 +879,12 @@ if not unstable then
 	    end
     end
 
-    dndj_global.register_hack({'unstb_0', 'dndj_0', 'unstb_1', 'dndj_1', '2', '3', '4', '5'})
-    dndj_global.register_fibonacci({0, 1, 2, 3, 5, 8, 13, 21})
-    dndj_global.register_odd({1, 3, 5, 7, 9, 11, 13, 21})
-    dndj_global.register_even({0, 2, 4, 6, 8, 10, 12})
+    dndj_global.register_hack({'dndj_0', 'dndj_1', '2', '3', '4', '5'})
+    dndj_global.register_fibonacci({'dndj_0', 'dndj_1', '2', '3', '5', '8', 'dndj_13', 'dndj_21','Ace'})
+    dndj_global.register_odd({'dndj_1', '3', '5', '7', '9', 'dndj_11', 'dndj_13', 'dndj_21', 'Ace'})
+    dndj_global.register_even({'dndj_0', '2', '4', '6', '8', '10', 'dndj_12'})
     
-    dndj_global.face = {Jack = true, Queen = true, King = true}
+    --dndj_global.face = {Jack = true, Queen = true, King = true}
 
     SMODS.Joker:take_ownership('fibonacci', {
         config = {extra = {mult = 8}},
@@ -898,18 +903,11 @@ if not unstable then
         calculate = function(self, card, context)
 		
             if context.individual and context.cardarea == G.play then
-                local nominal = context.other_card.base.nominal
                 
-                if not context.other_card.config.center.no_rank and (dndj_global.fib[nominal] or context.other_card.base.value == 'Ace') then
+                if not context.other_card.config.center.no_rank and dndj_global.fib[context.other_card.base.value] then
                     return {
                       mult = card.ability.extra.mult,
                       card = card
-                    }
-                    
-                else
-                    --failsafe in case some shit fucks up lol
-                    return {
-                        mult = 0
                     }
                 end
             end
@@ -935,18 +933,11 @@ if not unstable then
         calculate = function(self, card, context)
 		
             if context.individual and context.cardarea == G.play then
-                local nominal = context.other_card.base.nominal
                 
-                if not context.other_card.ability.name == 'Stone Card' and (dndj_global.odd[nominal]) then
+                if not context.other_card.config.center.no_rank and dndj_global.odd[context.other_card.base.value] then
                     return {
                       chips = card.ability.extra.chips,
                       card = card
-                    }
-                    
-                else
-                    --failsafe in case some shit fucks up lol
-                    return {
-                        mult = 0
                     }
                 end
             end
@@ -972,19 +963,11 @@ if not unstable then
         calculate = function(self, card, context)
 		
             if context.individual and context.cardarea == G.play then
-                local nominal = context.other_card.base.nominal
-                local value = context.other_card.base.value
                 
-                if not context.other_card.ability.name == 'Stone Card' and not dndj_global.face[value] and (dndj_global.even[nominal]) then
+                if not context.other_card.config.center.no_rank and dndj_global.even[context.other_card.base.value] then
                     return {
                       mult = card.ability.extra.mult,
                       card = card
-                    }
-                    
-                else
-                    --failsafe in case some shit fucks up lol
-                    return {
-                        mult = 0
                     }
                 end
             end
@@ -2312,6 +2295,9 @@ SMODS.Joker{
                 dollars = card.ability.extra.dollars
             }
         end
+        if context.after then
+            card.ability.extra.dollars = 0
+        end
     end
 
 }
@@ -2354,6 +2340,104 @@ SMODS.Joker{
 }
 
 
+SMODS.Joker{
+    key = 'king_of_kings',
+    loc_txt = {
+        name = "King of Kings",
+        text = {
+            "For each played {C:attention}King{}, destroy it",
+            "and gain {C:chips}+#3#{} Chips and {X:mult,C:white}X#4#{} Mult",
+            "{C:inactive}(Currently {}{C:chips}+#1#{}{C:inactive} Chips and {X:mult,C:white}X#2#{}{C:inactive} Mult){}"
+        },
+    },
+    rarity = 2,
+    atlas = 'jokers_atlas',
+    cost = 7,
+    blueprint_compat = true,
+    pos = { x = 2, y = 2 },
+    config = { extra = {chips = 0, x_mult = 1, chip_mod = 10, x_mult_mod = 0.3} },
+
+    loc_vars = function(self, info_queue, card)
+        return { vars = {card.ability.extra.chips, card.ability.extra.x_mult, card.ability.extra.chip_mod, card.ability.extra.x_mult_mod} }
+    end,
+
+    calculate = function(self, card, context)
+        if context.destroying_card and context.cardarea == G.play and not context.blueprint then
+            if context.destroying_card:get_id() == 13 then
+                card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.chip_mod
+                card.ability.extra.x_mult = card.ability.extra.x_mult + card.ability.extra.x_mult_mod
+                return {
+                    extra = {focus = card, message = localize('k_upgrade_ex')},
+                    colour = G.C.MULT,
+                    delay = 0.45,
+                    remove = true,
+                    card = card
+                }
+            end
+        end
+        if context.joker_main then
+            return {
+                chip_mod = card.ability.extra.chips,
+                message = localize { type = 'variable', key = 'a_chips', vars = { card.ability.extra.chips } },
+                delay = 1,
+                x_mult_mod = card.ability.extra.x_mult
+            }
+        end
+    end
+
+}
+
+SMODS.Joker{
+    key = 'king_cobra',
+    loc_txt = {
+        name = "King Cobra",
+        text = {
+            "This Joker gains {X:mult,C:white}X#3#{} Mult",
+            "for every {C:attention}King{} in your full deck",
+            "{C:inactive}(Currently {}{X:mult,C:white}X#2#{}{C:inactive} Mult){}",
+            "{C:blue}#1#{} hand per round"
+        },
+    },
+    rarity = 3,
+    atlas = 'jokers_atlas',
+    cost = 9,
+    blueprint_compat = true,
+    pos = { x = 3, y = 2 },
+    config = { extra = {hands = -1, x_mult = 1, x_mult_mod = 0.5, king_tally = 0} },
+    loc_vars = function(self, info_queue, card)
+        return { vars = {card.ability.extra.hands, card.ability.extra.x_mult, card.ability.extra.x_mult_mod, card.ability.extra.king_tally} }
+    end,
+    calculate = function(self, card, context)
+        card.ability.extra.king_tally = 0
+        for k, v in ipairs(G.playing_cards) do
+            if v:get_id() == 13 then 
+                card.ability.extra.king_tally = card.ability.extra.king_tally + 1
+                card.ability.extra.x_mult = card.ability.extra.king_tally*(card.ability.extra.x_mult_mod)+1
+            end 
+        end
+        if context.setting_blind and context.blind == G.GAME.round_resets.blind then
+            G.E_MANAGER:add_event(Event({func = function()
+                ease_hands_played(card.ability.extra.hands)
+                --card_eval_status_text(context.blueprint_card, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_hands', vars = {card.ability.extra.hands}}})--
+            return true end }))
+        end
+        if context.joker_main then
+            return {
+                --message = localize{type='variable',key='a_xmult',vars={card.ability.extra.x_mult}},
+                x_mult_mod = card.ability.extra.x_mult
+            }
+        end
+    end
+
+}
+
+
+
+
+
+
+
+
 
 
 
@@ -2386,8 +2470,9 @@ SMODS.Back{
         --G.GAME.HUD:recalculate()
         G.GAME.round_resets.ante = 0
         G.GAME.round_resets.blind_ante = 0
+        G.GAME.banned_keys['bl_pillar'] = true
         ease_ante(0)
-        SMODS.Blind:take_ownership('bl_pillar', {boss = {min = 9e999, max = 9e999}})
+        --SMODS.Blind:take_ownership('bl_pillar', {boss = {min = 9e999, max = 9e999}})
         G.E_MANAGER:add_event(Event({
             func = function()
                 for k, v in pairs(G.playing_cards) do
@@ -2550,3 +2635,102 @@ SMODS.Back{
     end
 }
 
+if not ortalab then
+SMODS.Back{
+    key = 'striped_deck',
+    atlas = 'decks',
+    discovered = true,
+    pos = {x = 3, y = 0},
+    config = {},
+    loc_vars = function(self, info_queue, card)
+        return { vars = {} }
+    end,
+    loc_txt = {
+        name = "Striped Deck",
+        text= {
+            "Start run with",
+            "{C:attention}26{C:clubs} Clubs{} and",
+            "{C:attention}26{C:diamonds} Diamonds{} in deck",
+        },
+      },
+    apply = function(self)
+        G.E_MANAGER:add_event(Event({
+            func = function()
+                for k, v in pairs(G.playing_cards) do
+                    if v.base.suit == 'Spades' then 
+                        v:change_suit('Clubs')
+                    end
+                    if v.base.suit == 'Hearts' then 
+                        v:change_suit('Diamonds')
+                    end
+                end
+            return true
+            end
+        }))
+    end
+}
+end
+
+SMODS.Back{
+    key = 'full_deck',
+    atlas = 'decks',
+    discovered = true,
+    pos = {x = 4, y = 0},
+    config = {},
+    loc_vars = function(self, info_queue, card)
+        return { vars = {} }
+    end,
+    loc_txt = {
+        name = "Full Deck",
+        text= {
+            "Start run with a full deck",
+            "including all {C:attention}illegal ranks{}",
+            "{C:attention}Contraband cards {}",
+            "will spawn naturally"
+        },
+      },
+    apply = function(self)
+        --contraband_booster_rate = {0, 0, 0, 0}
+        G.GAME.banned_keys['p_dndj_contraband_1'] = true
+        G.GAME.banned_keys['p_dndj_contraband_2'] = true
+        G.GAME.banned_keys['p_dndj_contraband_3'] = true
+        G.GAME.banned_keys['p_dndj_contraband_4'] = true
+        --G.GAME.pool_flags.full_deck_exception = true
+        setPoolRankFlagEnable('dndj_0', true)
+        setPoolRankFlagEnable('dndj_0.5', true)
+        setPoolRankFlagEnable('dndj_1', true)
+        setPoolRankFlagEnable('dndj_Pi', true)
+        setPoolRankFlagEnable('dndj_11', true)
+        setPoolRankFlagEnable('dndj_12', true)
+        setPoolRankFlagEnable('dndj_13', true)
+        setPoolRankFlagEnable('dndj_21', true)
+        local added_rank = {'dndj_0', 'dndj_0.5', 'dndj_1', 'dndj_Pi', 'dndj_11', 'dndj_12', 'dndj_13', 'dndj_21'}
+				
+		local all_suit = {}
+		
+		for k, v in pairs(SMODS.Suits) do
+			--If has in_pool, check in_pool
+			if type(v) == 'table' and type(v.in_pool) == 'function' and v.in_pool then
+				if v:in_pool({initial_deck = true}) then
+					all_suit[#all_suit+1] = v.card_key
+				end
+			else --Otherwise, added by default
+				all_suit[#all_suit+1] = v.card_key
+			end
+			
+		end
+		
+		--print(inspect(all_suit))
+		
+		local extra_cards = {}
+		
+		for i=1, #all_suit do
+			for j=1, #added_rank do
+				extra_cards[#extra_cards+1] = {s = all_suit[i], r = added_rank[j]}
+			end
+		end
+		
+		G.GAME.starting_params.extra_cards = extra_cards
+
+    end
+}

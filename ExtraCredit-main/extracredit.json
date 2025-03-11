@@ -9,8 +9,8 @@
 	"priority": 1,
 	"badge_colour": "006A00",
 	"badge_text_colour": "FBA105",
-	"version": "1.1.0",
+	"version": "1.2.1",
 	"dependencies": [
-		"Steamodded (>=1.0.0~ALPHA-1206c)"
+		"Steamodded (>=1.0.0~ALPHA-1423g)"
 	]
 }

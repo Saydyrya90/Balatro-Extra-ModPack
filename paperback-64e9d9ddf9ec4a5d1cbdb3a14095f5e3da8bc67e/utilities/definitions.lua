@@ -4,6 +4,12 @@ PB_UTIL.config = SMODS.current_mod.config
 -- Load values that get reset at the start of each round
 SMODS.current_mod.reset_game_globals = function(run_start)
   G.GAME.current_round.paperback_scored_clips = 0
+
+  PB_UTIL.reset_weather_radio()
+
+  if run_start then
+    G.GAME.round_resets.paperback_ceramic_inc = 0
+  end
 end
 
 PB_UTIL.base_poker_hands = {
@@ -116,7 +122,7 @@ PB_UTIL.ENABLED_JOKERS = {
   "basic_energy",
   "reference_card",
   "skydiver",
-  -- "surfer",
+  "surfer",
   "apple",
   "joker_cookie",
   "nachos",
@@ -138,8 +144,8 @@ PB_UTIL.ENABLED_JOKERS = {
   "pointy_stick",
   "charred_marshmallow",
   "sticky_stick",
-  -- "sake_cup",
-  -- "full_moon",
+  "sake_cup",
+  "full_moon",
   "black_rainbows",
   "emergency_broadcast",
   "triple_moon_goddess",
@@ -155,10 +161,10 @@ PB_UTIL.ENABLED_JOKERS = {
   "prince_of_darkness",
   "jester_of_nihil",
   "wild_prize",
-  -- "deadringer",
+  "deadringer",
   "bicycle",
   "pride_flag",
-  -- "bismuth",
+  "bismuth",
   "cherry_blossoms",
   "hole_in_one",
   "blue_bonnets",
@@ -167,27 +173,27 @@ PB_UTIL.ENABLED_JOKERS = {
   "river",
   "evergreens",
   "backpack",
-  -- "resurrections",
+  "resurrections",
   "summoning_circle",
   "union_card",
-  -- "book_of_vengeance",
+  "book_of_vengeance",
   "moribund",
   "subterfuge",
   "the_world",
   "paranoia",
   "jestrica",
-  -- "you_are_a_fool",
+  "you_are_a_fool",
   "alert",
   "legacy",
-  -- "weather_radio",
-  -- "power_surge",
+  "weather_radio",
+  "power_surge",
   "find_jimbo",
   -- "jimbocards",
   -- "banana_man",
   "jimbo_adventure",
-  -- "ddakji",
+  "ddakji",
   "pocket_pair",
-  -- "the_quiet",
+  "the_quiet",
   "big_misser",
   "heretical_joker",
   "quartz",
@@ -199,8 +205,11 @@ PB_UTIL.ENABLED_JOKERS = {
   "tanghulu",
   "sweet_stick",
   "wheat_field",
-  -- "kintsugi_joker",
-  -- "watercolor_joker",
+  "clothespin",
+  "kintsugi_joker",
+  "watercolor_joker",
+  -- "medic",
+  -- "festive_joker",
   -- "winter_melon",
   -- "freezer",
   -- "perke_os",
@@ -283,33 +292,79 @@ PB_UTIL.ENABLED_MINOR_ARCANA = {
 }
 
 PB_UTIL.DECK_SKINS = {
-  steven_universe = {
+  {
+    id = 'steven_universe',
     name = 'Steven Universe',
-    'Spades',
-    'paperback_Stars'
+    suits = {
+      'Spades',
+      'paperback_Stars'
+    }
   },
-  atlyss = {
+  {
+    id = 'atlyss',
     name = 'Atlyss',
-    'Clubs',
-    'bunc_Fleurons'
+    suits = {
+      'Clubs',
+      'bunc_Fleurons'
+    }
   },
-  flight_knight = {
+  {
+    id = 'flight_knight',
     name = 'Flight Knight',
-    'Hearts',
-    'bunc_Halberds'
+    suits = {
+      'Hearts',
+      'bunc_Halberds'
+    }
   },
-  hylics = {
+  {
+    id = 'hylics',
     name = 'Hylics',
-    'Diamonds',
-    'paperback_Crowns'
+    suits = {
+      'Diamonds',
+      'paperback_Crowns'
+    }
   },
-  steel_ball = {
+  {
+    id = 'steel_ball',
     name = "Steel Ball Run",
-    'paperback_Stars'
+    suits = {
+      'paperback_Stars'
+    }
   },
-  cult_of_the_lamb = {
+  {
+    id = 'cult_of_the_lamb',
     name = "Cult of the Lamb",
-    'paperback_Crowns'
+    suits = {
+      'paperback_Crowns'
+    }
+  },
+  {
+    id = 'smiling_friends',
+    name = "Smiling Friends",
+    suits = {
+      'Hearts'
+    }
+  },
+  {
+    id = 'super_mario_bros_z',
+    name = "Super Mario Bros. Z",
+    suits = {
+      'Clubs'
+    }
+  },
+  {
+    id = 'dragon_ball_z',
+    name = "Dragon Ball Z",
+    suits = {
+      'Diamonds'
+    }
+  },
+  {
+    id = 'chrono_trigger',
+    name = "Chrono Trigger",
+    suits = {
+      'Spades'
+    }
   }
 }
 

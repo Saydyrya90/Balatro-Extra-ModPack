@@ -1094,18 +1094,12 @@ local jollyedition = {
 				gcui(_c, full_UI_table, specific_vars, card_type, badges, hide_desc, main_start, main_end, card)
 			if
 				card
-				and card.edition
-				and card.edition.cry_m
-				and (not card.ability or card.ability.set ~= "Edition")
-				and full_UI_table
-				and full_UI_table.name
-				and type(full_UI_table.name) == "table"
-				and full_UI_table.name[1]
-				and full_UI_table.name[1].config
-				and full_UI_table.name[1].config.object
-				and full_UI_table.name[1].config.object.config
+				and Cryptid.safe_get(card, "edition", "cry_m")
+				and ((not card.ability) or card.ability.set ~= "Edition")
+				and type(Cryptid.safe_get(full_UI_table, "name")) == "table"
+				and Cryptid.safe_get(full_UI_table.name, 1, "nodes", 1, "config", "object", "config")
 			then
-				local conf = full_UI_table.name[1].config.object.config
+				local conf = full_UI_table.name[1].nodes[1].config.object.config
 				if conf.string and #conf.string > 0 then
 					local function m_ify_word(text)
 						-- Define a pattern for vowels
@@ -1140,8 +1134,8 @@ local jollyedition = {
 						return result
 					end
 					conf.string[1] = m_ify(conf.string[1])
-					full_UI_table.name[1].config.object:remove()
-					full_UI_table.name[1].config.object = DynaText(conf)
+					full_UI_table.name[1].nodes[1].config.object:remove()
+					full_UI_table.name[1].nodes[1].config.object = DynaText(conf)
 				end
 			end
 			return full_UI_table
@@ -1439,147 +1433,6 @@ local double_sided = {
 					return true
 				end,
 			}))
-		end
-		local use_and_sell_buttonsref = G.UIDEF.use_and_sell_buttons
-		function G.UIDEF.use_and_sell_buttons(card)
-			local retval = use_and_sell_buttonsref(card)
-			if
-				card.area
-				and card.edition
-				and (card.area == G.jokers or card.area == G.consumeables or card.area == G.hand)
-				and card.edition.cry_double_sided
-				and not Card.no(card, "dbl")
-			then
-				local use = {
-					n = G.UIT.C,
-					config = { align = "cr" },
-					nodes = {
-						{
-							n = G.UIT.C,
-							config = {
-								ref_table = card,
-								align = "cr",
-								maxw = 1.25,
-								padding = 0.1,
-								r = 0.08,
-								hover = true,
-								shadow = true,
-								colour = G.C.UI.BACKGROUND_INACTIVE,
-								one_press = true,
-								button = "flip",
-								func = "can_flip_card",
-							},
-							nodes = {
-								{ n = G.UIT.B, config = { w = 0.1, h = 0.3 } },
-								{
-									n = G.UIT.T,
-									config = {
-										text = localize("b_flip"),
-										colour = G.C.UI.TEXT_LIGHT,
-										scale = 0.3,
-										shadow = true,
-									},
-								},
-							},
-						},
-					},
-				}
-				local m = retval.nodes[1]
-				if not card.added_to_deck then
-					use.nodes[1].nodes = { use.nodes[1].nodes[2] }
-					if card.ability.consumeable then
-						m = retval
-					end
-				end
-				m.nodes = m.nodes or {}
-				table.insert(m.nodes, { n = G.UIT.R, config = { align = "cl" }, nodes = {
-					use,
-				} })
-				return retval
-			end
-			if
-				card.area
-				and (card.area == G.jokers or card.area == G.consumeables or card.area == G.hand)
-				and (not card.edition or not card.edition.cry_double_sided)
-				and not card.ability.eternal
-				and not Card.no(card, "dbl")
-			then
-				for i = 1, #card.area.cards do
-					if card.area.cards[i].edition and card.area.cards[i].edition.cry_double_sided then
-						local use = {
-							n = G.UIT.C,
-							config = { align = "cr" },
-							nodes = {
-								{
-									n = G.UIT.C,
-									config = {
-										ref_table = card,
-										align = "cr",
-										maxw = 1.25,
-										padding = 0.1,
-										r = 0.08,
-										hover = true,
-										shadow = true,
-										colour = G.C.UI.BACKGROUND_INACTIVE,
-										one_press = true,
-										button = "flip_merge",
-										func = "can_flip_merge_card",
-									},
-									nodes = {
-										{ n = G.UIT.B, config = { w = 0.1, h = 0.3 } },
-										{
-											n = G.UIT.T,
-											config = {
-												text = localize("b_merge"),
-												colour = G.C.UI.TEXT_LIGHT,
-												scale = 0.3,
-												shadow = true,
-											},
-										},
-									},
-								},
-							},
-						}
-						local m = retval.nodes[1]
-						if not card.added_to_deck then
-							use.nodes[1].nodes = { use.nodes[1].nodes[2] }
-							if card.ability.consumeable then
-								m = retval
-							end
-						end
-						m.nodes = m.nodes or {}
-						table.insert(m.nodes, { n = G.UIT.R, config = { align = "cl" }, nodes = {
-							use,
-						} })
-						return retval
-					end
-				end
-			end
-			return retval
-		end
-		local cupd = Card.update
-		function Card:update(dt)
-			cupd(self, dt)
-			if self.area then
-				if self.area.config.type == "discard" or self.area.config.type == "deck" then
-					return --prevent lagging event queues with unneeded flips
-				end
-			end
-			if self.sprite_facing == "back" and self.edition and self.edition.cry_double_sided then
-				self.sprite_facing = "front"
-				self.facing = "front"
-				if self.flipping == "f2b" then
-					self.flipping = "b2f"
-				end
-				self:dbl_side_flip()
-			end
-			if self.ability.cry_absolute then -- feedback loop... may be problematic
-				self.cry_absolute = true
-			end
-			if self.cry_absolute then
-				self.ability.cry_absolute = true
-				self.ability.eternal = true
-			end
 		end
 		function Cryptid.copy_dbl_card(C, c, deck_effects)
 			if not deck_effects then

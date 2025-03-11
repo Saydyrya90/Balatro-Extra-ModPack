@@ -375,6 +375,11 @@ if config.fixed_sprites then
             atlas = 'bunco_resprites_jokers'
         })
 
+        SMODS.Joker:take_ownership('scholar', {
+            pos = coordinate(14),
+            atlas = 'bunco_resprites_jokers'
+        })
+
         -- Consumables
 
         SMODS.Consumable:take_ownership('fool', {
@@ -1359,11 +1364,6 @@ create_joker({ -- Prehistoric
                 and (v:is_suit(context.other_card.base.suit) or context.other_card.config.center == G.P_CENTERS.m_wild)
                 and context.other_card.config.center ~= G.P_CENTERS.m_stone then
                     return {
-                        message = localize {
-                            type = 'variable',
-                            key = 'a_mult',
-                            vars = {card.ability.extra.mult}
-                        },
                         mult = card.ability.extra.mult,
                         card = card
                     }
@@ -2996,7 +2996,7 @@ create_joker({ -- On Broadway
 
 create_joker({ -- Rasta
     name = 'Rasta', position = 48,
-    vars = {{mult = 20}},
+    vars = {{mult = 12}},
     rarity = 'Common', cost = 5,
     blueprint = true, eternal = true,
     unlocked = false,

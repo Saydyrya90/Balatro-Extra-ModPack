@@ -10,26 +10,50 @@ priority = 0
 #Negative bonus chips UI
 [[patches]]
 [patches.pattern]
-target = "card.lua"
+target = 'card.lua'
 pattern = '''
 bonus_chips = (self.ability.bonus + (self.ability.perma_bonus or 0)) > 0 and (self.ability.bonus + (self.ability.perma_bonus or 0)) or nil,
 '''
-position = "at"
+position = 'at'
+match_indent = true
 payload = '''
 bonus_chips = (self.ability.bonus + (self.ability.perma_bonus or 0)) ~= 0 and (self.ability.bonus + (self.ability.perma_bonus or 0)) or nil,
 '''
+
+
+
+
+#Burglar instant for Bobby compat
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''
+ease_discard(-G.GAME.current_round.discards_left, nil, true)
+'''
+position = 'at'
+payload = '''
+ease_discard(-G.GAME.current_round.discards_left, true, true)
+'''
 match_indent = true
 
-
-
-
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''
+ease_hands_played(self.ability.extra)
+'''
+position = 'at'
+payload = '''
+ease_hands_played(self.ability.extra, true)
+'''
+match_indent = true
 
 
 
 #Debuff functionality
 [[patches]]
 [patches.pattern]
-target = "card.lua"
+target = 'card.lua'
 pattern = '''
 if self.ability.perishable and self.ability.perish_tally <= 0 then 
     if not self.debuff then
@@ -39,7 +63,7 @@ if self.ability.perishable and self.ability.perish_tally <= 0 then
     return
 end
 '''
-position = "after"
+position = 'after'
 payload = '''
 if next(find_joker("Permanent Marker")) and self.ability.set == "Enhanced" then should_debuff = false end
 '''
@@ -49,14 +73,11 @@ match_indent = true
 #Tuxedo, Farmer, and Go Fish resets
 [[patches]]
 [patches.pattern]
-target = "functions/state_events.lua"
+target = 'functions/state_events.lua'
 pattern = '''
 reset_idol_card()
-reset_mail_rank()
-reset_ancient_card()
-reset_castle_card()
 '''
-position = "after"
+position = 'after'
 payload = '''
 reset_tuxedo_card()
 reset_farmer_card()
@@ -66,14 +87,14 @@ match_indent = true
 
 [[patches]]
 [patches.pattern]
-target = "game.lua"
+target = 'game.lua'
 pattern = '''
 reset_idol_card()
 reset_mail_rank()
 self.GAME.current_round.ancient_card.suit = nil
 reset_ancient_card()
 '''
-position = "after"
+position = 'after'
 payload = '''
 self.GAME.current_round.tuxedo_card.suit = nil
 reset_tuxedo_card()
@@ -86,13 +107,13 @@ match_indent = true
 
 [[patches]]
 [patches.pattern]
-target = "game.lua"
+target = 'game.lua'
 pattern = '''
 idol_card = {suit = 'Spades', rank = 'Ace'},
 mail_card = {rank = 'Ace'},
 ancient_card = {suit = 'Spades'},
 '''
-position = "after"
+position = 'after'
 payload = '''
 tuxedo_card = {suit = 'Spades'},
 farmer_card = {suit = 'Spades'},
@@ -102,18 +123,15 @@ match_indent = true
 
 [[patches]]
 [patches.pattern]
-target = "functions/common_events.lua"
+target = 'functions/common_events.lua'
 pattern = '''
-function reset_ancient_card()
-    local ancient_suits = {}
-    for k, v in ipairs({'Spades','Hearts','Clubs','Diamonds'}) do
-        if v ~= G.GAME.current_round.ancient_card.suit then ancient_suits[#ancient_suits + 1] = v end
+if valid_castle_cards[1] then 
+        local castle_card = pseudorandom_element(valid_castle_cards, pseudoseed('cas'..G.GAME.round_resets.ante))
+        G.GAME.current_round.castle_card.suit = castle_card.base.suit
     end
-    local ancient_card = pseudorandom_element(ancient_suits, pseudoseed('anc'..G.GAME.round_resets.ante))
-    G.GAME.current_round.ancient_card.suit = ancient_card
 end
 '''
-position = "after"
+position = 'after'
 payload = '''
 
 function reset_tuxedo_card()
@@ -151,10 +169,10 @@ match_indent = true
 # New context to modify mult/chips before hands are played - used for Clown Car
 [[patches]]
 [patches.pattern]
-target = "functions/state_events.lua"
+target = 'functions/state_events.lua'
 match_indent = true
 pattern = '''if modded then update_hand_text({sound = 'chips2', modded = modded}, {chips = hand_chips, mult = mult}) end'''
-position = "after"
+position = 'after'
 payload = '''
 for i=1, #G.jokers.cards do
     eval_card(G.jokers.cards[i], {cardarea = G.jokers, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, before_but_not_as_much = true})

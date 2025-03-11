@@ -10,8 +10,6 @@ SMODS.load_file("utilities/cross-mod.lua")()
 -- Load the atlases
 SMODS.load_file("content/atlas.lua")()
 
--- Test Comment
-
 -- Load Jokers if they are enabled
 if PB_UTIL.config.jokers_enabled then
   PB_UTIL.register_items(PB_UTIL.ENABLED_JOKERS, "content/joker")
@@ -91,9 +89,9 @@ end
 PB_UTIL.register_items(PB_UTIL.ENABLED_DECKS, "content/deck")
 
 -- Register DeckSkins for Friends of Paperback
-for skin, data in pairs(PB_UTIL.DECK_SKINS) do
-  for _, suit in ipairs(data) do
-    local key = skin .. "_" .. suit:lower()
+for _, data in ipairs(PB_UTIL.DECK_SKINS) do
+  for _, suit in ipairs(data.suits) do
+    local key = data.id .. "_" .. suit:lower()
 
     -- Common ranks used in both palettes
     local ranks = { 'Jack', 'Queen', 'King', 'Ace' }

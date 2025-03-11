@@ -3,7 +3,7 @@ Extra Credit!
 A small-scale vanilla-style content mod for Balatro University
 
 Features:
-- 30 jokers with new effects and art :)
+- 45 jokers with new effects and art :)
 
 Project Lead:
 - CampfireCollective
@@ -22,6 +22,7 @@ Art:
 - tuzzo
 - R3venantR3mnant
 - Neato
+- Sacto
 - CampfireCollective
 
 Concepting:

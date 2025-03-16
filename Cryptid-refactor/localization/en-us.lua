@@ -1081,6 +1081,15 @@ return {
 					"for the next {C:attention}#2#{} round#<s>2#",
 				},
 			},
+			j_cry_cat_owl = {
+				name = "Cat Owl",
+				text = {
+					"{C:attention}Lucky Cards{} are also",
+					"considered {C:attention}Echo Cards",
+					"{C:attention}Echo Cards{} are also",
+					"considered {C:attention}Lucky Cards",
+				},
+			},
 			j_cry_chad = {
 				name = "Chad",
 				text = {
@@ -1152,10 +1161,10 @@ return {
 			j_cry_clockwork = {
 				name = "Clockwork Joker",
 				text = {
-					"Retrigger all Steel Cards every {C:attention}2{} {C:inactive}(#1#){} hands.",
-					"This joker gains {X:mult,C:white}X#6#{} Mult {C:inactive}(#5#){} every {C:attention}3{} {C:inactive}(#2#){} hands,",
-					"Turn the first played card Steel every {C:attention}5{} {C:inactive}(#3#){} hands,",
-					"Steel cards give {X:mult,C:white}+X#8#{} Mult {C:inactive}(X#7#){} every {C:attention}7{} {C:inactive}(#4#){} hands",
+					"Retrigger held Steel Cards every {C:attention}#9#{} {C:inactive}(#1#){} hands",
+					"This Joker gains {X:mult,C:white}X#6#{} Mult {C:inactive}(X#5#){} every {C:attention}#10#{} {C:inactive}(#2#){} hands",
+					"Turn the first played card Steel every {C:attention}#11#{} {C:inactive}(#3#){} hands",
+					"Held Steel Cards give +{X:mult,C:white}X#8#{} Mult {C:inactive}(X#7#){} every {C:attention}#12#{} {C:inactive}(#4#){} hands",
 				},
 			},
 			j_cry_CodeJoker = {

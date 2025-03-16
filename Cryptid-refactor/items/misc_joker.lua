@@ -7617,14 +7617,16 @@ local zooble = {
 			if not (next(context.poker_hands["Straight"]) or next(context.poker_hands["Straight Flush"])) then
 				local unique_ranks = {}
 				for i, v in pairs(context.scoring_hand) do
-					local not_unique = false
-					for i = 1, #unique_ranks do
-						if unique_ranks[i] == v:get_id() then
-							not_unique = true
+					if not (SMODS.has_no_rank(v) and not v.vampired) then
+						local not_unique = false
+						for i = 1, #unique_ranks do
+							if unique_ranks[i] == v:get_id() then
+								not_unique = true
+							end
 						end
-					end
-					if not not_unique then
-						unique_ranks[#unique_ranks + 1] = v:get_id()
+						if not not_unique then
+							unique_ranks[#unique_ranks + 1] = v:get_id()
+						end
 					end
 				end
 				if #unique_ranks >= 1 then
@@ -7637,7 +7639,7 @@ local zooble = {
 				end
 			end
 		end
-		if context.joker_main and context.cardarea == G.jokers then
+		if context.joker_main and card.ability.extra.mult > 0 then
 			return {
 				message = localize({ type = "variable", key = "a_mult", vars = { card.ability.extra.mult } }),
 				mult_mod = card.ability.extra.mult,
@@ -7765,6 +7767,50 @@ local huntingseason = { -- If played hand contains three cards, destroy the midd
 		},
 	},
 }
+local cat_owl = { -- Lucky Cards are considered Echo Cards and vice versa
+	object_type = "Joker",
+	dependencies = {
+		items = {
+			"set_cry_misc_joker",
+			"m_cry_echo",
+			"set_cry_misc",
+		},
+	},
+	name = "cry-cat_owl",
+	pools = { ["Meme"] = true },
+	key = "cat_owl",
+	pos = { x = 6, y = 5 },
+	order = 135,
+	rarity = 3,
+	cost = 8,
+	blueprint_compat = false,
+	atlas = "atlasone",
+	loc_vars = function(self, info_queue, center)
+		info_queue[#info_queue + 1] = G.P_CENTERS.m_lucky
+		info_queue[#info_queue + 1] = G.P_CENTERS.m_cry_echo
+	end,
+	calculate = function(self, card, context)
+		if context.check_enhancement then
+			if context.other_card.config.center.key == "m_lucky" then
+				return { m_cry_echo = true }
+			end
+			if context.other_card.config.center.key == "m_cry_echo" then
+				return { m_lucky = true }
+			end
+		end
+	end,
+	cry_credits = {
+		idea = {
+			"Math",
+		},
+		code = {
+			"Math",
+		},
+		art = {
+			"George the Rat",
+		},
+	},
+}
 local miscitems = {
 	jimball_sprite,
 	dropshot,
@@ -7878,6 +7924,7 @@ local miscitems = {
 	translucent,
 	lebaron_james,
 	huntingseason,
+	cat_owl,
 }
 return {
 	name = "Misc. Jokers",

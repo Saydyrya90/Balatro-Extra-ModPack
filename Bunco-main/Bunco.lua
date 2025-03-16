@@ -1,14 +1,3 @@
---- STEAMODDED HEADER
---- MOD_NAME: Bunco
---- MOD_ID: Bunco
---- MOD_AUTHOR: [Firch, RENREN, Peas, minichibis, J.D., Guwahavel, Ciirulean, ejwu]
---- MOD_DESCRIPTION: Mod aiming for vanilla style, a lot of new Jokers, Blinds, other stuff and Exotic Suits system!
---- VERSION: 5.0
-
--- ToDo:
--- Make configs apply immediately
--- Shell Game should modify tables instead of replacing - see Blind Packs
-
 BUNCOMOD = {vars = {}, funcs = {}, content = SMODS.current_mod}
 local filesystem = NFS or love.filesystem
 
@@ -18,6 +7,16 @@ local config = BUNCOMOD.content.config
 
 local function say(message)
     sendDebugMessage('[BUNCO] - '..(message or '???'))
+end
+
+-- Talisman-related functions
+
+to_big = to_big or function(x)
+    return x
+end
+
+to_number = to_number or function(x)
+    return x
 end
 
 -- Index-based coordinates generation
@@ -87,6 +86,15 @@ function BUNCOMOD.content.process_loc_text()
     G.P_CENTERS['bunc_consumable_edition_polychrome'] = {key = 'bunc_consumable_edition_polychrome', set = 'Other'}
     G.P_CENTERS['bunc_consumable_edition_bunc_glitter'] = {key = 'bunc_consumable_edition_bunc_glitter', set = 'Other'}
 end
+
+-- Mod icon
+
+SMODS.Atlas({
+    key = 'modicon',
+    path = 'Icon/Icon.png',
+    px = 34,
+    py = 34
+})
 
 -- Config globals
 
@@ -258,6 +266,158 @@ function BUNCOMOD.content.config_tab()
             }
         }
     }}
+end
+
+-- Credits tab
+
+SMODS.current_mod.extra_tabs = function()
+    local text_scale = 0.6
+	return {
+		{
+			label = G.localization.misc.dictionary.b_credits,
+			tab_definition_function = function()
+				return {n = G.UIT.ROOT, config = {r = 0.1, minw = 4, align = "tm", padding = 0.2, colour = G.C.BLACK}, nodes = {
+                {n=G.UIT.R, config={align = "cm", padding = 0.1, outline_colour = G.C.JOKER_GREY, r = 0.1, outline = 1}, nodes={
+                    {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                        {n=G.UIT.T, config={text = G.localization.misc.dictionary.b_credits, scale = text_scale*0.6, colour = G.C.ORANGE, shadow = true}},
+                    }},
+                    {n=G.UIT.R, config={align = "tm", padding = 0}, nodes={
+                        {n=G.UIT.C, config={align = "tl", padding = 0.05, minw = 2.0}, nodes={
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'Firch', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'RENREN', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'Peas', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'minichibis', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'J.D.', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'Guwahavel', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'Ciirulean', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'ejwu', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'sadlyjustal', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'Domique', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'Haloway', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'hapty', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'Joey', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'hellfirejune', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'Oroshibu', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'women', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'cometz', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'ferrium', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'hippocrunchy', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'Biverom', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'Just_Shrimmp', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                        }},
+                        {n=G.UIT.C, config={align = "tl", padding = 0.05, minw = 2.0}, nodes={
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'Mikadoe', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'Lyman', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'jostro', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'kingbobson', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'aure__', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'itayfeder', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'autumnmood', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'arachneii', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'mysthaps', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'iwas_nevergood', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'chromapie', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'kaishi_', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'Victin', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'sdm_0', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'PinkMaggit', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'Ardub23', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'nh6574', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'jumbocarrot0', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'weird_autumn', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'unascribed', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'itsmythie', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                        }},
+                    }},
+                    }}
+				}}
+			end,
+		}
+	}
 end
 
 -- Shaders
@@ -660,6 +820,73 @@ SMODS.calculate_repetitions = function(card, context, reps)
             locked_card:check_for_unlock({type = 'repetition', repetition_amount = #reps - 1})
         end
     end
+end
+
+-- Various on-money-gain functions
+
+BUNCOMOD.funcs.ease_dollars = function(mod)
+    if G.GAME.Trident and (to_big(mod) <= to_big(0)) then --Vermilion Trident 1/2
+        G.GAME.ante_purchases = (G.GAME.ante_purchases or 0) + 1
+    end
+
+    G.GAME.money_spend_this_round = G.GAME.money_spend_this_round or 0 --Money spent in one shop unlock 1/2
+    if to_big(mod) < to_big(0) then
+        G.GAME.money_spend_this_round = G.GAME.money_spend_this_round - mod
+
+        local locked_card
+
+        for i = 1, #G.P_LOCKED do
+            locked_card = G.P_LOCKED[i]
+
+            if not locked_card.unlocked and locked_card.check_for_unlock and type(locked_card.check_for_unlock) == 'function' then
+                locked_card:check_for_unlock({type = 'round_spend_money', round_spend_money = G.GAME.money_spend_this_round})
+            end
+        end
+    end
+
+    if G.jokers ~= nil then --Jokers that affect money income
+        for _, v in ipairs(G.jokers.cards) do
+            if v.config.center.key == 'j_bunc_fiendish' and not v.debuff then
+                if to_big(mod) > to_big(0) then
+                    if pseudorandom('fiendish'..G.SEED) < G.GAME.probabilities.normal / v.ability.extra.odds then
+                        mod = to_big(1)
+                        local message = to_number(mod)
+                        G.E_MANAGER:add_event(Event{func = function()
+                            card_eval_status_text(
+                            v,
+                            'extra',
+                            nil, nil, nil,
+                            {message = '$'..(message or '1'), colour = G.C.RED, instant = true})
+                        return true end})
+                    else
+                        mod = to_big(mod) * to_big(2)
+                        local message = to_number(mod)
+                        G.E_MANAGER:add_event(Event{func = function()
+                            card_eval_status_text(
+                            v,
+                            'extra',
+                            nil, nil, nil,
+                            {message = '$'..message, colour = G.C.ORANGE, instant = true})
+                        return true end})
+                    end
+                end
+            end
+            if v.config.center.key == 'j_bunc_bounty_hunter' and not v.debuff then
+                if to_big(mod) > to_big(0) then
+                    v:calculate_joker({get_money = true})
+                    mod = to_big(mod) - to_big(1)
+                    G.E_MANAGER:add_event(Event{func = function()
+                        card_eval_status_text(
+                        v,
+                        'extra',
+                        nil, nil, nil,
+                        {message = G.localization.misc.dictionary.bunc_robbed, colour = G.C.ORANGE, instant = true})
+                    return true end})
+                end
+            end
+        end
+    end
+    return(mod)
 end
 
 local original_game_update = Game.update
@@ -1448,7 +1675,7 @@ create_joker({ -- Loan Shark
     blueprint = false, eternal = true,
     unlocked = false,
     check_for_unlock = function(self, args)
-        if args.type == 'round_spend_money' and args.round_spend_money >= 100 then
+        if args.type == 'round_spend_money' and to_number(args.round_spend_money) >= 100 then
             unlock_card(self)
         end
     end,
@@ -2475,7 +2702,7 @@ create_joker({ -- Head in the Clouds
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'win_custom' then
-            local handname, level, order = 'High Card', to_big(-1), 100  -- Keep order as regular number
+            local handname, level, order = 'High Card', to_big(-1), 100
             for k, v in pairs(G.GAME.hands) do
                 if v.level > level or (v.level == level and order > v.order) then
                     level = v.level
@@ -3135,7 +3362,7 @@ create_joker({ -- Bounty Hunter
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'money' then
-            if G.GAME.dollars < self.config.extra.unlock then
+            if G.GAME.dollars < to_big(self.config.extra.unlock) then
                 unlock_card(self)
             end
         end
@@ -3950,30 +4177,25 @@ create_joker({ -- Dynasty
 create_joker({ -- Magic Wand
     type = 'Exotic',
     name = 'Magic Wand', position = 8,
-    vars = {{bonus = 0.3}, {xmult = 1}},
+    vars = {{bonus = 3}, {mult = 0}},
     rarity = 'Common', cost = 5,
     blueprint = true, eternal = true, perishable = false,
     unlocked = true,
     calculate = function(self, card, context)
         if context.before and context.poker_hands ~= nil and next(context.poker_hands['bunc_Spectrum']) and not context.blueprint then
-            card.ability.extra.xmult = card.ability.extra.xmult + 0.3
+            card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.bonus
         elseif context.after and context.poker_hands ~= nil and not next(context.poker_hands['bunc_Spectrum']) and not context.blueprint then
-            if card.ability.extra.xmult ~= 1 then
-                card.ability.extra.xmult = 1
+            if card.ability.extra.mult ~= 0 then
+                card.ability.extra.mult = 0
 
                 forced_message(localize('k_reset'), card, G.C.RED)
             end
         end
 
         if context.joker_main then
-            if card.ability.extra.xmult ~= 1 then
+            if card.ability.extra.mult ~= 0 then
                 return {
-                    message = localize {
-                        type = 'variable',
-                        key = 'a_xmult',
-                        vars = { card.ability.extra.xmult }
-                    },
-                    Xmult_mod = card.ability.extra.xmult,
+                    mult = card.ability.extra.mult,
                     card = card
                 }
             end
@@ -6311,8 +6533,8 @@ SMODS.Blind{ -- The Stone
         if not reset then
             G.GAME.blind.original_chips = G.GAME.blind.chips
         end
-        if not reset and not G.GAME.blind.disabled and G.GAME.dollars >= to_big(10) then
-            local final_chips = (G.GAME.blind.chips / G.GAME.blind.mult) * (math.floor(G.GAME.dollars / 10) + G.GAME.blind.mult)
+        if not reset and not G.GAME.blind.disabled and to_big(G.GAME.dollars) >= to_big(10) then
+            local final_chips = (G.GAME.blind.chips / G.GAME.blind.mult) * (math.floor(to_number(G.GAME.dollars) / 10) + G.GAME.blind.mult)
             local chip_mod -- iterate over ~120 ticks
             if type(G.GAME.blind.chips) ~= 'table' then
                 chip_mod = math.ceil((final_chips - G.GAME.blind.chips) / 120)

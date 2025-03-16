@@ -486,8 +486,9 @@ return {
 			c_cry_patch = {
 				name = "://PATCH",
 				text = {
-					"Remove all debuffs and stickers",
+					"Remove all {C:cry_code}debuffs",
 					"from currently visible items",
+					"{C:cry_code}Resets{} shop state",
 				},
 			},
 			c_cry_payload = {
@@ -1146,6 +1147,15 @@ return {
 					"{C:chips}+#1#{} Chip#<s>1#",
 					"{C:chips}-#2#{} Chip#<s>2# when",
 					"you {C:attention}click",
+				},
+			},
+			j_cry_clockwork = {
+				name = "Clockwork Joker",
+				text = {
+					"Retrigger all Steel Cards every {C:attention}2{} {C:inactive}(#1#){} hands.",
+					"This joker gains {X:mult,C:white}X#6#{} Mult {C:inactive}(#5#){} every {C:attention}3{} {C:inactive}(#2#){} hands,",
+					"Turn the first played card Steel every {C:attention}5{} {C:inactive}(#3#){} hands,",
+					"Steel cards give {X:mult,C:white}+X#8#{} Mult {C:inactive}(X#7#){} every {C:attention}7{} {C:inactive}(#4#){} hands",
 				},
 			},
 			j_cry_CodeJoker = {

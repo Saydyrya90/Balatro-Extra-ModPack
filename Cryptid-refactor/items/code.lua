@@ -974,6 +974,10 @@ local revert = {
 	init = function(self)
 		local sr = save_run
 		function save_run()
+			--Sneaking this here but hopefully fixes pointer UI crashes
+			if G.GAME.USING_CODE then
+				return
+			end
 			if G.GAME.round_resets.ante ~= G.GAME.cry_revert_ante then
 				G.GAME.cry_revert_ante = G.GAME.round_resets.ante
 				G.GAME.cry_revert = nil
@@ -3278,15 +3282,6 @@ local patch = {
 					end
 					CARD.debuff = false
 					CARD.cry_debuff_immune = true
-					CARD.ability.perishable = nil
-					CARD.pinned = nil
-					CARD:set_rental(nil)
-					if not CARD.sob then
-						CARD:set_eternal(nil)
-					end
-					CARD.ability.banana = nil
-					CARD.ability.cry_possessed = nil
-					SMODS.Stickers.cry_flickering:apply(CARD, nil)
 					play_sound("tarot2", percent)
 					CARD:juice_up(0.3, 0.3)
 					return true
@@ -3303,15 +3298,6 @@ local patch = {
 						CARD:flip()
 					end
 					CARD.debuff = false
-					CARD.ability.perishable = nil
-					CARD.pinned = nil
-					CARD:set_rental(nil)
-					if not CARD.sob then
-						CARD:set_eternal(nil)
-					end
-					CARD.ability.banana = notify_alert
-					CARD.ability.cry_possessed = nil
-					SMODS.Stickers.cry_flickering:apply(CARD, nil)
 					play_sound("card1", percent)
 					CARD:juice_up(0.3, 0.3)
 					return true
@@ -3328,15 +3314,6 @@ local patch = {
 						CARD:flip()
 					end
 					CARD.debuff = false
-					CARD.ability.perishable = nil
-					CARD.pinned = nil
-					CARD:set_rental(nil)
-					if not CARD.sob then
-						CARD:set_eternal(nil)
-					end
-					CARD.ability.banana = nil
-					CARD.ability.cry_possessed = nil
-					SMODS.Stickers.cry_flickering:apply(CARD, nil)
 					play_sound("card1", percent)
 					CARD:juice_up(0.3, 0.3)
 					return true
@@ -3926,6 +3903,7 @@ local pointer = {
 			G.FUNCS.pointer_apply()
 		end
 		local aliases = {
+			-- Vanilla Jokers
 			jimbo = "joker",
 			["gary mccready"] = "joker",
 			greedy = "greedy joker",
@@ -3979,6 +3957,7 @@ local pointer = {
 			driverslicense = "driver's license",
 			burnt = "burnt joker",
 			caino = "canio",
+			-- Cryptid Jokers
 			house = "happy house",
 			queensgambit = "queen's gambit",
 			weefib = "weebonacci",
@@ -4023,14 +4002,45 @@ local pointer = {
 			oldgoogleplaycard = "nostalgic googol play card",
 			localthunk = "supercell",
 			["1fa"] = "one for all",
-			crust = "crustulum",
-			deathstar = "stella mortis",
 			["jolly?"] = "jolly joker?",
 			scrabble = "scrabble tile",
-			["13"] = "tredecim",
+			oldcandy = "nostalgic candy",
+			jimbo9000 = "jimbo-tron 9000",
+			jimbotron9000 = "jimbo-tron 9000",
+			magnet = "fridge magnet",
+			weeb = "weebonacci",
+			potofgreed = "pot of jokes",
+			flipside = "on the flip side",
+			bonkers = "bonkers joker",
+			fuckedup = "fucked-up joker",
+			foolhardy = "foolhardy joker",
+			adroit = "adroit joker",
+			penetrating = "penetrating joker",
+			treacherous = "treacherous joker",
+			stronghold = "the stronghold",
+			thefuck = "the fuck!?",
+			["tf!?"] = "the fuck!?",
+			wtf = "the fuck!?",
+			clash = "the clash",
+			astral = "astral in a bottle",
+			smoothie = "tropical smoothie",
+			chocodie = "chocolate die",
+			chocodice = "chocolate die",
+			chocolatedice = "chocolate die",
+			cookie = "clicked cookie",
+			lebronjames = "lebaron james",
+			lebron = "lebaron james",
+			lebaron = "lebaron james",
+			hunting = "hunting season",
+			clockwork = "clockwork joker",
+			monopoly = "monopoly money",
+			notebook = "the motebook",
+			motebook = "the motebook",
+			--Vouchers
 			["overstock+"] = "overstock plus",
 			directorscut = "director's cut",
 			["3rs"] = "the 3 rs",
+			-- Vanilla Tarots
 			fool = "the fool",
 			magician = "the magician",
 			priestess = "the high priestess",
@@ -4049,10 +4059,13 @@ local pointer = {
 			moon = "the moon",
 			sun = "the sun",
 			world = "the world",
+			-- Cryptid Tarots
 			automaton = "the automaton",
 			eclipse = "c_cry_eclipse",
+			-- Planets
 			x = "planet x",
 			X = "planet x",
+			-- Code Cards
 			pointer = "pointer://",
 			payload = "://payload",
 			reboot = "://reboot",
@@ -4078,12 +4091,14 @@ local pointer = {
 			ctrlv = "://ctrl+v",
 			["ctrl+v"] = "://ctrl+v",
 			["ctrl v"] = "://ctrl+v",
+			hook = "hook://",
 			instantiate = "://INSTANTIATE",
 			inst = "://INSTANTIATE",
 			spaghetti = "://spaghetti",
+			-- Tags
 			topuptag = "top-up tag",
 			gamblerstag = "gambler's tag",
-			hook = "hook://",
+			-- Blinds
 			ox = "the ox",
 			wall = "the wall",
 			wheel = "the wheel",
@@ -5108,7 +5123,7 @@ local code_cards = {
 	oboe,
 	rework,
 	rework_tag,
-	--patch,
+	patch,
 	ctrl_v,
 	inst,
 	alttab,

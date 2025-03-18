@@ -196,7 +196,9 @@ position = 'at'
 match_indent = true
 times = 1
 payload = '''
-if G.GAME.PACK_INTERRUPT ~= G.STATES.SELECTING_HAND then G.FUNCS.draw_from_hand_to_deck() end
+if G.GAME.PACK_INTERRUPT ~= G.STATES.SELECTING_HAND then
+    G.FUNCS.draw_from_hand_to_deck()
+end
 '''
 
 ## Following two patches will cause the hand cardarea to be lifted when a standard or buffoon pack is opened mid-blind (otherwise they will cover the buttons to add cards to the deck)

@@ -12,7 +12,7 @@ SMODS.Joker {
   cost = 6,
   unlocked = true,
   discovered = true,
-  blueprint_compat = true,
+  blueprint_compat = false,
   eternal_compat = false,
   soul_pos = nil,
   yes_pool_flag = "quick_fix_can_spawn",

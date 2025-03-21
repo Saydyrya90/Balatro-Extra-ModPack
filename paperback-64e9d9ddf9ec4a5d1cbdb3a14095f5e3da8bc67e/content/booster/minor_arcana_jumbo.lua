@@ -1,12 +1,12 @@
 PB_UTIL.MinorArcanaBooster {
-  key = 'minor_arcana_mega',
+  key = 'minor_arcana_jumbo',
   atlas = 'boosters_atlas',
-  pos = { x = 3, y = 0 },
+  pos = { x = 2, y = 0 },
   config = {
     extra = 5,
-    choose = 2
+    choose = 1
   },
-  weight = 2 / 6,
-  cost = 8,
+  weight = 4 / 3,
+  cost = 6,
   discovered = true,
 }

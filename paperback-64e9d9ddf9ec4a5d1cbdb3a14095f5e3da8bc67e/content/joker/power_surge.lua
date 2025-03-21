@@ -32,16 +32,9 @@ SMODS.Joker {
       if context.other_card:get_id() == card.ability.extra.rank then
         if pseudorandom('power_surge') < G.GAME.probabilities.normal / card.ability.extra.odds then
           local destroyed_card = #G.hand.cards > 0 and
-              pseudorandom_element(G.hand.cards, pseudoseed('power_surge_destroy')) or nil
+              pseudorandom_element(G.hand.cards, pseudoseed('power_surge_destroy'))
 
-          if destroyed_card then
-            G.E_MANAGER:add_event(Event({
-              func = function()
-                destroyed_card:start_dissolve({ G.C.RED }, nil, 1.6)
-                return true
-              end
-            }))
-          end
+          PB_UTIL.destroy_playing_cards { destroyed_card }
         end
 
         return {

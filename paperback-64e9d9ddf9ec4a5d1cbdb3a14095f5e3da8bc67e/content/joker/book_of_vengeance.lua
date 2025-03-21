@@ -46,7 +46,7 @@ SMODS.Joker {
 
       if other_joker and other_joker ~= card then
         PB_UTIL.destroy_joker(card, function()
-          if #G.jokers.cards < G.jokers.config.card_limit then
+          if #G.jokers.cards <= G.jokers.config.card_limit then
             local strip_edition = other_joker.edition and other_joker.edition.negative
             local copy = copy_card(other_joker, nil, nil, nil, strip_edition)
             copy:add_to_deck()

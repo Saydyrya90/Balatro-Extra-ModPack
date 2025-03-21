@@ -1,5 +1,10 @@
 SMODS.Joker {
   key = "angel_investor",
+  config = {
+    extra = {
+      tags = 2
+    }
+  },
   rarity = 1,
   pos = { x = 7, y = 7 },
   atlas = 'jokers_atlas',
@@ -14,11 +19,20 @@ SMODS.Joker {
 
   loc_vars = function(self, info_queue, card)
     info_queue[#info_queue + 1] = G.P_TAGS.tag_paperback_angel_investment
+
+    return {
+      vars = {
+        card.ability.extra.tags
+      }
+    }
   end,
 
   calculate = function(self, card, context)
     if context.skip_blind then
-      PB_UTIL.add_tag('tag_paperback_angel_investment')
+      for i = 1, card.ability.extra.tags do
+        -- Only play sound on the last tag
+        PB_UTIL.add_tag('tag_paperback_angel_investment', nil, i < card.ability.extra.tags)
+      end
 
       return {
         message = localize('paperback_investment_ex'),

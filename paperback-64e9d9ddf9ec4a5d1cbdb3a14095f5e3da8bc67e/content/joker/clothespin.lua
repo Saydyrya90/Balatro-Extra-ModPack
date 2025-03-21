@@ -2,7 +2,8 @@ SMODS.Joker {
   key = "clothespin",
   config = {
     extra = {
-      chips = 14
+      a_chips = 15,
+      chips = 0
     }
   },
   rarity = 1,
@@ -27,26 +28,30 @@ SMODS.Joker {
   loc_vars = function(self, info_queue, card)
     return {
       vars = {
-        card.ability.extra.chips,
+        card.ability.extra.a_chips,
+        card.ability.extra.chips
       }
     }
   end,
 
   calculate = function(self, card, context)
-    if context.individual and context.cardarea == G.hand and not context.end_of_round then
-      if PB_UTIL.has_paperclip(context.other_card) then
-        if context.other_card.debuff then
-          return {
-            message = localize('k_debuffed')
-          }
-        else
-          return {
-            chips = card.ability.extra.chips,
-            juice_card = card,
-            message_card = context.other_card,
-          }
-        end
+    if not context.blueprint and context.individual and context.cardarea == G.hand and context.end_of_round then
+      if PB_UTIL.has_paperclip(context.other_card) and not context.other_card.debuff then
+        card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.a_chips
+
+        return {
+          message = localize('k_upgrade_ex'),
+          colour = G.C.CHIPS,
+          message_card = card,
+          juice_card = context.other_card
+        }
       end
+    end
+
+    if context.joker_main then
+      return {
+        chips = card.ability.extra.chips
+      }
     end
   end
 }

@@ -37,14 +37,12 @@ SMODS.Joker {
 
   add_to_deck = function(self, card, from_debuff)
     if from_debuff then
-      G.GAME.round_resets.paperback_ceramic_inc =
-          (G.GAME.round_resets.paperback_ceramic_inc or 0) + card.ability.extra.total
+      G.GAME.paperback.ceramic_inc = G.GAME.paperback.ceramic_inc + card.ability.extra.total
     end
   end,
 
   remove_from_deck = function(self, card, from_debuff)
-    G.GAME.round_resets.paperback_ceramic_inc =
-        (G.GAME.round_resets.paperback_ceramic_inc or 0) - card.ability.extra.total
+    G.GAME.paperback.ceramic_inc = G.GAME.paperback.ceramic_inc - card.ability.extra.total
   end,
 
   calculate = function(self, card, context)
@@ -58,7 +56,7 @@ SMODS.Joker {
       end
 
       if inc > 0 then
-        G.GAME.round_resets.paperback_ceramic_inc = (G.GAME.round_resets.paperback_ceramic_inc or 0) + inc
+        G.GAME.paperback.ceramic_inc = G.GAME.paperback.ceramic_inc + inc
         card.ability.extra.total = card.ability.extra.total + inc
 
         return {

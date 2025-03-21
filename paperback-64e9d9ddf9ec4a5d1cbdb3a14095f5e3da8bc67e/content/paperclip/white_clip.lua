@@ -20,7 +20,7 @@ PB_UTIL.Paperclip {
 
   calculate = function(self, card, context)
     if context.playing_card_end_of_round and context.cardarea == G.hand then
-      local increase = card.ability[self.key].chip_mod * (G.GAME.current_round.paperback_scored_clips or 0)
+      local increase = card.ability[self.key].chip_mod * G.GAME.paperback.round.scored_clips
 
       if increase > 0 then
         card.ability[self.key].chips = card.ability[self.key].chips + increase

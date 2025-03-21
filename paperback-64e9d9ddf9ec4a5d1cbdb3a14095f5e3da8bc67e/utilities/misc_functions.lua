@@ -334,11 +334,14 @@ end
 --- Adds a tag the same way vanilla does it
 --- @param tag string | table a tag key or a tag table
 --- @param event boolean? whether to send this in an event or not
-function PB_UTIL.add_tag(tag, event)
+--- @param silent boolean? whether to play a sound
+function PB_UTIL.add_tag(tag, event, silent)
   local func = function()
     add_tag(type(tag) == 'string' and Tag(tag) or tag)
-    play_sound('generic1', 0.9 + math.random() * 0.1, 0.8)
-    play_sound('holo1', 1.2 + math.random() * 0.1, 0.4)
+    if not silent then
+      play_sound('generic1', 0.9 + math.random() * 0.1, 0.8)
+      play_sound('holo1', 1.2 + math.random() * 0.1, 0.4)
+    end
     return true
   end
 
@@ -365,24 +368,38 @@ function PB_UTIL.poll_consumable_type(seed)
 end
 
 --- Tries to spawn a card into either the Jokers or Consumeable card areas, ensuring
---- that there is space available.
+--- that there is space available, using the respective buffer.
 --- DOES NOT TAKE INTO ACCOUNT ANY OTHER AREAS
---- @param args CreateCard | { instant: boolean?, func: function? } same arguments passed to SMODS.create_card, with the addition of 'instant' and 'func'
+--- @param args CreateCard | { card: Card?, strip_edition: boolean? } | { instant: boolean?, func: function? } info:
+--- Either a table passed to SMODS.create_card, which will create a new card.
+--- Or a table with 'card', which will copy the passed card and remove its edition based on 'strip_edition'.
 --- @return boolean? spawned whether the card was able to spawn
 function PB_UTIL.try_spawn_card(args)
-  local is_joker = (args.set == 'Joker' or args.key and args.key:sub(1, 1) == 'j')
+  local is_joker = args.card and (args.card.ability.set == 'Joker') or
+      (args.set == 'Joker' or (args.key and args.key:sub(1, 1) == 'j'))
   local area = args.area or (is_joker and G.jokers) or G.consumeables
   local buffer = area == G.jokers and 'joker_buffer' or 'consumeable_buffer'
 
   if #area.cards + G.GAME[buffer] < area.config.card_limit then
+    local added_card
+    local function add()
+      if args.card then
+        added_card = copy_card(args.card, nil, nil, nil, args.strip_edition)
+        added_card:add_to_deck()
+        area:emplace(added_card)
+      else
+        SMODS.add_card(args)
+      end
+    end
+
     if args.instant then
-      SMODS.add_card(args)
+      add()
     else
       G.GAME[buffer] = G.GAME[buffer] + 1
 
       G.E_MANAGER:add_event(Event {
         func = function()
-          SMODS.add_card(args)
+          add()
           G.GAME[buffer] = 0
           return true
         end
@@ -390,7 +407,7 @@ function PB_UTIL.try_spawn_card(args)
     end
 
     if args.func and type(args.func) == "function" then
-      args.func()
+      args.func(added_card)
     end
 
     return true
@@ -780,4 +797,97 @@ function PB_UTIL.has_modded_suit_in_deck()
     end
   end
   return false
+end
+
+--- Balances chips and shows the cosmetic effects just like Plasma deck
+---@param card (table|Card)?
+function PB_UTIL.apply_plasma_effect(card)
+  -- Actually balance the chips and mult
+  local tot = hand_chips + mult
+  hand_chips = mod_chips(math.floor(tot / 2))
+  mult = mod_mult(math.floor(tot / 2))
+  update_hand_text({ delay = 0 }, { mult = mult, chips = hand_chips })
+
+  -- Cosmetic effects
+  G.E_MANAGER:add_event(Event({
+    func = (function()
+      -- Play sounds and change the color of the scoring values
+      play_sound('gong', 0.94, 0.3)
+      play_sound('gong', 0.94 * 1.5, 0.2)
+      play_sound('tarot1', 1.5)
+      ease_colour(G.C.UI_CHIPS, { 0.8, 0.45, 0.85, 1 })
+      ease_colour(G.C.UI_MULT, { 0.8, 0.45, 0.85, 1 })
+
+      -- If a card was passed, show the balanced message on it
+      if card then
+        SMODS.calculate_effect({
+          message = localize('k_balanced'),
+          colour  = { 0.8, 0.45, 0.85, 1 },
+          instant = true
+        }, card)
+      end
+
+      -- Return the colors to normal
+      G.E_MANAGER:add_event(Event({
+        trigger = 'after',
+        blockable = false,
+        blocking = false,
+        delay = 4.3,
+        func = (function()
+          ease_colour(G.C.UI_CHIPS, G.C.BLUE, 2)
+          ease_colour(G.C.UI_MULT, G.C.RED, 2)
+          return true
+        end)
+      }))
+
+      G.E_MANAGER:add_event(Event({
+        trigger = 'after',
+        blockable = false,
+        blocking = false,
+        no_delete = true,
+        delay = 6.3,
+        func = (function()
+          G.C.UI_CHIPS[1], G.C.UI_CHIPS[2], G.C.UI_CHIPS[3], G.C.UI_CHIPS[4] =
+              G.C.BLUE[1], G.C.BLUE[2], G.C.BLUE[3], G.C.BLUE[4]
+          G.C.UI_MULT[1], G.C.UI_MULT[2], G.C.UI_MULT[3], G.C.UI_MULT[4] =
+              G.C.RED[1], G.C.RED[2], G.C.RED[3], G.C.RED[4]
+          return true
+        end)
+      }))
+      return true
+    end)
+  }))
+
+  delay(0.6)
+end
+
+--- @param card (Card)
+--- @param context (CalcContext)
+function PB_UTIL.panorama_logic(card, context)
+  if context.individual and context.cardarea == G.play then
+    -- Reset the xMult if the current card is not the required suit
+    if not context.other_card:is_suit(card.ability.extra.suit) then
+      card.ability.extra.xMult = card.ability.extra.xMult_base
+      return
+    end
+
+    -- Give the xMult if the current card is the required suit
+    if context.other_card:is_suit(card.ability.extra.suit) then
+      local xMult = card.ability.extra.xMult
+      -- Upgrade the xMult if not blueprint
+      if not context.blueprint then
+        card.ability.extra.xMult = card.ability.extra.xMult + card.ability.extra.xMult_gain
+      end
+
+      return {
+        x_mult = xMult,
+        card = card
+      }
+    end
+  end
+
+  -- Quietly reset the xMult for the card at the end of played hand
+  if context.after and not context.blueprint then
+    card.ability.extra.xMult = card.ability.extra.xMult_base
+  end
 end

@@ -629,7 +629,7 @@ local pickle = {
 						end
 						tag.ability.orbital_hand = pseudorandom_element(_poker_hands, pseudoseed("cry_pickle_orbital"))
 					end
-					tag.ability.shiny = cry_rollshinybool()
+					tag.ability.shiny = Cryptid.is_shiny()
 					add_tag(tag)
 				end
 			end
@@ -3754,6 +3754,7 @@ local rnjoker = {
 		G.hand:change_size(-hand_size)
 	end,
 	generate_ui = function(self, info_queue, card, desc_nodes, specific_vars, full_UI_table)
+		card = card or self:create_fake_card()
 		local len = (
 			card.ability
 			and card.ability.abilities
@@ -3784,6 +3785,7 @@ local rnjoker = {
 			end
 			new_loc.text_parsed = card.ability.abilities[1].text_parsed
 		end
+		new_loc.text_parsed = new_loc.text_parsed or {}
 		if not full_UI_table.name then
 			full_UI_table.name =
 				localize({ type = "name", set = self.set, key = target.key or self.key, nodes = full_UI_table.name })
@@ -7305,7 +7307,7 @@ local tax_fraud = {
 		},
 	},
 }
---TODO update desc
+
 local pity_prize = {
 	object_type = "Joker",
 	dependencies = {
@@ -7315,6 +7317,7 @@ local pity_prize = {
 	},
 	name = "cry-Pity-Prize",
 	key = "pity_prize",
+	blueprint_compat = true,
 	pos = { x = 5, y = 5 },
 	config = {},
 	rarity = 1,
@@ -7332,7 +7335,7 @@ local pity_prize = {
 			until tag_key ~= "tag_boss" --I saw pickle not generating boss tags because it apparently causes issues, so I did the same here
 			-- this is my first time seeing repeat... wtf
 			local tag = Tag(tag_key)
-			tag.ability.shiny = cry_rollshinybool()
+			tag.ability.shiny = Cryptid.is_shiny()
 			if tag.name == "Orbital Tag" then
 				local _poker_hands = {}
 				for k, v in pairs(G.GAME.hands) do
@@ -7670,6 +7673,7 @@ local lebaron_james = {
 	key = "lebaron_james",
 	pos = { x = 2, y = 5 },
 	config = { extra = { h_mod = 1 } },
+	blueprint_compat = true,
 	rarity = 3,
 	cost = 6,
 	atlas = "atlasone",
@@ -7821,24 +7825,39 @@ local eyeofhagane = {
 	name = "cry-eyeofhagane",
 	key = "eyeofhagane",
 	order = 136,
-	pos = { x = 4, y = 1 },
+	pos = { x = 5, y = 6 },
 	rarity = 2,
 	cost = 6,
 	blueprint_compat = false,
 	immutable = true,
-	atlas = "placeholders", -- https://discord.com/channels/1264429948970733782/1274103559113150629/1351479917367263312
+	atlas = "atlastwo", -- https://discord.com/channels/1264429948970733782/1274103559113150629/1351479917367263312
 	calculate = function(self, card, context)
 		if context.before then
-			for i = 1, #context.full_hand do
-				if context.full_hand[i]:is_face() then
-					context.full_hand[i]:set_ability(G.P_CENTERS["m_steel"], nil, true)
+			local faces = {}
+			for k, v in ipairs(context.scoring_hand) do
+				if v:is_face() then
+					faces[#faces + 1] = v
+					v:set_ability(G.P_CENTERS.m_steel, nil, true)
+					G.E_MANAGER:add_event(Event({
+						func = function()
+							v:juice_up()
+							return true
+						end,
+					}))
 				end
+			end
+			if #faces > 0 then
+				return {
+					message = "Steel",
+					colour = G.C.UI.TEXT_INACTIVE,
+					card = self,
+				}
 			end
 		end
 	end,
 	cry_credits = {
 		idea = { "Soren" },
-		code = { "Nova" },
+		code = { "Lexi" },
 		art = { "Soren" },
 	},
 }
@@ -7930,8 +7949,8 @@ local miscitems = {
 	exposed,
 	mask,
 	tropical_smoothie,
-	pumpkin,
-	carved_pumpkin,
+	--pumpkin,
+	--carved_pumpkin,
 	cookie,
 	necromancer,
 	oil_lamp,
@@ -7955,7 +7974,7 @@ local miscitems = {
 	translucent,
 	lebaron_james,
 	huntingseason,
-	cat_owl,
+	--cat_owl,
 	eyeofhagane,
 }
 return {

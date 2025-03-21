@@ -48,7 +48,7 @@ local pack1 = {
 	order = 1,
 	weight = 0.96,
 	create_card = function(self, card)
-		return create_card("Code", G.pack_cards, nil, nil, true, true, nil, "cry_program")
+		return create_card("Code", G.pack_cards, nil, nil, true, true, nil, "cry_program_1")
 	end,
 	ease_background_colour = function(self)
 		ease_colour(G.C.DYN_UI.MAIN, G.C.SET.Code)
@@ -92,7 +92,7 @@ local pack2 = {
 	order = 2,
 	weight = 0.96,
 	create_card = function(self, card)
-		return create_card("Code", G.pack_cards, nil, nil, true, true, nil, "cry_program")
+		return create_card("Code", G.pack_cards, nil, nil, true, true, nil, "cry_program_2")
 	end,
 	ease_background_colour = function(self)
 		ease_colour(G.C.DYN_UI.MAIN, G.C.SET.Code)
@@ -136,7 +136,7 @@ local packJ = {
 	order = 3,
 	weight = 0.48,
 	create_card = function(self, card)
-		return create_card("Code", G.pack_cards, nil, nil, true, true, nil, "cry_program")
+		return create_card("Code", G.pack_cards, nil, nil, true, true, nil, "cry_program_j")
 	end,
 	ease_background_colour = function(self)
 		ease_colour(G.C.DYN_UI.MAIN, G.C.SET.Code)
@@ -180,7 +180,7 @@ local packM = {
 	order = 4,
 	weight = 0.12,
 	create_card = function(self, card)
-		return create_card("Code", G.pack_cards, nil, nil, true, true, nil, "cry_program")
+		return create_card("Code", G.pack_cards, nil, nil, true, true, nil, "cry_program_m")
 	end,
 	ease_background_colour = function(self)
 		ease_colour(G.C.DYN_UI.MAIN, G.C.SET.Code)
@@ -277,10 +277,10 @@ local crash = {
 	set = "Code",
 	name = "cry-Crash",
 	key = "crash",
-	pos = { x = 0, y = 0 },
+	pos = { x = 7, y = 0 },
 	config = {},
 	cost = 4,
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	order = 1,
 	can_use = function(self, card)
 		return true
@@ -855,13 +855,13 @@ local payload = {
 	set = "Code",
 	name = "cry-Payload",
 	key = "payload",
-	pos = { x = 1, y = 0 },
+	pos = { x = 8, y = 0 },
 	config = { interest_mult = 3 },
 	loc_vars = function(self, info_queue, center)
 		return { vars = { self.config.interest_mult } }
 	end,
 	cost = 4,
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	order = 2,
 	can_use = function(self, card)
 		return true
@@ -895,10 +895,10 @@ local reboot = {
 	set = "Code",
 	name = "cry-Reboot",
 	key = "reboot",
-	pos = { x = 2, y = 0 },
+	pos = { x = 9, y = 0 },
 	config = {},
 	cost = 4,
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	order = 3,
 	can_use = function(self, card)
 		return G.STATE == G.STATES.SELECTING_HAND
@@ -948,10 +948,10 @@ local revert = {
 	set = "Code",
 	name = "cry-Revert",
 	key = "revert",
-	pos = { x = 3, y = 0 },
+	pos = { x = 10, y = 0 },
 	config = {},
 	cost = 4,
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	order = 4,
 	can_use = function(self, card)
 		return G.GAME.cry_revert
@@ -1011,12 +1011,12 @@ local semicolon = {
 	name = "cry-Semicolon",
 	key = "semicolon",
 	pos = {
-		x = 0,
+		x = 7,
 		y = 1,
 	},
 	config = {},
 	cost = 4,
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	order = 32,
 	can_use = function(self, card)
 		return G.STATE == G.STATES.SELECTING_HAND and not G.GAME.blind.boss
@@ -1062,12 +1062,12 @@ local malware = {
 	name = "cry-Malware",
 	key = "malware",
 	pos = {
-		x = 1,
+		x = 8,
 		y = 1,
 	},
 	config = {},
 	cost = 4,
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	order = 9,
 	can_use = function(self, card)
 		return #G.hand.cards > 0
@@ -1137,12 +1137,12 @@ local seed = {
 	name = "cry-Seed",
 	key = "seed",
 	pos = {
-		x = 3,
+		x = 10,
 		y = 1,
 	},
 	config = {},
 	cost = 4,
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	order = 12,
 	can_use = function(self, card)
 		--the card itself and one other card
@@ -1238,12 +1238,12 @@ local hook = {
 	name = "cry-Hook",
 	key = "hook",
 	pos = {
-		x = 0,
+		x = 7,
 		y = 4,
 	},
 	config = {},
 	cost = 4,
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	order = 14,
 	no_pool_flag = "beta_deck",
 	can_use = function(self, card)
@@ -1358,9 +1358,9 @@ local variable = {
 	set = "Code",
 	key = "variable",
 	name = "cry-Variable",
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	pos = {
-		x = 2,
+		x = 9,
 		y = 1,
 	},
 	cost = 4,
@@ -1657,9 +1657,9 @@ local class = {
 	set = "Code",
 	key = "class",
 	name = "cry-Class",
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	pos = {
-		x = 4,
+		x = 11,
 		y = 1,
 	},
 	cost = 4,
@@ -1942,9 +1942,9 @@ local commit = {
 	set = "Code",
 	key = "commit",
 	name = "cry-Commit",
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	pos = {
-		x = 1,
+		x = 8,
 		y = 2,
 	},
 	cost = 4,
@@ -2020,9 +2020,9 @@ local merge = {
 	set = "Code",
 	key = "merge",
 	name = "cry-Merge",
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	pos = {
-		x = 0,
+		x = 7,
 		y = 2,
 	},
 	cost = 4,
@@ -2131,10 +2131,10 @@ local multiply = {
 	set = "Code",
 	key = "multiply",
 	name = "cry-Multiply",
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	order = 24,
 	pos = {
-		x = 3,
+		x = 10,
 		y = 2,
 	},
 	cost = 4,
@@ -2190,10 +2190,10 @@ local divide = {
 	set = "Code",
 	key = "divide",
 	name = "cry-Divide",
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	order = 23,
 	pos = {
-		x = 2,
+		x = 9,
 		y = 2,
 	},
 	cost = 4,
@@ -2258,10 +2258,10 @@ local delete = {
 	set = "Code",
 	key = "delete",
 	name = "cry-Delete",
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	order = 18,
 	pos = {
-		x = 4,
+		x = 11,
 		y = 2,
 	},
 	cost = 4,
@@ -2389,10 +2389,10 @@ local spaghetti = {
 	set = "Code",
 	key = "spaghetti",
 	name = "cry-Spaghetti",
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	order = 13,
 	pos = {
-		x = 5,
+		x = 12,
 		y = 2,
 	},
 	cost = 4,
@@ -2433,9 +2433,9 @@ local machinecode = {
 	set = "Code",
 	name = "cry-Machine Code",
 	key = "machinecode",
-	pos = { x = 0, y = 3 },
+	pos = { x = 7, y = 3 },
 	cost = 3,
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	order = 19,
 	can_use = function(self, card)
 		return true
@@ -2703,9 +2703,9 @@ local run = {
 	set = "Code",
 	name = "cry-Run",
 	key = "run",
-	pos = { x = 5, y = 0 },
+	pos = { x = 12, y = 0 },
 	cost = 3,
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	order = 6,
 	can_use = function(self, card)
 		return Cryptid.safe_get(G.GAME, "blind", "in_blind")
@@ -2815,9 +2815,9 @@ local exploit = {
 	set = "Code",
 	key = "exploit",
 	name = "cry-Exploit",
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	pos = {
-		x = 1,
+		x = 8,
 		y = 3,
 	},
 	cost = 4,
@@ -3031,11 +3031,11 @@ local oboe = {
 	set = "Code",
 	key = "oboe",
 	name = "cry-oboe",
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	order = 10,
 	config = { extra = { choices = 1 } },
 	pos = {
-		x = 2,
+		x = 9,
 		y = 3,
 	},
 	cost = 4,
@@ -3077,11 +3077,11 @@ local rework = {
 	set = "Code",
 	key = "rework",
 	name = "cry-Rework",
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	order = 25,
 	no_pool_flag = "beta_deck",
 	pos = {
-		x = 3,
+		x = 10,
 		y = 3,
 	},
 	cost = 4,
@@ -3221,11 +3221,11 @@ local patch = {
 	set = "Code",
 	key = "patch",
 	name = "cry-patch",
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	order = 26,
 	config = {},
 	pos = {
-		x = 1,
+		x = 8,
 		y = 4,
 	},
 	cost = 4,
@@ -3343,11 +3343,11 @@ local ctrl_v = {
 	set = "Code",
 	key = "ctrl_v",
 	name = "cry-Ctrl-V",
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	order = 27,
 	config = {},
 	pos = {
-		x = 2,
+		x = 9,
 		y = 4,
 	},
 	cost = 4,
@@ -3446,11 +3446,11 @@ local inst = {
 	set = "Code",
 	key = "inst",
 	name = "cry-Inst",
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	order = 28,
 	config = {},
 	pos = {
-		x = 3,
+		x = 10,
 		y = 4,
 	},
 	cost = 4,
@@ -3523,11 +3523,11 @@ local alttab = {
 	set = "Code",
 	key = "alttab",
 	name = "cry-Alttab",
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	order = 28,
 	config = {},
 	pos = {
-		x = 4,
+		x = 11,
 		y = 4,
 	},
 	cost = 4,
@@ -3542,6 +3542,9 @@ local alttab = {
 			elseif G.GAME.blind:get_type() == "Boss" then
 				ret = "???"
 			end
+		end
+		if next(SMODS.find_card("j_cry_kittyprinter")) then
+			ret = localize({ type = "name_text", key = "tag_cry_cat", set = "Tag" })
 		end
 		return { vars = { ret } }
 	end,
@@ -3558,7 +3561,9 @@ local alttab = {
 				play_sound("tarot1")
 				local tag = nil
 				local type = G.GAME.blind:get_type()
-				if type == "Boss" then
+				if next(SMODS.find_card("j_cry_kittyprinter")) then
+					tag = Tag("tag_cry_cat")
+				elseif type == "Boss" then
 					tag = Tag(get_next_tag_key())
 				else
 					tag = Tag(G.GAME.round_resets.blind_tags[type])
@@ -3617,10 +3622,10 @@ local automaton = {
 	set = "Tarot",
 	name = "cry-Automaton",
 	key = "automaton",
-	pos = { x = 5, y = 1 },
+	pos = { x = 12, y = 1 },
 	config = { create = 1 },
 	order = 5,
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	loc_vars = function(self, info_queue, card)
 		return { vars = { Cryptid.safe_get(card, "ability", "create") or self.config.create } }
 	end,
@@ -3775,11 +3780,11 @@ local pointer = {
 	set = "Spectral",
 	name = "cry-Pointer",
 	key = "pointer",
-	pos = { x = 4, y = 3 },
+	pos = { x = 11, y = 3 },
 	hidden = true,
 	soul_set = "Code",
 	order = 41,
-	atlas = "code",
+	atlas = "atlasnotjokers",
 	can_use = function(self, card)
 		return true
 	end,
@@ -4097,6 +4102,7 @@ local pointer = {
 			instantiate = "://INSTANTIATE",
 			inst = "://INSTANTIATE",
 			spaghetti = "://spaghetti",
+			alttab = "://alttab",
 			-- Tags
 			topuptag = "top-up tag",
 			gamblerstag = "gambler's tag",

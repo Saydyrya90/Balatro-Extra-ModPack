@@ -4,7 +4,8 @@ SMODS.Joker {
     extra = {
       xMult = 1.05,
       xMult_gain = 0.05,
-      xMult_base = 1.05
+      xMult_base = 1.05,
+      suit = "Spades"
     }
   },
   rarity = 1,
@@ -27,29 +28,6 @@ SMODS.Joker {
   end,
 
   calculate = function(self, card, context)
-    if context.individual and context.cardarea == G.play then
-      -- Reset the xMult if the current card is not a spade
-      if not context.other_card:is_suit("Spades") then
-        card.ability.extra.xMult = card.ability.extra.xMult_base
-        return
-      end
-
-      -- Give the xMult if the current card is a spade
-      if context.other_card:is_suit("Spades") then
-        -- Upgrade the xMult
-        local xMult = card.ability.extra.xMult
-        card.ability.extra.xMult = card.ability.extra.xMult + card.ability.extra.xMult_gain
-
-        return {
-          x_mult = xMult,
-          card = card
-        }
-      end
-    end
-
-    -- Quietly reset the xMult for the card at the end of played hand
-    if context.after and not context.blueprint then
-      card.ability.extra.xMult = card.ability.extra.xMult_base
-    end
+    return PB_UTIL.panorama_logic(card, context)
   end
 }

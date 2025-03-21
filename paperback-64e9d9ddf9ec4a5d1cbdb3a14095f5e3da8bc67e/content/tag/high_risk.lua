@@ -19,7 +19,7 @@ SMODS.Tag {
     if context.type == 'round_start_bonus' and G.GAME.blind.boss then
       tag:yep('+', G.C.MULT, function()
         G.GAME.blind.chips = G.GAME.blind.chips * 2
-        G.GAME.blind.chip_text = format_ui_value(G.GAME.blind.chips)
+        G.GAME.blind.chip_text = number_format(G.GAME.blind.chips)
         G.GAME.blind:wiggle()
         return true
       end)

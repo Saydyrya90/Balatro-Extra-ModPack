@@ -1,6 +1,6 @@
 SMODS.Joker {
   key = "great_wave",
-  rarity = 3,
+  rarity = 2,
   pos = { x = 4, y = 2 },
   atlas = "jokers_atlas",
   cost = 8,

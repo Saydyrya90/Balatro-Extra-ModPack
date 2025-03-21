@@ -37,28 +37,16 @@ SMODS.Joker {
   end,
 
   calculate = function(self, card, context)
-    if context.cardarea == G.jokers and context.after then
-      local triggered
+    if context.individual and context.cardarea == G.play then
+      local c = context.other_card
 
-      for k, v in pairs(context.full_hand) do
-        if v:is_suit(card.ability.extra.suit) and v:get_id() == card.ability.extra.id then
-          local calculated_card = context.blueprint_card or card
-          triggered = true
-
-          G.E_MANAGER:add_event(Event({
-            func = function()
-              calculated_card:juice_up()
-              return true
-            end
-          }))
-
-          SMODS.calculate_effect({
-            dollars = card.ability.extra.money
-          }, v)
-        end
+      if c and c:is_suit(card.ability.extra.suit) and c:get_id() == card.ability.extra.id then
+        return {
+          dollars = card.ability.extra.money,
+          message_card = c,
+          juice_card = context.blueprint_card or card
+        }
       end
-
-      return nil, triggered
     end
 
     if not context.blueprint and context.end_of_round and context.main_eval then

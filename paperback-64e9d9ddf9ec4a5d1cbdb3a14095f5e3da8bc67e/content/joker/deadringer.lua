@@ -28,7 +28,7 @@ SMODS.Joker {
   end,
 
   calculate = function(self, card, context)
-    if context.repetition then
+    if context.cardarea == G.play and context.repetition then
       return {
         repetitions = card.ability.extra[context.other_card:get_id()]
       }

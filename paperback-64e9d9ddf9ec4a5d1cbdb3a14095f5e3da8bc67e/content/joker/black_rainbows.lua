@@ -33,7 +33,7 @@ SMODS.Joker {
       local polychrome_triggered = false
 
       -- Go through each card in the scoring hand and check if it is a valid card
-      for _, v in pairs(ctx.scoring_hand) do
+      for k, v in pairs(ctx.scoring_hand) do
         if (v:is_suit("Spades") or v:is_suit("Clubs")) and not v.debuff and not v.edition then
           -- If the odds succeed, set the card's edition to polychrome
           if pseudorandom('black_rainbows') < G.GAME.probabilities.normal / card.ability.extra.odds then

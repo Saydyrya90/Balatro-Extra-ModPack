@@ -2,7 +2,9 @@ SMODS.Joker {
   key = "bismuth",
   config = {
     extra = {
-      odds = 5
+      odds = 5,
+      suit1 = 'paperback_Crowns',
+      suit2 = 'paperback_Stars'
     }
   },
   rarity = 2,
@@ -13,17 +15,31 @@ SMODS.Joker {
   discovered = true,
   blueprint_compat = false,
   eternal_compat = true,
+  paperback = {
+    requires_custom_suits = true
+  },
+
+  in_pool = function(self, args)
+    -- Only in pool if you have either a Star or Crown
+    return PB_UTIL.has_suit_in_deck(self.config.extra.suit1, true)
+        or PB_UTIL.has_suit_in_deck(self.config.extra.suit2, true)
+  end,
 
   loc_vars = function(self, info_queue, card)
-    info_queue[#info_queue + 1] = G.P_CENTERS.m_wild
     info_queue[#info_queue + 1] = G.P_CENTERS.e_foil
     info_queue[#info_queue + 1] = G.P_CENTERS.e_holo
     info_queue[#info_queue + 1] = G.P_CENTERS.e_polychrome
 
     return {
       vars = {
+        localize(card.ability.extra.suit1, 'suits_plural'),
+        localize(card.ability.extra.suit2, 'suits_plural'),
         G.GAME.probabilities.normal,
-        card.ability.extra.odds
+        card.ability.extra.odds,
+        colours = {
+          G.C.SUITS[card.ability.extra.suit1] or G.C.PAPERBACK_CROWNS_LC,
+          G.C.SUITS[card.ability.extra.suit2] or G.C.PAPERBACK_STARS_LC,
+        }
       }
     }
   end,
@@ -36,7 +52,8 @@ SMODS.Joker {
 
       for k, v in pairs(ctx.full_hand) do
         local roll = pseudorandom('bismuth') < G.GAME.probabilities.normal / card.ability.extra.odds
-        if not v.edition and not v.debuff and SMODS.has_enhancement(v, 'm_wild') and roll then
+        if not v.edition and not v.debuff and roll and
+            (v:is_suit(card.ability.extra.suit1) or v:is_suit(card.ability.extra.suit2)) then
           triggered = true
 
           local edition = poll_edition('bismuth', nil, nil, true, {

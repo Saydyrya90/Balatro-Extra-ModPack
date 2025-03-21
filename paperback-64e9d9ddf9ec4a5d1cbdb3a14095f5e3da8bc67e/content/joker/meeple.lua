@@ -2,7 +2,6 @@ SMODS.Joker {
   key = 'meeple',
   config = {
     extra = {
-      odds = 5,
       discards_given = 1,
     }
   },
@@ -19,17 +18,15 @@ SMODS.Joker {
   loc_vars = function(self, info_queue, card)
     return {
       vars = {
-        G.GAME.probabilities.normal,
-        card.ability.extra.odds,
-        card.ability.extra.discards_given,
+        card.ability.extra.discards_given
       }
     }
   end,
 
   calculate = function(self, card, context)
-    if context.individual and context.cardarea == G.play then
-      if context.other_card:is_face() then
-        if pseudorandom("Meeple") < G.GAME.probabilities.normal / card.ability.extra.odds then
+    if context.before and context.main_eval then
+      for _, v in ipairs(context.scoring_hand) do
+        if v:is_face() then
           ease_discard(card.ability.extra.discards_given)
 
           return {

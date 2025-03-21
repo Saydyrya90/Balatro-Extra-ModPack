@@ -3,8 +3,8 @@ SMODS.Joker {
   config = {
     extra = {
       sell_cost = 10,
-      odds = 4,
-      odds_cap = 3
+      odds = 5,
+      chance_mult = 1
     }
   },
   rarity = 3,
@@ -21,29 +21,39 @@ SMODS.Joker {
 
     return {
       vars = {
-        math.min(G.GAME.probabilities.normal, card.ability.extra.odds_cap),
+        G.GAME.probabilities.normal * card.ability.extra.chance_mult,
         card.ability.extra.odds,
         card.ability.extra.sell_cost,
-        card.ability.extra.odds_cap
+        G.GAME.probabilities.normal
       }
     }
   end,
 
   calculate = function(self, card, context)
-    if not context.blueprint and context.selling_card and context.card and context.card.ability.set == 'Joker' then
-      local chance = math.min(G.GAME.probabilities.normal, card.ability.extra.odds_cap)
+    if not context.blueprint and context.selling_card and context.card ~= card and context.card.ability.set == 'Joker' then
+      local chance = G.GAME.probabilities.normal * card.ability.extra.chance_mult
       local roll = pseudorandom("resurrections") < chance / card.ability.extra.odds
 
-      if roll and #G.jokers.cards < G.jokers.config.card_limit then
-        local copy = copy_card(context.card)
-        copy:set_edition('e_negative')
-        copy:add_to_deck()
-        G.jokers:emplace(copy)
-        PB_UTIL.modify_sell_value(copy, -(copy.sell_cost + card.ability.extra.sell_cost))
+      if roll then
+        G.E_MANAGER:add_event(Event {
+          func = function()
+            local copy = copy_card(context.card)
+            copy:set_edition('e_negative', true)
+            copy:add_to_deck()
+            G.jokers:emplace(copy)
+            PB_UTIL.modify_sell_value(copy, -(copy.sell_cost + card.ability.extra.sell_cost))
+            return true
+          end
+        })
+
+        -- Reset chance after a successful roll
+        card.ability.extra.chance_mult = 1
 
         return {
           message = localize('k_duplicated_ex')
         }
+      else
+        card.ability.extra.chance_mult = card.ability.extra.chance_mult + 1
       end
     end
   end

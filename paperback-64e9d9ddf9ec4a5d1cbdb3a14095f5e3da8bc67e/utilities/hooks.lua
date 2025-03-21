@@ -1,3 +1,20 @@
+---@diagnostic disable: duplicate-set-field
+-- Initializes default values in the game object
+local init_game_object_ref = Game.init_game_object
+function Game.init_game_object(self)
+  local ret = init_game_object_ref(self)
+  ret.paperback = {
+    round = {
+      scored_clips = 0
+    },
+    ceramic_inc = 0,
+    bandaged_inc = 0,
+    weather_radio_hand = 'High Card',
+    destroyed_dark_suits = 0,
+  }
+  return ret
+end
+
 ---@diagnostic disable: duplicate-set-field, lowercase-global
 -- Creates the flags
 local BackApply_to_run_ref = Back.apply_to_run
@@ -82,7 +99,7 @@ function eval_card(card, context)
   local ret, ret2 = eval_card_ref(card, context)
 
   if context.cardarea == G.play and context.main_scoring and ret and ret.playing_card and PB_UTIL.has_paperclip(card) then
-    G.GAME.current_round.paperback_scored_clips = G.GAME.current_round.paperback_scored_clips + 1
+    G.GAME.paperback.round.scored_clips = G.GAME.paperback.round.scored_clips + 1
 
     -- Add a new context for our Paperclips when held in hand
     for _, v in ipairs(G.hand.cards) do

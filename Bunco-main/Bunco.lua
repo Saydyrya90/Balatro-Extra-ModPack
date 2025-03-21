@@ -348,6 +348,9 @@ SMODS.current_mod.extra_tabs = function()
                             }},
                             {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
                                 {n=G.UIT.T, config={text = 'wingedcatgirl', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'Shinosan', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
                             }}
                         }},
                         {n=G.UIT.C, config={align = "tl", padding = 0.05, minw = 2.0}, nodes={
@@ -2153,7 +2156,7 @@ create_joker({ -- Nil Bill
     calculate = function(self, card, context)
         if context.remove_playing_cards then
             ease_dollars(card.ability.extra.bonus * #context.removed)
-            forced_message('$'..card.ability.extra.bonus, card, G.C.MONEY)
+            forced_message('$'..card.ability.extra.bonus * #context.removed, card, G.C.MONEY)
         end
     end
 })
@@ -3472,10 +3475,15 @@ create_joker({ -- The Joker
                             event({blocking = false, blockable = false, trigger = 'after', delay = 0.06*G.SETTINGS.GAMESPEED, func = function()
                                 play_sound('tarot2', 0.96, 0.4)
                             return true end})
+                            local destroyed_cards = {}
                             for _, card_to_trash in ipairs(trash_list) do
                                 if not card_to_trash.removed then
                                     card_to_trash:start_dissolve(nil, nil, dissolve_time_fac)
+                                    table.insert(destroyed_cards, card_to_trash)
                                 end
+                            end
+                            if next(destroyed_cards) then
+                                SMODS.calculate_context({remove_playing_cards = true, removed = destroyed_cards})
                             end
                             return true
                         end

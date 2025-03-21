@@ -18,12 +18,12 @@ SMODS.Joker {
   eternal_compat = true,
 
   loc_vars = function(self, info_queue, card)
-    local hand = G.GAME.current_round.paperback_weather_radio_hand
+    local hand = G.GAME.paperback.weather_radio_hand
 
     return {
       vars = {
         card.ability.extra.a_xmult,
-        localize(hand or 'High Card', 'poker_hands'),
+        localize(hand, 'poker_hands'),
         card.ability.extra.xmult_disable,
         card.ability.extra.xmult_penalty,
         card.ability.extra.x_mult
@@ -33,7 +33,7 @@ SMODS.Joker {
 
   calculate = function(self, card, context)
     if not context.blueprint and context.before then
-      if next(context.poker_hands[G.GAME.current_round.paperback_weather_radio_hand]) then
+      if next(context.poker_hands[G.GAME.paperback.weather_radio_hand]) then
         card.ability.extra.x_mult = card.ability.extra.x_mult + card.ability.extra.a_xmult
 
         if G.GAME.blind.boss and not G.GAME.blind.disabled and card.ability.extra.x_mult >= card.ability.extra.xmult_disable then
@@ -84,5 +84,5 @@ function PB_UTIL.reset_weather_radio()
     if v.visible then hands[#hands + 1] = k end
   end
   local hand = pseudorandom_element(hands, pseudoseed("weather_radio"))
-  G.GAME.current_round.paperback_weather_radio_hand = hand
+  G.GAME.paperback.weather_radio_hand = hand
 end

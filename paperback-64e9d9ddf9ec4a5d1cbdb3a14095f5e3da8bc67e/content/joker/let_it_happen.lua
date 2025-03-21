@@ -49,19 +49,11 @@ SMODS.Joker {
       end
 
       -- Balance the chips if the hand is not debuffed
-      local tot = hand_chips + mult
       if not context.debuffed_hand then
-        hand_chips = mod_chips(math.floor(tot / 2))
-        mult = mod_mult(math.floor(tot / 2))
-        update_hand_text({ delay = 0 }, { mult = mult, chips = hand_chips })
-
+        PB_UTIL.apply_plasma_effect(context.blueprint_card or card)
         table.insert(card.ability.extra.hands_played_this_ante, context.scoring_name)
 
-        -- Return balanced message
-        return {
-          message = localize('k_balanced'),
-          colour = { 0.8, 0.45, 0.85, 1 }
-        }
+        return nil, true
       end
     end
 

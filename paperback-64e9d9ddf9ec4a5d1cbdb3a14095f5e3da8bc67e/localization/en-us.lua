@@ -26,6 +26,32 @@ return {
       }
     },
     Joker = {
+      j_paperback_festive_joker = {
+        name = "Festive Joker",
+        text = {
+          "{C:attention}#1#s{} have a {C:green}#2# in #3#",
+          "chance to create a random",
+          "{C:attention}Consumable{} when scored",
+          "{C:inactive}(Must have room)"
+        }
+      },
+      j_paperback_medic = {
+        name = "Medic",
+        text = {
+          "{C:attention}#1#s{} retrigger",
+          "cards an additional time",
+        }
+      },
+      j_paperback_matcha = {
+        name = "Matcha",
+        text = {
+          "Gain {C:chips}+#1#{} chips when",
+          "a card is scored",
+          "{C:green}#2# in #3#{} chance to",
+          "consume on {C:mult}discard",
+          "{C:inactive}(Currently {C:chips}+#4#{C:inactive} Chips)"
+        }
+      },
       j_paperback_you_are_a_fool = {
         name = "You Are a Fool!",
         text = {
@@ -52,7 +78,8 @@ return {
           "face down, if scored hand",
           "contains a {C:attention}face up{} and",
           "{C:attention}face down{} card, create",
-          "a random consumable"
+          "a random consumable",
+          "{C:inactive}(Must have room)"
         }
       },
       j_paperback_weather_radio = {
@@ -79,26 +106,24 @@ return {
       j_paperback_bismuth = {
         name = "Bismuth",
         text = {
-          "Played {C:attention}Wild Cards{} have",
-          "a {C:green}#1# in #2#{} chance to",
-          "gain {C:dark_edition}Foil{}, {C:dark_edition}Holographic",
-          "or {C:dark_edition}Polychrome{} edition"
+          "Played {V:1}#1#{} and {V:2}#2#{} have",
+          "a {C:green}#3# in #4#{} chance to gain {C:dark_edition}Foil",
+          "{C:dark_edition}Holographic{} or {C:dark_edition}Polychrome",
         }
       },
       j_paperback_deadringer = {
         name = "Deadringer",
         text = {
-          "Retrigger {C:attention}#1#s{} and {C:attention}#2#s",
-          "once, and {C:attention}#3#s{} twice"
+          "Retrigger scored {C:attention}#1#s{} and {C:attention}#2#s",
+          "once, and scored {C:attention}#3#s{} twice"
         }
       },
       j_paperback_full_moon = {
         name = "Full Moon",
         text = {
-          "Using a {C:planet}Planet{} card",
-          "has a {C:green}#1# in #2#{} chance",
-          "to create {C:tarot}The Moon",
-          "{C:tarot}Tarot{} card"
+          "{C:planet}Planet{} cards have a",
+          "{C:green}#1# in #2#{} chance",
+          "to level up {C:attention}twice",
         }
       },
       j_paperback_sake_cup = {
@@ -107,17 +132,18 @@ return {
           "After a hand is played, {C:attention}#1#s",
           "{C:attention}held in hand{} have a {C:green}#2# in #3#",
           "chance to make the {C:planet}Planet",
-          "card for played {C:attention}poker hand"
+          "card for played {C:attention}poker hand",
+          "{C:inactive}(Must have room)"
         }
       },
       j_paperback_resurrections = {
         name = "Resurrections",
         text = {
-          "Sold {C:attention}Jokers{} have a {C:green}#1# in #2#",
+          "Selling a {C:attention}Joker{} has a {C:green}#1# in #2#",
           "chance to make a {C:dark_edition}Negative",
-          "copy of themselves with",
-          "{C:money}-$#3#{} sell value",
-          "{C:inactive}(Chance capped at {C:green}#4# in #2#{C:inactive})"
+          "copy with {C:money}-$#3#{} sell value",
+          "{s:0.9}Chance increases by {s:0.9,C:green}#4#{s:0.9} on fail",
+          "{s:0.9}Chance resets when activated"
         }
       },
       j_paperback_book_of_vengeance = {
@@ -143,7 +169,7 @@ return {
         name = "Angel Investor",
         text = {
           "Skipping a {C:attention}blind{} gives",
-          "an {C:attention}Angel Investment Tag"
+          "{C:attention}#1#{} {C:money}Angel Investment Tags"
         }
       },
       j_paperback_ice_cube = {
@@ -243,8 +269,7 @@ return {
       j_paperback_find_jimbo = {
         name = "Find Jimbo",
         text = {
-          "After a hand is scored,",
-          "each played {C:attention}#1#{} of",
+          "Each scored {C:attention}#1#{} of",
           "{V:1}#2#{} earns {C:money}$#3#{}",
           "{s:0.8}Card changes every round"
         },
@@ -253,8 +278,8 @@ return {
         name = "Cream Liqueur",
         text = {
           "{C:attention}Tags{} earn {C:money}$#1#{} when activated",
-          "{C:green}#2# in #3#{} chance this card is",
-          "consumed at end of round"
+          "Consumed in {C:attention}#2#{} rounds",
+          "{C:inactive}(Resets when a {C:attention}Tag{C:inactive} is acquired)"
         }
       },
       j_paperback_coffee = {
@@ -419,10 +444,9 @@ return {
       j_paperback_solemn_lament = {
         name = "Solemn Lament",
         text = {
-          "Retrigger {C:attention}first{} scored card",
-          "{C:attention}once{} for every remaining",
-          "{C:chips}hand{} or {C:mult}discard{}",
-          "{C:inactive}(The lowest of the two)",
+          "Retrigger {C:attention}first{} scored",
+          "card {C:attention}once{} for every {C:chips}hand",
+          "and {C:mult}discard{} remaining"
         },
       },
       j_paperback_hole_in_one = {
@@ -438,9 +462,10 @@ return {
       j_paperback_mismatched_sock = {
         name = "Mismatched Sock",
         text = {
-          "This Joker gains {C:mult}+#1#{} Mult",
-          "if played hand contains no {C:attention}pairs{}",
-          "{C:inactive}(Currently {C:mult}+#2# {C:inactive}Mult)",
+          "This Joker gains {X:mult,C:white}X#1#",
+          "Mult if played hand does",
+          "not contain a {C:attention}#2#",
+          "{C:inactive}(Currently {X:mult,C:white}X#3#{C:inactive} Mult)",
         },
       },
       j_paperback_quick_fix = {
@@ -465,10 +490,11 @@ return {
       j_paperback_surfer = {
         name = "Surfer",
         text = {
-          "This Joker gains {C:chips}+#1#{} chips",
-          "for every {C:attention}#2#{} held",
-          "in hand at end of round",
-          "{C:inactive}(Currently {C:chips}+#3#{C:inactive} chips)"
+          "This Joker gains {C:chips}+#1#{} Chips",
+          "for every {C:attention}#3#{} held in hand",
+          "at {C:attention}end of round{}, and {C:chips}+#2#",
+          "Chips for every {C:attention}#3#{} scored",
+          "{C:inactive}(Currently {C:chips}+#4#{C:inactive} chips)"
         }
       },
       j_paperback_blue_bonnets = {
@@ -578,6 +604,7 @@ return {
           "If played hand contains a {C:attention}Three of a Kind{},",
           "{C:green}#1# in #2#{} chance to create a random {C:planet}Planet{} card and",
           "{C:green}#1# in #3#{} chance to create a random {C:purple}Tarot{} card",
+          "{C:inactive}(Must have room)"
         },
       },
       j_paperback_triple_moon_goddess_minor_arcana = {
@@ -585,7 +612,8 @@ return {
         text = {
           "If played hand contains a {C:attention}Three of a Kind{},",
           "{C:green}#1# in #2#{} chance to create a random {C:tarot}Tarot{} card, and",
-          "{C:green}#1# in #3#{} chance to create a random {C:paperback_minor_arcana}Minor Arcana{} card"
+          "{C:green}#1# in #3#{} chance to create a random {C:paperback_minor_arcana}Minor Arcana{} card",
+          "{C:inactive}(Must have room)"
         },
       },
       j_paperback_derecho = {
@@ -609,7 +637,7 @@ return {
         name = "Grand Strategy",
         text = {
           "This Joker gives {X:mult,C:white}X#1#{} Mult if",
-          "{C:attention}#2#{} unique {C:attention}enahncements{}, {C:attention}editions{},",
+          "{C:attention}#2#{} unique {C:attention}enhancements{}, {C:attention}editions{},",
           "or {C:attention}seals{} are in your full deck",
           "{C:inactive}(Currently {C:attention}#3#{C:inactive})",
         },
@@ -668,9 +696,10 @@ return {
       j_paperback_paranoia = {
         name = "Paranoia",
         text = {
-          "After scoring a hand,",
-          "destroy all {C:paperback_dark_suit}dark suits{} played",
-          "and all {C:paperback_light_suit}light suits{} held in hand",
+          "{C:paperback_light_suit}Light suits{} give {C:mult}+#1#{} Mult",
+          "when {C:attention}scored{} for every {C:paperback_dark_suit}dark",
+          "{C:paperback_dark_suit}suit{} {C:attention}destroyed{} this run",
+          "{C:inactive}(Currently {C:mult}+#2#{C:inactive} Mult)"
         },
       },
       j_paperback_unholy_alliance = {
@@ -685,7 +714,7 @@ return {
         name = "Summoning Circle",
         text = {
           "If played hand contains a",
-          "{C:attention}Five of a Kind{}, create a copy",
+          "{C:attention}#1#{}, create a copy",
           "of a {C:attention}random consumable",
           "{C:inactive}(Must have room)",
         },
@@ -718,8 +747,8 @@ return {
       j_paperback_let_it_happen = {
         name = "Let it Happen",
         text = {
-          "If hand has not been played this Ante,",
-          "balance {C:mult}Mult{} and {C:chips}Chips{}",
+          "If hand has not been played this",
+          "{C:attention}Ante{}, balance {C:mult}Mult{} and {C:chips}Chips",
           "{C:inactive}(Hands played:{C:attention}#1#{C:inactive})",
         },
       },
@@ -751,9 +780,9 @@ return {
       j_paperback_meeple = {
         name = "Meeple",
         text = {
-          "Scored {C:attention}face cards{} have a",
-          "{C:green}#1# in #2#{} chance to",
-          "give {C:mult}+#3#{} Discard(s)"
+          "If played hand contains",
+          "a scoring {C:attention}face{} card, gain",
+          "{C:mult}+#1#{} discard this round",
         }
       },
       j_paperback_apple = {
@@ -823,8 +852,10 @@ return {
       j_paperback_pyrite = {
         name = "Pyrite",
         text = {
-          "Scored {C:paperback_crowns}Crowns{} earn",
-          "between {C:money}$#1#{} and {C:money}$#2#"
+          "Played {V:1}#1#{} have a",
+          "{C:green}#2# in #3#{} chance to spawn",
+          "a random {C:tarot}Tarot{} card",
+          "{C:inactive}(Must have room)"
         }
       },
       j_paperback_wheat_field = {
@@ -839,14 +870,16 @@ return {
       j_paperback_clothespin = {
         name = "Clothespin",
         text = {
-          "Clips {C:attention}held in hand{}",
-          "provide {C:chips}+#1#{} Chips",
+          "Gain {C:chips}+#1#{} Chips at {C:attention}end",
+          "{C:attention}of round{} for each {C:attention}Clip",
+          "in {C:attention}held hand",
+          "{C:inactive}(Currently {C:chips}+#2#{C:inactive} Chips)"
         }
       },
       j_paperback_watercolor_joker = {
         name = "Watercolor Joker",
         text = {
-          "{C:attention}#1#s give",
+          "{C:attention}#1#s{} give",
           "{X:chips,C:white}X#2#{} Chips when scored",
         }
       },
@@ -1030,8 +1063,10 @@ return {
       c_paperback_eight_of_wands = {
         name = "Eight of Wands",
         text = {
-          "Create a {C:dark_edition}Negative",
-          "{C:attention}Tag{} and lose {C:money}$#1#"
+          "Create a {C:dark_edition}Negative {C:attention}Tag{} and",
+          "lose {C:money}$#1#{}, plus {C:money}$#2#{} for every",
+          "Joker over {C:attention}#3#{} owned",
+          "{C:inactive}(Currently {C:money}$#4#{C:inactive})"
         }
       },
       c_paperback_nine_of_wands = {
@@ -1101,15 +1136,15 @@ return {
       v_paperback_celtic_cross = {
         name = "Celtic Cross",
         text = {
-          "{C:paperback_minor_arcana}Minor Arcana{} cards may",
-          "appear in the {C:money}Shop"
+          "Gain a {C:paperback_minor_arcana}Divination Tag{} when",
+          "clearing a {C:attention}Boss Blind"
         }
       },
       v_paperback_soothsay = {
         name = "Soothsay",
         text = {
-          "Gain a {C:paperback_minor_arcana}Divination Tag{} when",
-          "clearing a {C:attention}Boss Blind"
+          "{C:paperback_minor_arcana}Minor Arcana{} cards may",
+          "appear in the {C:money}Shop"
         }
       },
     },
@@ -1337,6 +1372,14 @@ return {
       -- Minor Arcana
       p_paperback_minor_arcana_normal = {
         name = "Minor Arcana Pack",
+        text = {
+          "Choose {C:attention}#1#{} of up to {C:attention}#2#",
+          "{C:paperback_minor_arcana}Minor Arcana{} cards",
+          "to be used immediately"
+        }
+      },
+      p_paperback_minor_arcana_jumbo = {
+        name = "Jumbo Minor Arcana Pack",
         text = {
           "Choose {C:attention}#1#{} of up to {C:attention}#2#",
           "{C:paperback_minor_arcana}Minor Arcana{} cards",

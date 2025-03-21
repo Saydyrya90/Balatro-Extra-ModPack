@@ -2,7 +2,8 @@ SMODS.Joker {
   key = "cream_liqueur",
   config = {
     extra = {
-      odds = 5,
+      rounds_reset = 3,
+      rounds = 3,
       money = 5
     }
   },
@@ -23,8 +24,7 @@ SMODS.Joker {
     return {
       vars = {
         card.ability.extra.money,
-        G.GAME.probabilities.normal,
-        card.ability.extra.odds
+        card.ability.extra.rounds
       }
     }
   end,
@@ -37,7 +37,9 @@ SMODS.Joker {
     end
 
     if not context.blueprint and context.end_of_round and context.main_eval then
-      if pseudorandom("cream_liqueur") < G.GAME.probabilities.normal / card.ability.extra.odds then
+      card.ability.extra.rounds = card.ability.extra.rounds - 1
+
+      if card.ability.extra.rounds <= 0 then
         PB_UTIL.destroy_joker(card)
 
         return {
@@ -47,9 +49,28 @@ SMODS.Joker {
         }
       else
         return {
-          message = localize('k_safe_ex'),
+          message = localize {
+            type = 'variable',
+            key = 'a_remaining',
+            vars = { card.ability.extra.rounds }
+          }
         }
       end
     end
   end
 }
+
+local add_tag_ref = add_tag
+function add_tag(tag)
+  -- When a tag is added, reset the countdown for each existing Cream Liqueur
+  for _, v in ipairs(SMODS.find_card('j_paperback_cream_liqueur')) do
+    if v.ability.extra.rounds > 0 and v.ability.extra.rounds < v.ability.extra.rounds_reset then
+      v.ability.extra.rounds = v.ability.extra.rounds_reset
+
+      SMODS.calculate_effect({
+        message = localize('k_reset')
+      }, v)
+    end
+  end
+  return add_tag_ref(tag)
+end

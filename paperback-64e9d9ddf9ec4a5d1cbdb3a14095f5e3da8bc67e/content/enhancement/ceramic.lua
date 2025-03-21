@@ -15,7 +15,7 @@ SMODS.Enhancement {
     return {
       vars = {
         card.ability.extra.a_money_low,
-        card.ability.extra.a_money_high + (G.GAME.round_resets.paperback_ceramic_inc or 0),
+        card.ability.extra.a_money_high + G.GAME.paperback.ceramic_inc,
         G.GAME.probabilities.normal,
         card.ability.extra.odds
       }
@@ -25,7 +25,7 @@ SMODS.Enhancement {
   calculate = function(self, card, context)
     if context.cardarea == G.play and context.main_scoring then
       local dollars = pseudorandom("Ceramic Money Amount", card.ability.extra.a_money_low,
-        card.ability.extra.a_money_high + (G.GAME.round_resets.paperback_ceramic_inc or 0))
+        card.ability.extra.a_money_high + G.GAME.paperback.ceramic_inc)
 
       return {
         dollars = dollars

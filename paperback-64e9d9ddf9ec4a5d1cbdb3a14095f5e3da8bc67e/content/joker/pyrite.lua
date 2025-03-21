@@ -2,8 +2,8 @@ SMODS.Joker {
   key = 'pyrite',
   config = {
     extra = {
-      min_money = -1,
-      max_money = 3
+      suit = 'paperback_Crowns',
+      odds = 3
     }
   },
   rarity = 2,
@@ -21,20 +21,32 @@ SMODS.Joker {
   loc_vars = function(self, info_queue, card)
     return {
       vars = {
-        card.ability.extra.min_money,
-        card.ability.extra.max_money
+        localize(card.ability.extra.suit, 'suits_plural'),
+        G.GAME.probabilities.normal,
+        card.ability.extra.odds,
+        colours = {
+          G.C.SUITS[card.ability.extra.suit] or G.C.PAPERBACK_CROWNS_LC
+        }
       }
     }
   end,
 
   calculate = function(self, card, context)
-    if context.individual and context.cardarea == G.play then
-      if context.other_card:is_suit('paperback_Crowns') then
-        local dollars = pseudorandom("pyrite", card.ability.extra.min_money, card.ability.extra.max_money)
+    if context.individual and (context.cardarea == G.play or context.cardarea == 'unscored') then
+      if context.other_card:is_suit(card.ability.extra.suit) then
+        if pseudorandom("pyrite") < G.GAME.probabilities.normal / card.ability.extra.odds then
+          local eff_card = context.blueprint_card or card
 
-        if dollars ~= 0 then
-          return {
-            dollars = dollars
+          return nil, PB_UTIL.try_spawn_card {
+            set = 'Tarot',
+            func = function()
+              SMODS.calculate_effect({
+                message = localize('k_plus_tarot'),
+                colour = G.C.SECONDARY_SET.Tarot,
+                juice_card = eff_card,
+                message_card = context.other_card
+              }, eff_card)
+            end
           }
         end
       end

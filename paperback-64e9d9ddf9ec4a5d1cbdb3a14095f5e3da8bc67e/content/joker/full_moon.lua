@@ -2,21 +2,19 @@ SMODS.Joker {
   key = 'full_moon',
   config = {
     extra = {
-      odds = 3
+      odds = 2
     }
   },
-  rarity = 1,
+  rarity = 2,
   pos = { x = 5, y = 9 },
   atlas = 'jokers_atlas',
-  cost = 5,
+  cost = 7,
   unlocked = true,
   discovered = true,
   blueprint_compat = true,
   eternal_compat = true,
 
   loc_vars = function(self, info_queue, card)
-    info_queue[#info_queue + 1] = G.P_CENTERS.c_moon
-
     return {
       vars = {
         G.GAME.probabilities.normal,
@@ -27,16 +25,28 @@ SMODS.Joker {
 
   calculate = function(self, card, context)
     if context.using_consumeable and context.consumeable.ability.set == 'Planet' then
-      if pseudorandom("full_moon") < G.GAME.probabilities.normal / card.ability.extra.odds then
-        return nil, PB_UTIL.try_spawn_card {
-          key = 'c_moon',
-          func = function()
-            SMODS.calculate_effect({
-              message = localize('k_plus_tarot'),
-              colour = G.C.SECONDARY_SET.Planet
-            }, context.blueprint_card or card)
-          end
-        }
+      local hand = context.consumeable.ability.hand_type
+
+      if hand and pseudorandom('full_moon') < G.GAME.probabilities.normal / card.ability.extra.odds then
+        -- This is a copy of how a planet card sets the text when upgrading a hand (just formatted better)
+        update_hand_text(
+          { sound = 'button', volume = 0.7, pitch = 0.8, delay = 0.3 },
+          {
+            handname = localize(hand, 'poker_hands'),
+            chips = G.GAME.hands[hand].chips,
+            mult = G.GAME.hands[hand].mult,
+            level = G.GAME.hands[hand].level
+          }
+        )
+
+        level_up_hand(context.blueprint_card or card, hand)
+
+        update_hand_text(
+          { sound = 'button', volume = 0.7, pitch = 1.1, delay = 0 },
+          { mult = 0, chips = 0, handname = '', level = '' }
+        )
+
+        return nil, true
       end
     end
   end

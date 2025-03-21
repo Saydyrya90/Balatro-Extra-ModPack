@@ -1,15 +1,10 @@
 -- Load mod config
 PB_UTIL.config = SMODS.current_mod.config
 
--- Load values that get reset at the start of each round
+-- Update values that get reset at the start of each round
 SMODS.current_mod.reset_game_globals = function(run_start)
-  G.GAME.current_round.paperback_scored_clips = 0
-
+  G.GAME.paperback.round.scored_clips = 0
   PB_UTIL.reset_weather_radio()
-
-  if run_start then
-    G.GAME.round_resets.paperback_ceramic_inc = 0
-  end
 end
 
 PB_UTIL.base_poker_hands = {
@@ -135,6 +130,7 @@ PB_UTIL.ENABLED_JOKERS = {
   "cream_liqueur",
   "champagne",
   "coffee",
+  "matcha",
   "epic_sauce",
   "dreamsicle",
   "popsicle_stick",
@@ -208,12 +204,11 @@ PB_UTIL.ENABLED_JOKERS = {
   "clothespin",
   "kintsugi_joker",
   "watercolor_joker",
-  -- "medic",
-  -- "festive_joker",
+  "medic",
+  "festive_joker",
   -- "winter_melon",
   -- "freezer",
   -- "perke_os",
-  -- "matcha",
   -- "jestrogen",
   -- "jestosterone",
   -- "marketable_plushie",
@@ -369,7 +364,9 @@ PB_UTIL.DECK_SKINS = {
 }
 
 PB_UTIL.ENABLED_MINOR_ARCANA_BOOSTERS = {
-  'minor_arcana_normal',
+  'minor_arcana_normal_1',
+  'minor_arcana_normal_2',
+  'minor_arcana_jumbo',
   'minor_arcana_mega',
 }
 
@@ -427,6 +424,18 @@ if PB_UTIL.config.minor_arcana_enabled then
   PB_UTIL.MinorArcanaBooster = SMODS.Booster:extend {
     group_key = 'paperback_minor_arcana_pack',
     draw_hand = true,
+
+    loc_vars = function(self, info_queue, card)
+      return {
+        -- Removes the underscore with a digit at the end of a key if it exists,
+        -- allowing us to make only one localization entry per type
+        key = self.key:gsub('_%d$', ''),
+        vars = {
+          card.ability.choose,
+          card.ability.extra
+        }
+      }
+    end,
 
     create_card = function(self, card, i)
       return {

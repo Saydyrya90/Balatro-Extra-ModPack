@@ -59,6 +59,10 @@ end
 G.FUNCS.go_to_neato_twitch = function(e)
     love.system.openURL("https://twitch.tv/neato")
 end
+
+to_big = to_big or function(num)
+    return num
+end
 --#endregion
 
 
@@ -127,12 +131,5 @@ function loc_colour(_c, _default)
     end
 
     return old_loc_colour(_c, _default)
-end
-
-local old_Card_get_chip_mult = Card.get_chip_mult
-function Card:get_chip_mult()
-    -- hook seems best for mod compat?
-    local mult = old_Card_get_chip_mult(self)
-    return mult + (self.ability.perma_mult or 0)
 end
 --#endregion

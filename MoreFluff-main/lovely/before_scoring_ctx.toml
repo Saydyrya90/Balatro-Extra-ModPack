@@ -1,0 +1,15 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = -1
+
+# Extra Credit before but not as much; diff. ctx though becuase clashes AUGH
+[[patches]]
+[patches.pattern]
+target = 'functions/state_events.lua'
+match_indent = true
+pattern = '''if modded then update_hand_text({sound = 'chips2', modded = modded}, {chips = hand_chips, mult = mult}) end'''
+position = 'after'
+payload = '''
+SMODS.calculate_context{cardarea = G.jokers, mf_before_cards = true, main_eval=true}
+'''

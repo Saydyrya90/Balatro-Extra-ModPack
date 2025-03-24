@@ -11,6 +11,7 @@ function Game.init_game_object(self)
     bandaged_inc = 0,
     weather_radio_hand = 'High Card',
     destroyed_dark_suits = 0,
+    last_tarot_energized = false,
   }
   return ret
 end
@@ -34,38 +35,6 @@ function Back.apply_to_run(arg_56_0)
   G.GAME.pool_flags.paperback_legacy_can_spawn = false
 
   G.P_CENTERS['j_diet_cola']['no_pool_flag'] = 'ghost_cola_can_spawn'
-end
-
--- set_cost hook for zeroing out a sell value
-local set_cost_ref = Card.set_cost
-function Card.set_cost(self)
-  if G.STAGE == G.STAGES.RUN and self.added_to_deck then
-    -- If this card is Union Card, set sell cost to 0
-    if self.config.center.key == "j_paperback_union_card" then
-      self.sell_cost = 0
-      return
-    end
-
-    if next(SMODS.find_card("j_paperback_union_card")) then
-      self.sell_cost = 0
-      return
-    end
-  end
-
-  -- Don't calculate the original sell_cost calculation if a custom sell_cost increase has been indicated
-  if self.ability.custom_sell_cost then
-    self.sell_cost = self.sell_cost + (self.ability.custom_sell_cost_increase or 0)
-    self.ability.custom_sell_cost_increase = nil
-  else
-    set_cost_ref(self)
-  end
-
-  -- if trying to set the sell cost to zero, set it to zero
-  if self.zero_sell_cost then
-    self.sell_cost = 0
-    self.ability.custom_sell_cost = true
-    self.zero_sell_cost = nil
-  end
 end
 
 -- Draws a debuffed shader on top of cards in your collection if they are disabled

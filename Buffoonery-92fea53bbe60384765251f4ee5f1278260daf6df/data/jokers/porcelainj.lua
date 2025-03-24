@@ -9,10 +9,19 @@ SMODS.Joker {
     rarity = 2,
     cost = 6,
     unlocked = true,
-    discovered = true,
+    discovered = false,
     eternal_compat = true,
     perishable_compat = true,
     blueprint_compat = true,
+	in_pool = function()
+        local condition = false
+        if G.playing_cards then
+            for k, v in pairs(G.playing_cards) do
+                if v.config.center == G.P_CENTERS.m_buf_porcelain or v.config.center == G.P_CENTERS.m_buf_porcelain_g then condition = true break end
+            end
+        end
+        return condition
+    end,
     config = {
         extra = { Xchip = 1, Xchip_gain = 0.75, tally = 0 },
     },

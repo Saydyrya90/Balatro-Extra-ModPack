@@ -34,7 +34,9 @@ SMODS.Joker {
           local destroyed_card = #G.hand.cards > 0 and
               pseudorandom_element(G.hand.cards, pseudoseed('power_surge_destroy'))
 
-          PB_UTIL.destroy_playing_cards { destroyed_card }
+          if destroyed_card then
+            destroyed_card.ability.paperback_destroyed = true
+          end
         end
 
         return {
@@ -42,6 +44,13 @@ SMODS.Joker {
         }
       end
     end
-  end
 
+    if context.destroy_card and context.cardarea == G.hand and context.destroy_card.ability.paperback_destroyed then
+      context.destroy_card.ability.paperback_destroyed = nil
+
+      return {
+        remove = true
+      }
+    end
+  end
 }

@@ -9,7 +9,7 @@ SMODS.Joker {
     rarity = 1,
     cost = 4,
     unlocked = true,
-    discovered = true,
+    discovered = false,
     eternal_compat = true,
     perishable_compat = true,
     blueprint_compat = false,
@@ -35,9 +35,10 @@ SMODS.Joker {
 			card.ability.extra.once = 1 
 			card.ability.extra.aim = math.random(1, G.GAME.current_round.hands_left)
 			SMODS.calculate_effect({message = localize('k_reset'), colour = G.C.FILTER}, card)  -- resets when added to deck
-			if G.STATE == G.STATES.SHOP or G.STATE == G.STATES.BLIND_SELECT then card.ability.extra.add_check = true end -- This will make the next reset be skipped if the card was not added in-round
-		end
-		
+			if G.STATE == G.STATES.SHOP or G.STATE == G.STATES.BLIND_SELECT then 
+				card.ability.extra.add_check = true -- This will make the next reset be skipped if the card was not added in-round
+			end
+		end	
 	end,
 	
     calculate = function(self, card, context)
@@ -53,6 +54,13 @@ SMODS.Joker {
 				}
 			end
 		end
+		
+		if (context.after or context.first_hand_drawn) then
+			local eval = function() 
+			return G.GAME.current_round.hands_played == (card.ability.extra.aim - 1) end
+			juice_card_until(card, eval, true) --will jiggle when the relevant hand is current
+		end
+		
 		if context.end_of_round and not context.blueprint and not context.repetition and not context.other_card then
 			if card.ability.extra.aim == G.GAME.current_round.hands_played then
 				card.ability.extra.success = true

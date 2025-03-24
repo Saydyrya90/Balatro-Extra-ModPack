@@ -15,34 +15,28 @@ SMODS.Joker {
   end,
 
   add_to_deck = function(self, card, from_debuff)
+    -- Set the sell cost of all jokers and consumables to 0
     card.sell_cost = 0
 
-    for k, v in ipairs(G.jokers.cards) do
-      if v.set_cost then
-        v.zero_sell_cost = true
-        v:set_cost()
-      end
+    for _, v in ipairs(G.jokers.cards) do
+      v.sell_cost = 0
     end
 
-    for k, v in ipairs(G.consumeables.cards) do
-      if v.set_cost then
-        v.zero_sell_cost = true
-        v:set_cost()
-      end
+    for _, v in ipairs(G.consumeables.cards) do
+      v.sell_cost = 0
     end
   end,
 
   remove_from_deck = function(self, card, from_debuff)
-    for k, v in ipairs(G.jokers.cards) do
+    -- Make the game recalculate the sell cost of all jokers and consumables
+    for _, v in ipairs(G.jokers.cards) do
       if v.set_cost then
-        v.ability.custom_sell_cost = false
         v:set_cost()
       end
     end
 
-    for k, v in ipairs(G.consumeables.cards) do
+    for _, v in ipairs(G.consumeables.cards) do
       if v.set_cost then
-        v.ability.custom_sell_cost = false
         v:set_cost()
       end
     end
@@ -52,7 +46,7 @@ SMODS.Joker {
     if context.cardarea == G.jokers and context.joker_main then
       local suitable_cards = 0
 
-      for k, v in ipairs(context.scoring_hand) do
+      for _, v in ipairs(context.scoring_hand) do
         if PB_UTIL.is_suit(v, 'light') then
           suitable_cards = suitable_cards + 1
         end
@@ -68,12 +62,35 @@ SMODS.Joker {
   end
 }
 
--- If user has Union Card, set the newly acquired card to $0
+-- If user has Union Card, set the newly acquired card's sell cost to $0
 local add_to_deck_ref = Card.add_to_deck
 Card.add_to_deck = function(self, from_debuff)
-  add_to_deck_ref(self, from_debuff)
+  local ret = add_to_deck_ref(self, from_debuff)
 
   if next(SMODS.find_card("j_paperback_union_card")) then
     self.sell_cost = 0
   end
+
+  return ret
+end
+
+-- When calculating the sell cost for a card, if Union Card is present then override it
+-- and set the sell cost to 0
+local set_cost_ref = Card.set_cost
+function Card.set_cost(self)
+  if self.added_to_deck then
+    -- If this card is Union Card set sell cost to 0
+    if self.config.center.key == "j_paperback_union_card" then
+      self.sell_cost = 0
+      return
+    end
+
+    -- If Union Card is added to deck set sell cost to 0
+    if next(SMODS.find_card("j_paperback_union_card")) then
+      self.sell_cost = 0
+      return
+    end
+  end
+
+  return set_cost_ref(self)
 end

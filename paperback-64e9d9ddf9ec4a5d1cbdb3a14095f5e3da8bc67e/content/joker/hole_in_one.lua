@@ -48,21 +48,13 @@ SMODS.Joker {
       -- Resets all Jokers' sell values
       for _, v in ipairs(G.jokers.cards) do
         if v ~= card then
-          if v.set_cost then
-            v.ability.extra_value = 0
-            v.zero_sell_cost = true
-            v:set_cost()
-          end
+          PB_UTIL.set_sell_value(v, 0)
         end
       end
 
       -- Resets all consumeables' sell values
       for _, v in ipairs(G.consumeables.cards) do
-        if v.set_cost then
-          v.ability.extra_value = 0
-          v.zero_sell_cost = true
-          v:set_cost()
-        end
+        PB_UTIL.set_sell_value(v, 0)
       end
     end
   end

@@ -27,8 +27,7 @@ SMODS.Joker {
   end,
 
   set_ability = function(self, card, initial, delay_sprites)
-    card.zero_sell_cost = true
-    card:set_cost()
+    PB_UTIL.set_sell_value(card, 0)
   end,
 
   calculate = function(self, card, context)

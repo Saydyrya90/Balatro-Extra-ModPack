@@ -1061,6 +1061,10 @@ function CardArea:emplace(card, location, stay_flipped)
         for _, v in ipairs(G.GAME.current_round.used_cine or {}) do
             local center = Reverie.find_cine_center(v)
     
+            if center and type(center.config.extra) == "table" and center.config.extra.set_price then
+                card.cost = center.config.extra.set_price
+                card.sell_cost = math.floor(center.config.extra.set_price / 2)
+            end
             if center and type(center.config.extra) == "table" and center.config.extra.discount then
                 card.cost = math.max(1, math.floor(card.cost * (100 - center.config.extra.discount) / 100))
                 card.sell_cost = math.max(1, math.floor(card.cost / 2)) + (card.ability.extra_value or 0)
@@ -1374,7 +1378,7 @@ function Reverie.use_cine(center, card, area, copier)
             -- Manipulate vouchers
             for _, v in ipairs(G.shop_vouchers.cards) do
                 if card.ability.name == "Adrifting" then
-                    v.cost = math.max(1, math.floor(card.cost * (100 - G.P_CENTERS.c_dvrprv_adrifting.config.extra.discount) / 100))
+                    v.cost = G.P_CENTERS.c_dvrprv_adrifting.config.extra.set_price
                     v:flip()
                 elseif is_reverie or card.ability.name == "Crazy Lucky" then
                     local c = G.shop_vouchers:remove_card(v)
@@ -1799,7 +1803,7 @@ function Card:calculate_joker(context)
             elseif self.config.center.key == "j_olab_fine_wine" and context.setting_blind and not context.getting_sliced and not context.blueprint then
                 self.ability.extra.discards = self.ability.extra.discards + 1
             elseif self.config.center.key == "j_mf_goldencarrot" and context.after and context.cardarea == G.jokers and not context.blueprint then
-                if not self.gone and self.ability.extra - 1 > 0 then
+                if not self.gone and type(self.ability.extra) == "number" and self.ability.extra - 1 > 0 then
                     self.ability.extra = self.ability.extra - 1
                 end
             elseif self.config.center.key == "j_bunc_fondue" and context.after and G.GAME.current_round.hands_played == 1 and context.scoring_hand and not context.blueprint then

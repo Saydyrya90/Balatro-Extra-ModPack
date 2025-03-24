@@ -1,6 +1,88 @@
 <sup>Supported languages:</sup> [![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/pinkmaggit-hub/Buffoonery/blob/main/changelog.md) [![pt-br](https://img.shields.io/badge/lang-pt--br-green.svg)](https://github.com/pinkmaggit-hub/Buffoonery/blob/main/changelog.pt-br.md) 
 
-# v1.1.2
+# v1.2.0
+### Adições
+**Curingas:**
+- Ex-Fã Amargurado (Especial)
+- Eco do Abismo (Especial)
+- Integral (Especial)
+- Kerman Renascido (Especial)
+- Curinga Prestativo (Especial)
+- Van (Especial)
+- JokerGebra (Incomum)
+- Sayajimbo (Incomum)
+- Terno Sob Medida (Incomum)
+- Let Me Solo Her (Raro)
+
+**Apostas:**
+- Paládio (após Aposta Dourada) e Espinela (após Aposta de Paládio)
+
+**Baralho / Estampa:**
+- Arenito
+
+### Ajustes Visuais
+- A arte de _Jebediah Kerman_ agora muda dinamicamente com base no último planeta usado. Todos os planetas Vanilla incluídos.
+- A mecânica de "Banir" do _Prisma Abissal_ foi substituída por "Exilar". Cartas exiladas mantêm todas as suas propriedades, e cartas Eternas podem ser exiladas.
+- Gradientes personalizados adicionados para o texto de Multi Exponencial e Fichas Exponenciais.
+- Removida a opção "Modo de Desempenho do Memory Card" das configurações, pois não é mais necessária.
+- Cartas Especiais agora são exibidas na coleção por padrão.
+- Todos os Curingas agora começam como não descobertos por padrão.
+- Adicionada exigência de desbloqueio da carta "Alma" para o _Maggit_.
+- Adicionada exigência de desbloqueio para o _Baralho Galopeiro_.
+- Adicionada uma aba de Créditos.
+
+### Balanceamento
+- _Roleta Russa_ nerfada: o dinheiro agora aumenta com a chance, começa em $15.
+- Revertido _Fondue Dourado_ para $8/-$2.
+
+### Correção de Bugs
+- Corrigido _Palhaço_, que estava subindo 20 no primeiro upgrade, em vez de 15.
+- Corrigido bug do escalonamento do _Palhaço_, que era perdido ao iniciar uma nova rodada.
+- Corrigido _Patronizing Joker_ não selecionando cartas durante a luta contra o chefe _Cerulean Bell_.
+- Corrigido _Erosão_ não funcionando corretamente com o _baralho de Porcelana_.
+- Corrigido _Memory Card / Tiro ao Prato_ tremendo excessivamente.
+- Corrigido _Prisma Abissal_ não contabilizando corretamente curingas já negativos dentro dele ao converter os outros para negativos.
+- Corrigido _Prisma Abissal_ travando o jogo ao continuar uma rodada e tentar vendê-lo.
+- Corrigido _Baralho Galopeiro + Capa Galopeira_ mostrando 4 mãos restantes antes de selecionar a primeira escolha, em vez de 2.
+
+---
+
+## v1.1.8
+### Novo Idioma!
+- Localização em Chinês Simplificado por Ethylene.
+
+## v1.1.7
+### Correção de Bugs
+- Corrigido _Nobreza_ travando o jogo ao tentar converter uma carta já aprimorada em uma Carta de Porcelana (Real) quando **_Bunco_** está instalado.
+
+### Ajustes Visuais
+- O texto "JOKER" na arte do _Tiro Ao Prato_ agora segue mais de perto a paleta de cores.
+
+## v1.1.6
+### Compatibilidade & Correção de Bugs
+- Corrigido Cartas de Porcelana (Real) copiadas pelo _Navio de Teseu_ do mod **_Extra Credit_**, que quebravam quando não deveriam.
+- _Roleta Russa_ agora se autodestrói ao adicionar um Curinga Lendário para abrir espaço para ele.
+
+## v1.1.5
+### Novo Idioma!
+- Localização em Russo por BurAndBY.
+
+### Correção de Bugs
+- Corrigido (Real) Cartões de Porcelana quebrando aleatoriamente e de forma errática quando mantidos na mão após o uso.
+
+## v1.1.4
+### Correções & Ajustes Visuais
+- Corrigidos curingas de _Emulti_ quebrados.
+- _Tiro ao Prato_ agora balança quando a mão relevante está ativa (Sugerido por Lykrast).
+- _Chá Dorkshire_ não converte mais (Reais) Cartões de Porcelana em Cartões de Porcelana normais.
+- _Curinga de Porcelana_ agora só aparece quando o jogador tem Cartas de Porcelana (Real) no baralho.
+
+## v1.1.3
+### Correções
+- Corrigido _Tiro ao Prato_ não atualizando quando adicionado no meio da rodada.
+- Adicionado efeito sonoro próprio para _Emulti_.
+
+## v1.1.2
 **REQUISITOS: STEAMODDED 1.0.0~ALPHA-1321c OU MAIS RECENTE
 ### Compatibilidade
 + <ins>***O [Talisman](https://github.com/MathIsFun0/Talisman/) é opcional agora***</ins>, porém recomendado por conta dos sons de XFichas e EMulti.
@@ -8,7 +90,7 @@
 *OBS: Se você decidir usar o Talisman, use a versão 2.0.3. Se não estiver na seção de "releases" do repositório do Talisman, baixe o código-fonte e use ele.*
 + Corrigido o Curinga Intrometido não selecionando 5 cartas quando o [Bunco](https://github.com/Firch/Bunco) estava instalado
 + Cartas com alguma classe do [UnStable](https://github.com/kirbio/UnStable) que começam com "T" (em inglês) agora funcionam com *Chá Dorkshire / Dorkshire Gold*
-### Balance
+### Balancemento
 + *Palhaço*: Fichas & Ganho de Fichas 20 --> 15
 + *Fondue Dourado*: Dinheiro $8 --> $9, Perda de dinheiro -$2 -> -$3
 + *Jebediah Kerman*: Ganho de Multi 10 --> 8, Chance 1 de 5 --> 1 de 6
@@ -65,6 +147,14 @@
 + Corrigido um problema no código de *Memory Card* durante o desenvolvimento (ele estava memorizando não apenas na primeira mão, como deveria)  
 + Adicionada pseudo-compatibilidade entre *Memory Card* e [Collector's Cards](https://github.com/Mathguy23/CollectorsCards) (prevenção de travamento)  
 
+---
+
+## v1.0.1  
++ *Curinga Intrometido* agora sempre seleciona 5 cartas, como pretendido originalmente  
++ *Cinco Dedos* agora custa $5, por motivos de temática  
++  de arte (*Jebediah Kerman* e *Curinga Folgado*)  
++  da localização pt_BR  
+
 # v1.0.0  
 **REQUISITO: STEAMODDED 1.0.0~ALPHA-1103a OU MAIS RECENTE**  
 
@@ -87,11 +177,7 @@
 + Buff em *Voucher de Saque* para torná-lo mais útil no início do jogo  
 + Pequeno buff em *Korny*  
 
-## v1.0.1  
-+ *Curinga Intrometido* agora sempre seleciona 5 cartas, como pretendido originalmente  
-+ *Cinco Dedos* agora custa $5, por motivos de temática  
-+  de arte (*Jebediah Kerman* e *Curinga Folgado*)  
-+  da localização pt_BR  
+---
 
 # v0.9.0  
 ### Adições:  
@@ -134,7 +220,7 @@
 - Tradução dos curingas para português do Brasil  
 - Melhorada a arte de *Jebediah Kerman*  
 
-# v0.5.0  
+## v0.5.0  
 ### Adições:  
 **Curingas**  
 - Cinco Dedos (Comum)  
@@ -154,7 +240,7 @@
 ## v0.5.2  
 - Adicionada compatibilidade de naipes de mods a *Memory Card*  
 
-# v0.2.0  
+## v0.2.0  
 ### Adições:  
 **Curingas**  
 - Voucher de Saque (Comum)  
@@ -171,7 +257,7 @@
 - Atualizada a arte de *Memory Card* (resolução do número 8 aumentada)  
 - Descrições de *Kornringa* e *Memory Card* tornadas menos verbosas  
 
-# v0.1.0  
+## v0.1.0  
 ### Adições:  
 **Curingas**  
 - Kornringa (Comum)  

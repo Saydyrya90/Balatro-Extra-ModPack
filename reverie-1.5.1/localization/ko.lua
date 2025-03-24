@@ -50,7 +50,7 @@ return {
                 text = {
                     "이번 상점 동안에는",
                     "모든 카드가 {C:dark_edition}홀로그래픽{}이",
-                    "되고 {C:attention}25%{} 할인됩니다",
+                    "되고 {C:attention}#1#%{} 할인됩니다",
                     "카드 및 {s:0.8,C:attention}부스터 팩 {s:0.8}새로고침"
                 }
             },
@@ -150,7 +150,7 @@ return {
                 name = "파랑 끝에서",
                 text = {
                     "이번 상점 동안에는",
-                    "모든 것이 {C:attention}무료{}지만",
+                    "모든 것이 {C:attention}$#1#{} 지만",
                     "{C:attention}뒤집혀서{} 나타납니다",
                     "카드 및 {s:0.8,C:attention}부스터 팩 {s:0.8}새로고침"
                 }

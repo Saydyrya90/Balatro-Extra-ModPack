@@ -172,17 +172,23 @@ function PB_UTIL.get_complete_suits(vanilla_ranks)
 end
 
 ---Modifies the sell value of a provided card by the provided amount
----@param card table
+---@param card table | Card
 ---@param amount integer
 function PB_UTIL.modify_sell_value(card, amount)
   if not card.set_cost or amount == 0 then return end
+  card.ability.extra_value = (card.ability.extra_value or 0) + amount
+  card:set_cost()
+end
 
-  if card.ability.custom_sell_cost then
-    card.ability.custom_sell_cost_increase = amount
-  else
-    card.ability.extra_value = (card.ability.extra_value or 0) + amount
-  end
-
+--- Sets the extra_value field of this card to an amount that will result in its
+--- sell cost being equal to amount
+---@param card table | Card
+---@param amount integer
+function PB_UTIL.set_sell_value(card, amount)
+  if not card.set_cost then return end
+  -- This is called just so it calculates the cost of the card... a bit silly
+  card:set_cost()
+  card.ability.extra_value = amount - math.max(1, math.floor(card.cost / 2))
   card:set_cost()
 end
 
@@ -267,35 +273,6 @@ function PB_UTIL.open_booster_pack(key)
 
   G.FUNCS.use_card { config = { ref_table = pack } }
   pack:start_materialize()
-end
-
----Adds a booster pack with the specified key to the shop.
----Does nothing if the shop does not exist
----@param key string
----@param price number?
-function PB_UTIL.add_booster_pack(key, price)
-  if not G.shop then return end
-
-  -- Create the pack the same way vanilla game does it
-  local pack = Card(
-    G.shop_booster.T.x + G.shop_booster.T.w / 2,
-    G.shop_booster.T.y,
-    G.CARD_W * 1.27, G.CARD_H * 1.27,
-    G.P_CARDS.empty,
-    G.P_CENTERS[key],
-    { bypass_discovery_center = true, bypass_discovery_ui = true }
-  )
-
-  if price then
-    pack.cost = price
-  end
-
-  -- Create the price tag above the pack
-  create_shop_card_ui(pack, 'Booster', G.shop_booster)
-
-  -- Add the pack to the shop
-  pack:start_materialize()
-  G.shop_booster:emplace(pack)
 end
 
 ---Gets a pseudorandom tag from the Tag pool

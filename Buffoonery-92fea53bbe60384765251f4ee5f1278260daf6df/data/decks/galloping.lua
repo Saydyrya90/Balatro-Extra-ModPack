@@ -1,7 +1,8 @@
 SMODS.Back{
     key = 'galloping',
-    unlocked = true,
+    unlocked = false,
     discovered = true,
+	unlock_condition = {type = 'ante_up', ante = 10},
     atlas = 'buf_decks',
     pos = {
         x = 1,

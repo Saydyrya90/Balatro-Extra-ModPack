@@ -9,7 +9,7 @@ SMODS.Joker {
     rarity = 3,
     cost = 7,
     unlocked = true,
-    discovered = true,
+    discovered = false,
     eternal_compat = true,
     perishable_compat = true,
     blueprint_compat = false,
@@ -27,9 +27,10 @@ SMODS.Joker {
 			local tcards = {}
 			local check = false
 			for k, v in ipairs(context.scoring_hand) do
-				if v:get_id() == 2 or v:get_id() == 3 or v:get_id() == 10 or 
+				if (v:get_id() == 2 or v:get_id() == 3 or v:get_id() == 10 or 
 				SMODS.Ranks[v.base.value].key == 'unstb_12' or SMODS.Ranks[v.base.value].key == 'unstb_13' or
-				SMODS.Ranks[v.base.value].key == 'unstb_21' or SMODS.Ranks[v.base.value].key == 'unstb_25' then 
+				SMODS.Ranks[v.base.value].key == 'unstb_21' or SMODS.Ranks[v.base.value].key == 'unstb_25')
+				and not (v.config.center == G.P_CENTERS.m_buf_porcelain or v.config.center == G.P_CENTERS.m_buf_porcelain_g) then -- will not overwrite Royal Porcelain
 					check = true
 					tcards[#tcards+1] = v
 					v:set_ability(G.P_CENTERS.m_buf_porcelain, nil, true)

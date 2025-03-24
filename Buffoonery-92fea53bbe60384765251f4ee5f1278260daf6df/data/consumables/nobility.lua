@@ -3,7 +3,7 @@ SMODS.Consumable{
 	atlas = 'buf_consumables',
 	pos = {x = 0, y = 0},
 	key = 'nobility',
-	discovered = true,
+	discovered = false,
 	set_card_type_badge = function(self, card, badges)
         badges[1] = create_badge(localize("k_tarot").."!?", get_type_colour(self or card.config, card), nil, 1.2)
     end,

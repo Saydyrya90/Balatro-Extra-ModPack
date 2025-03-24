@@ -30,18 +30,23 @@ SMODS.Joker {
   end,
 
   calculate = function(self, card, context)
-    if not context.blueprint and context.selling_card and context.card ~= card and context.card.ability.set == 'Joker' then
+    if not context.blueprint and context.selling_card and context.card ~= card and
+        context.card.ability.set == 'Joker' and not context.card.ability.paperback_resurrected then
       local chance = G.GAME.probabilities.normal * card.ability.extra.chance_mult
       local roll = pseudorandom("resurrections") < chance / card.ability.extra.odds
 
       if roll then
+        context.card.ability.paperback_resurrected = true
+
         G.E_MANAGER:add_event(Event {
           func = function()
             local copy = copy_card(context.card)
             copy:set_edition('e_negative', true)
+            -- Remove resurrected flag from copy
+            copy.ability.paperback_resurrected = nil
             copy:add_to_deck()
             G.jokers:emplace(copy)
-            PB_UTIL.modify_sell_value(copy, -(copy.sell_cost + card.ability.extra.sell_cost))
+            PB_UTIL.set_sell_value(copy, -card.ability.extra.sell_cost)
             return true
           end
         })

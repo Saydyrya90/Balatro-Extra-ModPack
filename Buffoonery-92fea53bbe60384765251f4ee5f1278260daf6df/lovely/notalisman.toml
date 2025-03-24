@@ -17,6 +17,13 @@ if not buf.compat.talisman then
 		colour = G.C.MULT
 		config.type = 'fade'
 		config.scale = 0.7
+	elseif eval_type == 'e_chips' then
+		sound = 'buf_echip'
+		amt = amt
+		text = '^' .. amt
+		colour = G.C.CHIPS
+		config.type = 'fade'
+		config.scale = 0.7
 	end
 end
 '''

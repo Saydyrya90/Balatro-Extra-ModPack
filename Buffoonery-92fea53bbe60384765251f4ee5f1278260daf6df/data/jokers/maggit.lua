@@ -12,8 +12,8 @@ SMODS.Joker{
 	},
     rarity = 4,
     cost = 5,
-    unlocked = true,
-    discovered = true,
+    unlocked = false,
+    unlock_condition = {hidden = true},
     eternal_compat = true,
     perishable_compat = true,
     blueprint_compat = true,
@@ -26,7 +26,10 @@ SMODS.Joker{
 			info_queue[#info_queue+1] = {set = 'Other', key = 'maggit_info'}
 		end
 		if card.ability.extra.once == 1 then
-            return {key = self.key .. '_alt', 
+			-- for key, _ in pairs(self.loc_txt.text) do
+				-- print(key)
+			-- end
+            return {key = self.key .. '_alt',			
 					vars = {card.ability.extra.Emult},
 			}
 		else

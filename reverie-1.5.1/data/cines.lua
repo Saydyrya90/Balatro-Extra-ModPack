@@ -206,6 +206,10 @@ local function loc_vars_cine(self, info_queue, card)
         vars = { card.ability.extra.slot }
     elseif self.name == "Every Hue" then
         vars = { card.ability.extra.rounds }
+    elseif self.name == "Gem Heist" then
+        vars = { card.ability.extra.discount }
+    elseif self.name == "Adrifting" then
+        vars = { card.ability.extra.set_price }
     else
         vars = { card.ability.extra }
     end
@@ -526,7 +530,7 @@ Reverie.cines = {
         name = "Adrifting",
         config = {
             extra = {
-                discount = 100
+                set_price = 1
             }
         },
         cost = 4,

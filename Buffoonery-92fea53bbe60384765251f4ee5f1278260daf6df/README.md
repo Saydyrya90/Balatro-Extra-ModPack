@@ -8,8 +8,6 @@
 
 **<ins>Recommended: download from the [releases](https://github.com/pinkmaggit-hub/Buffoonery/releases) section (use latest)</ins>**
 
-## Check out the [Wiki](https://balatromods.miraheze.org/wiki/Buffoonery)
-
 ## Jokers
 ![github](https://github.com/user-attachments/assets/67bee398-1f8c-4da1-a6f1-d4aef7bcf9bc)
 

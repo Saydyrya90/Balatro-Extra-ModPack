@@ -26,6 +26,7 @@ SMODS.Joker {
   calculate = function(self, card, context)
     if context.using_consumeable and context.consumeable.ability.set == 'Planet' then
       local hand = context.consumeable.ability.hand_type
+      local eff_card = context.blueprint_card or card
 
       if hand and pseudorandom('full_moon') < G.GAME.probabilities.normal / card.ability.extra.odds then
         -- This is a copy of how a planet card sets the text when upgrading a hand (just formatted better)
@@ -39,7 +40,14 @@ SMODS.Joker {
           }
         )
 
-        level_up_hand(context.blueprint_card or card, hand)
+        G.E_MANAGER:add_event(Event {
+          func = function()
+            eff_card:juice_up()
+            return true
+          end
+        })
+
+        level_up_hand(context.consumeable or eff_card, hand)
 
         update_hand_text(
           { sound = 'button', volume = 0.7, pitch = 1.1, delay = 0 },

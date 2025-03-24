@@ -181,6 +181,13 @@ SMODS.current_mod.extra_tabs = function()
               nodes = {
                 { n = G.UIT.T, config = { text = 'BurAndBY (RU)', colour = G.C.FILTER, scale = 0.4 } }
               }
+            },
+            {
+              n = G.UIT.R,
+              config = { align = 'cm', minh = 0.25 },
+              nodes = {
+                { n = G.UIT.T, config = { text = 'Ethylene (zh_CN)', colour = G.C.FILTER, scale = 0.4 } }
+              }
             }
           }
         },

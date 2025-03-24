@@ -9,7 +9,7 @@ SMODS.Joker {
     rarity = 1,
     cost = 2,
     unlocked = true,
-    discovered = true,
+    discovered = false,
     eternal_compat = false,
     perishable_compat = true,
     blueprint_compat = false,

@@ -3,11 +3,11 @@
 	"name": "Buffoonery",
 	"display_name": "Buffoonery",
 	"author": ["PinkMaggit"],
-	"description": "A vanilla-adjacent content mod made with the help of the glorious Balatro modding community. Xchips and Emult sounds by HexaCryonic",
+	"description": "A vanilla-adjacent content mod made with the help of the glorious Balatro modding community. Enjoy!",
 	"prefix": "buf",
 	"main_file": "Buffoonery.lua",
 	"priority": 0,
 	"badge_colour": "ee8f8d",
-	"version": "1.1.3",
-	"dependencies": ["Steamodded (>=1.0.0~ALPHA-1321c)"]
+	"version": "1.2.0",
+	"dependencies": ["Steamodded (>=1.0.0~ALPHA-1410a)"]
 }

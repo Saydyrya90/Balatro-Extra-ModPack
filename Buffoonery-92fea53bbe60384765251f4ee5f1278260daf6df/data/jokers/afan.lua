@@ -9,12 +9,12 @@ SMODS.Joker {
     rarity = 1,
     cost = 0,
     unlocked = true,
-    discovered = true,
+    discovered = false,
     eternal_compat = true,
     perishable_compat = true,
     blueprint_compat = true,
     config = {
-        extra = { mult = 15, odds = 2, cost = -6 },
+        extra = { mult = 15, odds = 2, cost = -6, count = 0 },
     },
     loc_txt = {set = 'Joker', key = 'j_buf_afan'},
     loc_vars = function(self, info_queue, card)
@@ -31,11 +31,12 @@ SMODS.Joker {
                 mult = card.ability.extra.mult
             }
         end
-        if context.selling_self and pseudorandom('adoring'..G.GAME.round_resets.ante) < G.GAME.probabilities.normal / card.ability.extra.odds then
+        if context.selling_self and pseudorandom('adoring'..G.GAME.round_resets.ante) < G.GAME.probabilities.normal / card.ability.extra.odds and card.ability.extra.count < 4 then
+			card.ability.extra.count = card.ability.extra.count + 1
 			card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('buf_afan_annoy'..math.random(1,4)), colour = G.C.RED})
 			G.E_MANAGER:add_event(Event({
 				trigger = "after",
-				delay = 1,
+				delay = 0.5,
 				func = function() 
 					local chosen_joker = nil
 					for i = 1, #G.jokers.cards do
@@ -46,6 +47,16 @@ SMODS.Joker {
 					G.jokers:emplace(_card)
 					_card:start_materialize()
 					G.GAME.joker_buffer = 0
+					return true
+				end
+			}))
+		elseif context.selling_self and card.ability.extra.count >= 4 then
+			SMODS.calculate_effect({message = localize('buf_disilluison'), colour = G.C.BUF_SPC}, card)
+			G.E_MANAGER:add_event(Event({
+				trigger = "after",
+				delay = 0.5,
+				func = function() 
+					SMODS.add_card({key = 'j_buf_afan_spc'})
 					return true
 				end
 			}))

@@ -6,7 +6,7 @@ PB_UTIL.MinorArcanaBooster {
     extra = 3,
     choose = 1
   },
-  weight = 4 / 3,
+  weight = 1,
   cost = 4,
   discovered = true,
 }

@@ -33,6 +33,7 @@ SMODS.Back{
 			for i = 1, #keys_to_remove do
 				keys_to_remove[i]:remove()
 			end
+			G.GAME.starting_deck_size = #G.playing_cards
         return true end }))
     end,
 }

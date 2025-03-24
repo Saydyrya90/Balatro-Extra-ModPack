@@ -14,12 +14,12 @@ SMODS.Joker {
   end,
 
   calculate = function(self, card, context)
-    local ctx = context.paperback
-
-    if ctx and ctx.entering_shop and ctx.create_boosters then
+    if context.starting_shop then
       G.E_MANAGER:add_event(Event {
         func = function()
-          PB_UTIL.add_booster_pack('p_buffoon_normal_' .. pseudorandom('backpack', 1, 2), 0)
+          local key = 'p_buffoon_normal_' .. pseudorandom('backpack', 1, 2)
+          local booster = SMODS.add_booster_to_shop(key)
+          booster.cost = 0
           return true
         end
       })

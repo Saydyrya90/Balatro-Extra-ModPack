@@ -1,5 +1,81 @@
 <sup>Supported languages:</sup> [![pt-br](https://img.shields.io/badge/lang-pt--br-green.svg)](https://github.com/pinkmaggit-hub/Buffoonery/blob/main/changelog.pt-br.md) [![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/pinkmaggit-hub/Buffoonery/blob/main/changelog.md)
 
+# v1.2.0
+### Additions
+**Jokers:**
+- Bitter Ex-Fan (Special)
+- Echo of The Abyss (Special)
+- Integral (Special)
+- Kerman Reborn (Special)
+- Supportive Joker (Special)
+- Van (Special)
+- JokerGebra (Uncommon)
+- Sayajimbo (Uncommon)
+- Tailored Suit (Uncommon)
+- Let Me Solo Her (Rare)
+
+**Stakes:**
+- Palladium (after Gold Stake) and Spinel (After Palladium Stake)
+
+**Deck / Sleeve:**
+- Sandstone
+### Polish
+- _Jebediah Kerman_'s artwork now dynamically changes based on last planet used. All Vanilla planets included
+- "Banish" mechanic from _Abyssal Prism_ replaced with "Exile". Exiled cards keep all their properties and Eternal ones can be exiled.
+- Added custom gradients for Exponential Mult and Exponential Chips text
+- Removed "Memory Card Performance Mode" toggle from settings, as it is no longer needed
+- Special cards are now shown in collection by default
+- All jokers are now undiscovered by default
+- Added "Soul" card unlock requirement for _Maggit_
+- Added an unlock requirement for _Galloping Deck_
+- Added a Credits tab
+### Balance
+- Nerfed Roulette: money increases with chance, starts at $15
+- Reverted Gold Fondue to $8/-$2
+### Bugfixing
+- Fixed _Clown_ upgrading by 20 the first time, instead of 15
+- Fixed _Clown_'s scaling bugging out or being lost when starting a new run
+- Fixed _Patronizing Joker_ not selecting cards during Cerulean Bell bossfight
+- Fixed _Erosion_ not working properly with the _Porcelain Deck_
+- Fixed _Memory Card / Clay Shooting_ shaking too much
+- Fixed _Abyssal Prism_ not properly accounting for already-negative Jokers inside it when converting the others into negatives
+- Fixed _Abyssal Prism_ crashing the game when continuing a run and trying to sell it
+- Fixed _Galloping Deck + Sleeve_ showing 4 hands left before selecting the first blind, instead of 2
+
+
+# v1.1.8
+### New Language!
+- Simplified Chinese localization by Ethylene
+
+# v1.1.7
+### Bugfixing
+- Fixed Nobility crashing the game when trying to convert an already enhanced card into a (Royal) Porcelain Card, when Bunco is installed.
+### Polish
+- Made the "JOKER" text in Clay Shooting's artwork more closely follow its palette.
+
+# v1.1.6
+### Compatibility & bugfixing
+- Fixed (Royal) Porcelain Cards copied by Extra Credit's Ship of Theseus breaking when they shouldn't
+- Russian Roulette now destroys itself when adding a legendary Joker to make room for it
+
+# v1.1.5
+### New language!
+- Russian localization by BurAndBY
+### Bugfixing
+- Fixed (royal) porcelain cards breaking randomly and erratically when kept in hand after play
+
+# v1.1.4
+### Fixes & Polish
+- Fixed borked Emult jokers
+- Clay Shooting now jiggles when relevant hand is current (Suggested by Lykrast)
+- Dorkshire Tea no longer converts Royal Porcelain Cards to normal Porcelain Cards
+- Porcelain Joker now only appears when the player has (Royal) Porcelain Cards in their deck
+
+# v1.1.3
+### Fixes
+- Fixed Clay Shooting not updating when added mid round
+- Added own emult sound
+
 # v1.1.2
 **REQUIREMENTS: STEAMODDED 1.0.0~ALPHA-1321c OR NEWER
 ### Compatibility

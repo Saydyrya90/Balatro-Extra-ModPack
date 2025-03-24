@@ -9,17 +9,17 @@ SMODS.Joker {
     rarity = 2,
     cost = 6,
     unlocked = true,
-    discovered = true,
+    discovered = false,
     eternal_compat = true,
     perishable_compat = true,
     blueprint_compat = false,
     config = {
-        extra = {money = 30, odds = 6} 
+        extra = {money = 15, odds = 6} 
     },
     loc_txt = {set = 'Joker', key = 'j_buf_roulette'},
 	loc_vars = function(self, info_queue, card)
 		return { 
-			vars = { G.GAME.probabilities.normal or 1, card.ability.extra.odds}
+			vars = { G.GAME.probabilities.normal or 1, card.ability.extra.odds, card.ability.extra.money}
 		}
 	end,
 
@@ -58,22 +58,20 @@ SMODS.Joker {
 					G.E_MANAGER:add_event(Event({
 						func = function() 
 							for i = 1, jokers_to_create do
-								local card = create_card('Joker', G.jokers, true, nil, nil, nil, nil, 'rou') -- the 'true' here refers to the 'legendary' boolean of the create_card() function
-								card:add_to_deck()
-								G.jokers:emplace(card)
-								card:start_materialize()
-								G.GAME.joker_buffer = 0
+								SMODS.add_card({set = 'Joker', rarity = 'Legendary'})
+								SMODS.calculate_effect({message = localize('k_plus_joker'), colour = G.C.BLUE}, card)
+								card:start_dissolve()
 							end
 							return true
 						end}))   
-					SMODS.calculate_effect({message = localize('k_plus_joker'), colour = G.C.BLUE}, card)
 				else
 					card:juice_up(0.8, 0.5)
 					SMODS.calculate_effect({message = localize('buf_dry'), colour = G.C.GREEN}, card)
 					play_sound('buf_roul1', 0.96+math.random()*0.08)
 					delay(0.8)
-					ease_dollars(30)
+					ease_dollars(card.ability.extra.money)
 					card.ability.extra.odds = math.max(card.ability.extra.odds - 1, 1)
+					if card.ability.extra.odds > 2 then card.ability.extra.money = card.ability.extra.money + 5 end
 				end
 			end
 		end

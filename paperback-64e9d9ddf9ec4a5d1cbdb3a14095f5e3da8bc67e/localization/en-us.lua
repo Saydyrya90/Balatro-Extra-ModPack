@@ -5,7 +5,9 @@ return {
         name = "Paper Deck",
         text = {
           "{C:legendary}Paperback{C:attention} Jokers{} are {C:attention}3x",
-          "more likely to appear"
+          "more likely to appear,",
+          "start run with the",
+          "{C:attention,T:j_paperback_shopping_center}#1#{} Joker"
         }
       },
       b_paperback_proud = {
@@ -139,11 +141,12 @@ return {
       j_paperback_resurrections = {
         name = "Resurrections",
         text = {
-          "Selling a {C:attention}Joker{} has a {C:green}#1# in #2#",
-          "chance to make a {C:dark_edition}Negative",
-          "copy with {C:money}-$#3#{} sell value",
-          "{s:0.9}Chance increases by {s:0.9,C:green}#4#{s:0.9} on fail",
-          "{s:0.9}Chance resets when activated"
+          "Sold {C:attention}Jokers{} have a",
+          "{C:green}#1# in #2#{} chance to {C:attention}return",
+          "and gain {C:dark_edition}Negative{} edition",
+          "with {C:money}-$#3#{} sell value",
+          "{s:0.8}Chance increases by {s:0.8,C:green}#4#{s:0.8} on fail",
+          "{s:0.8}Chance resets when activated"
         }
       },
       j_paperback_book_of_vengeance = {
@@ -1136,8 +1139,10 @@ return {
       v_paperback_celtic_cross = {
         name = "Celtic Cross",
         text = {
-          "Gain a {C:paperback_minor_arcana}Divination Tag{} when",
-          "clearing a {C:attention}Boss Blind"
+          "When clearing a {C:attention}Boss",
+          "{C:attention}Blind{}, the next shop will",
+          "have an additional {C:attention}free",
+          "{C:paperback_minor_arcana}Mega Minor Arcana Pack"
         }
       },
       v_paperback_soothsay = {
@@ -1215,10 +1220,10 @@ return {
       m_paperback_soaked = {
         name = "Soaked Card",
         text = {
-          "Cards {C:attention}held in hand{}",
-          "score their {C:chips}chip value{}",
-          "{C:green}#1# in #2#{} chance to be",
-          "destroyed on {C:mult}discard",
+          "When scored, cards {C:attention}held",
+          "{C:attention}in hand{} score their {C:chips}chip",
+          "{C:chips}value{}, {C:green}#1# in #2#{} chance to",
+          "be destroyed on {C:mult}discard",
         }
       },
       m_paperback_wrapped = {
@@ -1320,7 +1325,8 @@ return {
       paperback_blue_clip = {
         name = "Blue Clip",
         text = {
-          "{X:chips,C:white}X#1#{} Chips for each",
+          "{X:chips,C:white}X#1#{} Chips when",
+          "{C:attention}scored{} for each",
           "{C:attention}Clip{} in {C:attention}held hand",
           "{C:inactive}(Currently {X:chips,C:white}X#2#{C:inactive})"
         }
@@ -1328,7 +1334,8 @@ return {
       paperback_red_clip = {
         name = "Red Clip",
         text = {
-          "{C:mult}+#1#{} Mult for each",
+          "{C:mult}+#1#{} Mult when",
+          "{C:attention}scored{} for each",
           "{C:attention}Clip{} in {C:attention}held hand",
           "{C:inactive}(Currently {C:mult}+#2#{C:inactive} Mult)"
         }
@@ -1336,7 +1343,8 @@ return {
       paperback_orange_clip = {
         name = "Orange Clip",
         text = {
-          "Earn {C:money}$#1#{} for every {C:attention}#2#",
+          "Earn {C:money}$#1#{} when",
+          "{C:attention}scored{} for every {C:attention}#2#",
           "{C:attention}Clips{} in {C:attention}held hand",
           "{C:inactive}(Currently {C:money}$#3#{C:inactive})"
         }
@@ -1344,10 +1352,10 @@ return {
       paperback_black_clip = {
         name = "Black Clip",
         text = {
-          "Retriggers if another",
-          "{C:attention}Clip{} is in {C:attention}played hand",
-          "and again if a {C:attention}Clip{} is",
-          "{C:attention}held in hand"
+          "Retriggers when {C:attention}scored",
+          "if another {C:attention}Clip{} is in",
+          "{C:attention}played hand{} and again if",
+          "a {C:attention}Clip{} is {C:attention}held in hand"
         }
       },
       paperback_white_clip = {

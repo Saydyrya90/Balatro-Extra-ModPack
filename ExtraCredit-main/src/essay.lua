@@ -409,7 +409,7 @@ SMODS.Joker{ --Eclipse
     end,
 
     calculate = function(self, card, context)
-        if context.cardarea == G.jokers and (sum_levels() - to_big(12)) > 0 and context.joker_main then
+        if context.cardarea == G.jokers and (sum_levels() - to_big(12)) > to_big(0) and context.joker_main then
             return {
                 message = localize{type='variable',key='a_chips',vars={(sum_levels() - to_big(12))*card.ability.extra.chip_mod}},
                 chip_mod = (sum_levels() - to_big(12))*card.ability.extra.chip_mod,

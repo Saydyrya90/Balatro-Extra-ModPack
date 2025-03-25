@@ -56,7 +56,7 @@ SMODS.Joker { -- 5k, 50k, 100k
 			end
 			if hand_score >= req_score then
 				card.ability.extra.curr = card.ability.extra.curr + 1
-				if card.ability.extra.curr >= card.ability.extra.need then
+				if card.ability.extra.curr >= card.ability.extra.need and card.ability.extra.level < 3 then
 					card.ability.extra.curr = 0
 					card.ability.extra.need = card.ability.extra.need + 2
 					card.ability.extra.level = card.ability.extra.level + 1

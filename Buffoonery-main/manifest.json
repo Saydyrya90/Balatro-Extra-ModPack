@@ -8,6 +8,6 @@
 	"main_file": "Buffoonery.lua",
 	"priority": 0,
 	"badge_colour": "ee8f8d",
-	"version": "1.2.0",
+	"version": "1.2.0-hotfix",
 	"dependencies": ["Steamodded (>=1.0.0~ALPHA-1410a)"]
 }

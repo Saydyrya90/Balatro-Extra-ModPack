@@ -35,6 +35,9 @@ SMODS.Joker {
 		end
 		
 		if context.joker_main and not card.getting_sliced then
+			if buf.compat.talisman then
+				card.ability.extra.mult_amount = to_number(card.ability.extra.mult_amount)
+			end
 			return {
 				echips = card.ability.extra.mult_amount
 			}

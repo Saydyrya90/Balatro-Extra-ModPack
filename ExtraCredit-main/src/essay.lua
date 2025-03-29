@@ -177,6 +177,17 @@ SMODS.current_mod.config_tab = function() --Config tab
     }
 end
 
+-- Talisman Compatibility
+
+to_big = to_big or function(x)
+  return x
+end
+to_number = to_number or function(x)
+  return x
+end
+
+-------------------------
+
 
 local function contains(table_, value)
     for _, v in pairs(table_) do
@@ -192,16 +203,9 @@ local function sum_levels()
 end
 local ed = ease_dollars
 function ease_dollars(mod, x)
-    -- Use Talisman's to_number if available
-    local safe_mod = type(mod) == "table" and (to_number and to_number(mod) or tonumber(mod)) or mod
-    local safe_x = type(x) == "table" and (to_number and to_number(x) or tonumber(x)) or x
-    -- If conversion fails, default to 0
-    safe_mod = safe_mod or 0
-    safe_x = safe_x or 0
-    -- Call original ease_dollars with converted values
-    ed(safe_mod, safe_x)
+    ed(mod, x)
     for i = 1, #G.jokers.cards do
-        local effects = G.jokers.cards[i]:calculate_joker({ EC_ease_dollars = safe_x })
+        local effects = G.jokers.cards[i]:calculate_joker({ EC_ease_dollars = to_big(mod) })
     end
 end
 
@@ -409,10 +413,10 @@ SMODS.Joker{ --Eclipse
     end,
 
     calculate = function(self, card, context)
-        if context.cardarea == G.jokers and (sum_levels() - to_big(12)) > to_big(0) and context.joker_main then
+        if context.cardarea == G.jokers and (sum_levels() - 12) > 0 and context.joker_main then
             return {
-                message = localize{type='variable',key='a_chips',vars={(sum_levels() - to_big(12))*card.ability.extra.chip_mod}},
-                chip_mod = (sum_levels() - to_big(12))*card.ability.extra.chip_mod,
+                message = localize{type='variable',key='a_chips',vars={(sum_levels()-12)*card.ability.extra.chip_mod}},
+                chip_mod = (sum_levels()-12)*card.ability.extra.chip_mod,
                 colour = G.C.CHIPS
             }
         end
@@ -1078,15 +1082,18 @@ SMODS.Joker{ --Ten Gallon
     atlas = 'ECjokers',
 
     loc_vars = function(self, info_queue, card)
-        return {vars = {card.ability.extra.Xmult, card.ability.extra.dollars, (1 + card.ability.extra.Xmult*math.floor((G.GAME.dollars + (G.GAME.dollar_buffer or 0))/card.ability.extra.dollars))}}
+        return {vars = {card.ability.extra.Xmult, card.ability.extra.dollars, to_big(1) + to_big(card.ability.extra.Xmult)*math.floor((G.GAME.dollars + (G.GAME.dollar_buffer or to_big(0)))/to_big(card.ability.extra.dollars))}}
     end,
 
     calculate = function(self, card, context)
-        if context.cardarea == G.jokers and context.joker_main and (card.ability.extra.Xmult*math.floor((G.GAME.dollars + (G.GAME.dollar_buffer or 0))/card.ability.extra.dollars)) > 0 then
-            return{
-                message = localize{type='variable',key='a_xmult',vars={1 + card.ability.extra.Xmult*math.floor((G.GAME.dollars + (G.GAME.dollar_buffer or 0))/card.ability.extra.dollars)}},
-                Xmult_mod = 1 + card.ability.extra.Xmult*math.floor((G.GAME.dollars + (G.GAME.dollar_buffer or 0))/card.ability.extra.dollars)
-            }
+        if context.cardarea == G.jokers and context.joker_main then
+            local xmult = (to_big(card.ability.extra.Xmult)*math.floor((G.GAME.dollars + (G.GAME.dollar_buffer or to_big(0)))/to_big(card.ability.extra.dollars)))
+            if xmult > to_big(0) then
+                return {
+                    message = localize{type='variable',key='a_xmult',vars={to_big(1) + xmult}},
+                    Xmult_mod = to_big(1) + xmult
+                }
+            end
         end
     end
 }
@@ -2509,7 +2516,7 @@ SMODS.Joker{ --Hoarder
 
     calculate = function(self, card, context)
         if context.EC_ease_dollars and not context.blueprint then
-            if context.EC_ease_dollars > 0 then
+            if context.EC_ease_dollars > to_big(0) then
                 card.ability.extra_value = card.ability.extra_value + card.ability.extra
                 card:set_cost()
                 card_eval_status_text(card, 'extra', nil, nil, nil, {
@@ -2855,4 +2862,3 @@ SMODS.Joker{ --Alloy
     end
 }
 end
-

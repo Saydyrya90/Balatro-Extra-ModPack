@@ -32,7 +32,7 @@ SMODS.Enhancement {
       }
     end
 
-    if context.destroy_card and context.cardarea == G.play then
+    if context.destroy_card and context.cardarea == G.play and context.destroy_card == card then
       if pseudorandom("Ceramic Destroy Chance") < G.GAME.probabilities.normal / card.ability.extra.odds then
         return {
           remove = true

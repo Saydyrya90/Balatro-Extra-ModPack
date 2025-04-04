@@ -41,6 +41,7 @@
 ---@field loc_vars? fun(self: SMODS.Blind|table): table? Provides control over displaying the Blind descriptions. See [SMODS.Blind `loc_vars` implementation](https://github.com/Steamodded/smods/wiki/SMODS.Blind#api-methods) documentation for return value details. 
 ---@field collection_loc_vars? fun(self: SMODS.Blind|table): table? Provides control over displaying the Blind description in the collections menu. 
 ---@field in_pool? fun(self: SMODS.Blind|table): boolean Allows configuring if the Blind is allowed to appear. 
+---@field calculate? fun(self: SMODS.Blind|table, blind: Blind|table, context: CalcContext|table): table?, boolean? Calculates effects based on parameters in `context`. See [SMODS calculation](https://github.com/Steamodded/smods/wiki/calculate_functions) docs for details. 
 ---@overload fun(self: SMODS.Blind): SMODS.Blind
 SMODS.Blind = setmetatable({}, {
     __call = function(self)

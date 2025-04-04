@@ -8,26 +8,17 @@ SMODS.Joker {
       suit = "Clubs",
     }
   },
-  rarity = 1,
+  rarity = 2,
   pos = { x = 1, y = 4 },
   atlas = "jokers_atlas",
   cost = 6,
   unlocked = true,
-  discovered = true,
+  discovered = false,
   blueprint_compat = true,
   eternal_compat = true,
   soul_pos = nil,
 
-  loc_vars = function(self, info_queue, card)
-    return {
-      vars = {
-        card.ability.extra.xMult_base,
-        card.ability.extra.xMult_gain
-      }
-    }
-  end,
-
-  calculate = function(self, card, context)
-    return PB_UTIL.panorama_logic(card, context)
-  end
+  loc_vars = PB_UTIL.panorama_loc_vars,
+  calculate = PB_UTIL.panorama_logic,
+  joker_display_def = PB_UTIL.panorama_joker_display_def
 }

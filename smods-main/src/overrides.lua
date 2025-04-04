@@ -559,12 +559,13 @@ function get_straight(hand, min_length, skip, wrap)
             end
         end
     end
-    local function next_ranks(key)
+    local function next_ranks(key, start)
         local rank = SMODS.Ranks[key]
         local ret = {}
+		if not start and not wrap and rank.straight_edge then return ret end
         for _,v in ipairs(rank.next) do
             ret[#ret+1] = v
-            if skip then
+            if skip and (wrap or not SMODS.Ranks[v].straight_edge) then
                 for _,w in ipairs(SMODS.Ranks[v].next) do
                     ret[#ret+1] = w
                 end
@@ -583,8 +584,8 @@ function get_straight(hand, min_length, skip, wrap)
         local new_tuples = {}
         for _, tuple in ipairs(tuples) do
             local any_tuple
-            if (not SMODS.Ranks[tuple[i-1]].straight_edge or i == 2 or wrap) and i ~= #hand+1 then
-                for _,l in ipairs(next_ranks(tuple[i-1])) do
+            if i ~= #hand+1 then
+                for _,l in ipairs(next_ranks(tuple[i-1], i == 2)) do
                     if next(ranks[l]) then
                         local new_tuple = {}
                         for _,v in ipairs(tuple) do new_tuple[#new_tuple+1] = v end
@@ -868,6 +869,21 @@ function G.UIDEF.view_deck(unplayed_only)
 				end
 			end
 		end
+	end
+
+	-- Add empty card area if there's none, to fix a visual issue with no cards left
+	if not next(deck_tables) then
+		local view_deck = CardArea(
+			G.ROOM.T.x + 0.2*G.ROOM.T.w/2,G.ROOM.T.h,
+			6.5*G.CARD_W,
+			0.6*G.CARD_H,
+			{card_limit = 1, type = 'title', view_deck = true, highlight_limit = 0, card_w = G.CARD_W*0.7, draw_layers = {'card'}})
+		table.insert(
+			deck_tables,
+			{n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+				{n=G.UIT.O, config={object = view_deck}}
+			}}
+		)
 	end
 
 	local flip_col = G.C.WHITE
@@ -1370,6 +1386,7 @@ end
 -- immediate = boolean value
 -- silent = boolean value
 function Card:set_edition(edition, immediate, silent)
+	SMODS.enh_cache:write(self, nil)
 	-- Check to see if negative is being removed and reduce card_limit accordingly
 	if (self.added_to_deck or self.joker_added_to_deck_but_debuffed or (self.area == G.hand and not self.debuff)) and self.edition and self.edition.card_limit then
 		if self.ability.consumeable and self.area == G.consumeables then
@@ -1703,6 +1720,7 @@ end
 function Card:align_h_popup()
 	local focused_ui = self.children.focused_ui and true or false
 	local popup_direction = (self.children.buy_button or (self.area and self.area.config.view_deck) or (self.area and self.area.config.type == 'shop')) and 'cl' or
+							(self.T.y > G.CARD_H*0.8 and self.T.y < G.CARD_H*1.8) and ((self.T.x > G.ROOM.T.w*0.4) and "cl" or "cr") or
 							(self.T.y < G.CARD_H*0.8) and 'bm' or
 							'tm'
 	local sign = 1
@@ -1828,4 +1846,89 @@ G.FUNCS.change_colour_palette = function(args)
 		end
 	end
 	G:save_settings()
+end
+
+-- blind calc contexts
+local disable = Blind.disable
+function Blind:disable()
+	disable(self)
+	SMODS.calculate_context({ blind_disabled = true })
+end
+
+local defeat = Blind.defeat
+function Blind:defeat(silent)
+	defeat(self, silent)
+	SMODS.calculate_context({ blind_defeated = true })
+end
+
+local press_play = Blind.press_play
+function Blind:press_play()
+	local ret = press_play(self)
+	SMODS.calculate_context({ press_play = true })
+	return ret
+end
+
+local debuff_card = Blind.debuff_card
+function Blind:debuff_card(card, from_blind)
+	local flags = SMODS.calculate_context({ debuff_card = card, ignore_debuff = true })
+	if flags.prevent_debuff then 
+		if card.debuff then card:set_debuff(false) end
+		return
+	elseif flags.debuff then
+		if not card.debuff then card:set_debuff(true) end
+		return
+	end
+	debuff_card(self, card, from_blind)
+end
+
+local debuff_hand = Blind.debuff_hand
+function Blind:debuff_hand(cards, hand, handname, check)
+	SMODS.hand_debuff_source = nil
+	local ret = debuff_hand(self, cards, hand, handname, check)
+	local _, _, _, scoring_hand = G.FUNCS.get_poker_hand_info(cards)
+	local final_scoring_hand = {}
+    for i=1, #cards do
+        local splashed = SMODS.always_scores(cards[i]) or next(find_joker('Splash'))
+        local unsplashed = SMODS.never_scores(cards[i])
+        if not splashed then
+            for _, card in pairs(scoring_hand) do
+                if card == cards[i] then splashed = true end
+            end
+        end
+        local effects = {}
+        SMODS.calculate_context({modify_scoring_hand = true, other_card =  cards[i], full_hand = cards, scoring_hand = scoring_hand}, effects)
+        local flags = SMODS.trigger_effects(effects, cards[i])
+		if flags.add_to_hand then splashed = true end
+		if flags.remove_from_hand then unsplashed = true end
+        if splashed and not unsplashed then table.insert(final_scoring_hand, G.play.cards[i]) end
+    end
+	local flags = SMODS.calculate_context({ debuff_hand = true, full_hand = cards, scoring_hand = final_scoring_hand, poker_hands = hand, scoring_name = handname, check = check })
+	if flags.prevent_debuff then return false end
+	if flags.debuff then
+		SMODS.debuff_text = flags.debuff_text
+		SMODS.hand_debuff_source = flags.debuff_source
+		return true
+	end
+	SMODS.debuff_text = nil
+	return ret
+end
+
+local stay_flipped = Blind.stay_flipped
+function Blind:stay_flipped(to_area, card, from_area)
+	local ret = stay_flipped(self, to_area, card, from_area)
+	local flags = SMODS.calculate_context({ to_area = to_area, from_area = from_area, other_card = card, stay_flipped = true })
+	local self_eval, self_post = eval_card(card, { to_area = to_area, from_area = from_area, other_card = card, stay_flipped = true })
+	local self_flags = SMODS.trigger_effects({ self_eval, self_post })
+	for k,v in pairs(self_flags) do flags[k] = flags[k] or v end
+	if flags.prevent_stay_flipped then return false end
+	if flags.stay_flipped then return true end
+	return ret
+end
+
+local modify_hand = Blind.modify_hand
+function Blind:modify_hand(cards, poker_hands, text, mult, hand_chips, scoring_hand)
+	local modded
+	_G.mult, _G.hand_chips, modded = modify_hand(self, cards, poker_hands, text, mult, hand_chips, scoring_hand)
+	local flags = SMODS.calculate_context({ modify_hand = true, poker_hands = poker_hands, scoring_name = text, scoring_hand = scoring_hand, full_hand = cards })
+	return _G.mult, _G.hand_chips, modded or flags.calculated
 end

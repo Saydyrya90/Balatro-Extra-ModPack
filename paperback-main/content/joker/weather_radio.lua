@@ -13,7 +13,7 @@ SMODS.Joker {
   atlas = 'jokers_atlas',
   cost = 9,
   unlocked = true,
-  discovered = true,
+  discovered = false,
   blueprint_compat = true,
   eternal_compat = true,
 
@@ -77,12 +77,3 @@ SMODS.Joker {
     end
   end
 }
-
-function PB_UTIL.reset_weather_radio()
-  local hands = {}
-  for k, v in pairs(G.GAME.hands) do
-    if v.visible then hands[#hands + 1] = k end
-  end
-  local hand = pseudorandom_element(hands, pseudoseed("weather_radio"))
-  G.GAME.paperback.weather_radio_hand = hand
-end

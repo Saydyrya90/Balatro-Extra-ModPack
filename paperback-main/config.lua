@@ -1,5 +1,5 @@
 return {
-  jokers_enabled = true,
+  blinds_enabled = true,
   minor_arcana_enabled = true,
   suits_enabled = true,
   enhancements_enabled = true,

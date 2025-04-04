@@ -765,7 +765,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
             G.C.RARITY[self.key] = self.badge_colour
             -- Called every frame, moving deprecated prints here
             if self.gradient and type(self.gradient) == "function" then
-                sendWarnMessage(('Found `gradient` function on SMODS.Rarity object "%s". This field is deprecated; please use `SMODS.Gradient` API instead.'):format(obj.key), 'Rarity')
+                sendWarnMessage(('Found `gradient` function on SMODS.Rarity object "%s". This field is deprecated; please use `SMODS.Gradient` API instead.'):format(self.key), 'Rarity')
             end
         end,
         process_loc_text = function(self)
@@ -1219,7 +1219,8 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
                 context.other_consumeable.ability.consumeable.hand_type == context.scoring_name
             then
                 return {
-                    x_mult = card.ability.extra
+                    x_mult = card.ability.extra,
+                    message_card = context.other_consumeable,
                 }
             end
         end,
@@ -1893,7 +1894,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
             ignore = false
         },
         next = {},
-        prev = {},
+        prev = nil,
         straight_edge = false,
         -- TODO we need a better system for what this is doing.
         -- We should allow setting a playing card's atlas and position to any values,
@@ -1924,6 +1925,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
             self.id = self.max_id.value
             self.shorthand = self.shorthand or self.key
             self.sort_nominal = self.nominal + (self.face_nominal or 0)
+            self.prev = self.prev or {}
             if self:check_dependencies() and not self.obj_table[self.key] then
                 self.obj_table[self.key] = self
                 local j
@@ -1939,18 +1941,19 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
                 else
                     table.insert(self.obj_buffer, self.key)
                 end
-                for _,v in ipairs(self.next) do
-                    local other = self.obj_table[v]
-                    if other then
-                        table.insert(other.prev, self.key)
-                    end
-                end
+                
             end
         end,
         process_loc_text = function(self)
             SMODS.process_loc_text(G.localization.misc.ranks, self.key, self.loc_txt, 'name')
         end,
         inject = function(self)
+            for _,v in ipairs(self.next) do
+                local other = self.obj_table[v]
+                if other then
+                    table.insert(other.prev, self.key)
+                end
+            end
             for _, suit in pairs(SMODS.Suits) do
                 SMODS.inject_p_card(suit, self)
             end
@@ -2075,20 +2078,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
                     trigger = 'after',
                     delay = 0.1,
                     func = function()
-                        local _card = G.hand.highlighted[i]
-                        local rank_data = SMODS.Ranks[_card.base.value]
-                        local behavior = rank_data.strength_effect or { fixed = 1, ignore = false, random = false }
-                        local new_rank
-                        if behavior.ignore or not next(rank_data.next) then
-                            return true
-                        elseif behavior.random then
-                            -- TODO doesn't respect in_pool
-                            new_rank = pseudorandom_element(rank_data.next, pseudoseed('strength'))
-                        else
-                            local ii = (behavior.fixed and rank_data.next[behavior.fixed]) and behavior.fixed or 1
-                            new_rank = rank_data.next[ii]
-                        end
-                        assert(SMODS.change_base(_card, nil, new_rank))
+                        assert(SMODS.modify_rank(G.hand.highlighted[i], 1))
                         return true
                     end
                 }))
@@ -2585,7 +2575,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
     }
     SMODS.PokerHandPart {
         key = '_straight',
-        func = function(hand) return get_straight(hand, next(SMODS.find_card('j_four_fingers')) and 4 or 5, next(SMODS.find_card('j_shortcut'))) end
+        func = function(hand) return get_straight(hand, next(SMODS.find_card('j_four_fingers')) and 4 or 5, not not next(SMODS.find_card('j_shortcut'))) end
     }
     SMODS.PokerHandPart {
         key = '_flush',
@@ -3275,6 +3265,16 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
         key_pressed = 'm',
         event = 'held',
         held_duration = 1.1,
+        action = function(self)
+            SMODS.save_all_config()
+		    SMODS.restart_game()
+        end
+    }
+
+        SMODS.Keybind {
+        key_pressed = 'f5',
+        held_keys = { "lalt" },
+        event = 'pressed',
         action = function(self)
             SMODS.save_all_config()
 		    SMODS.restart_game()

@@ -27,7 +27,178 @@ return {
         }
       }
     },
+    Blind = {
+      bl_paperback_quarter = {
+        name = "The Quarter",
+        text = {
+          "#1# in #2# cards",
+          "are debuffed"
+        },
+      },
+      bl_paperback_half = {
+        name = 'The Half',
+        text = {
+          'Halves all listed',
+          'probabilities'
+        }
+      },
+      bl_paperback_whole = {
+        name = 'The Whole',
+        text = {
+          'Ranks scored previously',
+          'this Ante are debuffed'
+        }
+      },
+      bl_paperback_rest = {
+        name = 'The Rest',
+        text = {
+          'Numbered cards are',
+          'drawn face down'
+        }
+      },
+      bl_paperback_flat = {
+        name = 'The Flat',
+        text = {
+          'Decrease rank of',
+          'played cards'
+        }
+      },
+
+      bl_paperback_sharp = {
+        name = 'The Sharp',
+        text = {
+          'Increase rank of',
+          'played cards'
+        }
+      },
+      bl_paperback_natural = {
+        name = 'The Natural',
+        text = {
+          'Leveled Hands',
+          'are debuffed'
+        }
+      },
+      bl_paperback_coda = {
+        name = 'The Coda',
+        text = {
+          'Cards can not',
+          'be moved',
+        }
+      },
+    },
     Joker = {
+      j_paperback_j_and_js = {
+        name = "J&J's",
+        text = {
+          "If played hand contains a",
+          "{C:attention}Spectrum{}, create {C:attention}#1#{} random {C:attention}Tags",
+          "Consumed in {C:attention}#2#{} rounds",
+          "{C:inactive}(Resets when a {C:attention}Tag{C:inactive} is acquired)"
+        }
+      },
+      j_paperback_blue_star = {
+        name = "Blue Star",
+        text = {
+          "Gain {X:chips,C:white}X#1#{} Chips for each scored {V:1}#2#",
+          "Lose {X:chips,C:white}X#3#{} Chips for each scored {V:2}#4#",
+          "{C:inactive}(Currently {X:chips,C:white}X#5#{C:inactive} Chips)"
+        }
+      },
+      j_paperback_shooting_star = {
+        name = "Shooting Star",
+        text = {
+          "Scored {V:1}#1#{} have a",
+          "{C:green}#2# in #3#{} chance to",
+          "create the {C:planet}Planet{} card",
+          "for played {C:attention}poker hand"
+        }
+      },
+      j_paperback_black_star = {
+        name = "Black Star",
+        text = {
+          "Scored {C:paperback_dark_suit}dark suits",
+          "become {V:1}#1#"
+        }
+      },
+      j_paperback_high_speed_rail = {
+        name = "High Speed Rail",
+        text = {
+          "When {C:chips}buying{} or {C:mult}selling",
+          "{C:attention}Jokers{}, {C:chips}gain{} or {C:mult}lose",
+          "Mult equal to their",
+          "{C:money}sell value{}, respectively",
+          "{C:inactive}(Currently {C:mult}+#1#{C:inactive} Mult)"
+        }
+      },
+      j_paperback_joke_master = {
+        name = "Joke Master",
+        text = {
+          "Gain {C:mult}+#1#{} Mult if played",
+          "hand is a {C:attention}#2#{}",
+          "{s:0.8}hand changes every round",
+          "{C:inactive}(Currently {C:mult}+#3#{C:inactive} Mult)"
+        }
+      },
+      j_paperback_ultra_rare = {
+        name = "Ultra Rare",
+        text = {
+          "When {C:attention}Blind{} is selected, create",
+          "a random {C:chips}Common{}, {C:green}Uncommon",
+          "and {C:mult}Rare{} Temporary {C:dark_edition}Negative",
+          "{C:attention}Jokers{} with {C:money}$#1#{} sell value"
+        }
+      },
+      j_paperback_manilla_folder = {
+        name = "Manilla Folder",
+        text = {
+          "Earn {C:money}$#1#{} at end of round",
+          "for each {C:attention}unique",
+          "{C:attention}Clip{} in your full deck",
+          "{C:inactive}(Currently {C:money}$#2#{C:inactive})"
+        }
+      },
+      j_paperback_the_normal_joker = {
+        name = "The Normal Joker",
+        text = {
+          "Retrigger all",
+          "{C:blue}Common {C:attention}Jokers"
+        }
+      },
+      j_paperback_touch_tone_joker = {
+        name = "Touch Tone Joker",
+        text = {
+          "When opening an {C:tarot}Arcana{},",
+          "{C:planet}Celestial{} or {C:spectral}Spectral{} pack",
+          "{C:attention}draw{} the {C:attention}first card{} in it",
+          "to your consumables",
+          "{C:inactive}(Must have room)"
+        }
+      },
+      j_paperback_joker_cd_i = {
+        name = 'Joker CD-i',
+        text = {
+          "This Joker has a {C:green}#1# in #2#{} chance",
+          "to create a random {C:planet}Planet{} card",
+          "if played hand has exactly {C:attention}#3#{} cards",
+          "{C:inactive}(Must have room)"
+        }
+      },
+      j_paperback_blue_marble = {
+        name = "Blue Marble",
+        text = {
+          "If {C:attention}winning hand{} was all {V:1}#1#{},",
+          "create a {C:attention}random {C:planet}Planet{} card",
+          "{C:inactive}(Must have room)"
+        }
+      },
+      j_paperback_boundary_of_death = {
+        name = "Boundary of Death",
+        text = {
+          "Scored {C:attention}#1#s{} have a",
+          "{C:green}#2# in #3#{} chance to",
+          "retrigger {C:attention}#4#{} times"
+        }
+      },
       j_paperback_festive_joker = {
         name = "Festive Joker",
         text = {
@@ -141,12 +312,12 @@ return {
       j_paperback_resurrections = {
         name = "Resurrections",
         text = {
-          "Sold {C:attention}Jokers{} have a",
-          "{C:green}#1# in #2#{} chance to {C:attention}return",
-          "and gain {C:dark_edition}Negative{} edition",
+          "{C:green}#1# in #2#{} chance to {C:attention}return{}",
+          "sold {C:attention}Jokers{} and create",
+          "an {C:attention}extra{} {C:dark_edition}Negative{} copy",
           "with {C:money}-$#3#{} sell value",
           "{s:0.8}Chance increases by {s:0.8,C:green}#4#{s:0.8} on fail",
-          "{s:0.8}Chance resets when activated"
+          "{S:1.1,C:red,E:2}self destructs",
         }
       },
       j_paperback_book_of_vengeance = {
@@ -503,9 +674,9 @@ return {
       j_paperback_blue_bonnets = {
         name = "Blue Bonnets",
         text = {
-          "{C:clubs}Clubs{} give {X:mult,C:white}X#1#{} Mult when scored.",
-          "Increases by {X:mult,C:white}X#2#{} Mult for each ",
-          "consecutively scored {C:clubs}Club{}",
+          "{C:clubs}#1#{} give {X:mult,C:white}X#2#{} Mult when scored.",
+          "Increases by {X:mult,C:white}X#3#{} Mult for each ",
+          "consecutively scored {C:clubs}#4#{}",
           "{C:inactive}(Resets after each hand played)",
         },
       },
@@ -561,9 +732,9 @@ return {
       j_paperback_autumn_leaves = {
         name = "Autumn Leaves",
         text = {
-          "{C:diamonds}Diamonds{} give {X:mult,C:white}X#1#{} Mult when scored.",
-          "Increases by {X:mult,C:white}X#2#{} Mult for each ",
-          "consecutively scored {C:diamonds}Diamond{}",
+          "{C:diamonds}#1#{} give {X:mult,C:white}X#2#{} Mult when scored.",
+          "Increases by {X:mult,C:white}X#3#{} Mult for each ",
+          "consecutively scored {C:diamonds}#4#{}",
           "{C:inactive}(Resets after each hand played)",
         },
       },
@@ -649,8 +820,8 @@ return {
         name = "Solar System",
         text = {
           "Gives {X:mult,C:white}X#1#{} Mult for",
-          "every {C:attention}level{} all 9 base",
-          "{C:planet}Planets{} share",
+          "every {C:attention}level{} over 1 all",
+          "9 base {C:planet}Planets{} share",
           "{C:inactive}(Currently {X:mult,C:white}X#2#{} {C:inactive}Mult)",
         },
       },
@@ -690,9 +861,9 @@ return {
       j_paperback_cherry_blossoms = {
         name = "Cherry Blossoms",
         text = {
-          "{C:hearts}Hearts{} give {X:mult,C:white}X#1#{} Mult when scored.",
-          "Increases by {X:mult,C:white}X#2#{} Mult for each ",
-          "consecutively scored {C:hearts}Heart{}",
+          "{C:hearts}#1#{} give {X:mult,C:white}X#2#{} Mult when scored.",
+          "Increases by {X:mult,C:white}X#3#{} Mult for each ",
+          "consecutively scored {C:hearts}#4#{}",
           "{C:inactive}(Resets after each hand played)",
         },
       },
@@ -758,9 +929,9 @@ return {
       j_paperback_evergreens = {
         name = "Evergreens",
         text = {
-          "{C:spades}Spades{} give {X:mult,C:white}X#1#{} Mult when scored.",
-          "Increases by {X:mult,C:white}X#2#{} Mult for each ",
-          "consecutively scored {C:spades}Spade{}",
+          "{C:spades}#1#{} give {X:mult,C:white}X#2#{} Mult when scored.",
+          "Increases by {X:mult,C:white}X#3#{} Mult for each ",
+          "consecutively scored {C:spades}#4#{}",
           "{C:inactive}(Resets after each hand played)",
         },
       },
@@ -864,9 +1035,9 @@ return {
       j_paperback_wheat_field = {
         name = "Wheat Field",
         text = {
-          "{C:paperback_crowns}Crowns{} give {X:mult,C:white}X#1#{} Mult when scored.",
-          "Increases by {X:mult,C:white}X#2#{} Mult for each ",
-          "consecutively scored {C:paperback_crowns}Crown{}",
+          "{C:paperback_crowns}#1#{} give {X:mult,C:white}X#2#{} Mult when scored.",
+          "Increases by {X:mult,C:white}X#3#{} Mult for each ",
+          "consecutively scored {C:paperback_crowns}#4#{}",
           "{C:inactive}(Resets after each hand played)",
         },
       },
@@ -889,9 +1060,9 @@ return {
       j_paperback_birches = {
         name = "Birches",
         text = {
-          "{C:paperback_stars}Stars{} give {X:mult,C:white}X#1#{} Mult when scored.",
-          "Increases by {X:mult,C:white}X#2#{} Mult for each ",
-          "consecutively scored {C:paperback_stars}Stars{}",
+          "{C:paperback_stars}#1#{} give {X:mult,C:white}X#2#{} Mult when scored.",
+          "Increases by {X:mult,C:white}X#3#{} Mult for each ",
+          "consecutively scored {C:paperback_stars}#4#{}",
           "{C:inactive}(Resets after each hand played)",
         },
       },
@@ -1253,13 +1424,6 @@ return {
       }
     },
     Other = {
-      paperback_energized = {
-        name = "Energized",
-        text = {
-          "Cannot be copied by",
-          "{C:attention}Basic Joker Energy{}"
-        }
-      },
       paperback_light_suits = {
         name = "Light Suits",
         text = {
@@ -1321,6 +1485,22 @@ return {
         }
       },
 
+      -- Stickers
+      paperback_energized = {
+        name = "Energized",
+        text = {
+          "Cannot be copied by",
+          "{C:attention}#1#{}"
+        }
+      },
+      paperback_temporary = {
+        name = "Temporary",
+        text = {
+          "Will be {C:mult}destroyed",
+          "when round ends"
+        }
+      },
+
       -- Paperclips
       paperback_blue_clip = {
         name = "Blue Clip",
@@ -1352,10 +1532,9 @@ return {
       paperback_black_clip = {
         name = "Black Clip",
         text = {
-          "Retriggers when {C:attention}scored",
-          "if another {C:attention}Clip{} is in",
-          "{C:attention}played hand{} and again if",
-          "a {C:attention}Clip{} is {C:attention}held in hand"
+          "Retriggers when",
+          "{C:attention}scored{} if a {C:attention}Clip",
+          "is {C:attention}held in hand",
         }
       },
       paperback_white_clip = {
@@ -1429,10 +1608,12 @@ return {
       paperback_investment_ex = "Investment!",
       paperback_plus_minor_arcana = "+1 M. Arcana",
       paperback_plus_consumable = "+1 Consumable",
+      paperback_plus_tag = "+1 Tag",
       paperback_edition_ex = "Edition!",
+      paperback_rare_ex = "Rare!",
 
       paperback_ui_requires_restart = "Requires Restart",
-      paperback_ui_enable_jokers = "Enable Jokers",
+      paperback_ui_enable_blinds = "Enable Blinds",
       paperback_ui_enable_minor_arcana = "Enable Minor Arcana",
       paperback_ui_enable_enhancements = "Enable Enhancements",
       paperback_ui_enable_editions = "Enable Editions",
@@ -1451,7 +1632,8 @@ return {
       paperback_a_hands_minus = "-#1# Hands",
       paperback_prince_of_darkness = "+#1# Mult, +#2# Chips",
       paperback_a_completion = "#1#/#2#",
-      paperback_a_round_minus = "-#1# Round"
+      paperback_a_round_minus = "-#1# Round",
+      paperback_saved = "Saved by #1#",
     },
     suits_singular = {
       paperback_Crowns = "Crown",
@@ -1493,6 +1675,8 @@ return {
       paperback_black_clip = "Black Clip",
       paperback_white_clip = "White Clip",
       paperback_dichrome = "Dichrome",
+      paperback_energized = "Energized",
+      paperback_temporary = "Temporary",
     }
   }
 }

@@ -9,9 +9,13 @@ function Game.init_game_object(self)
     },
     ceramic_inc = 0,
     bandaged_inc = 0,
-    weather_radio_hand = 'High Card',
     destroyed_dark_suits = 0,
     last_tarot_energized = false,
+    ranks_scored_this_ante = {},
+    saved_by = nil,
+
+    weather_radio_hand = 'High Card',
+    joke_master_hand = 'High Card',
   }
   return ret
 end
@@ -127,6 +131,9 @@ G.FUNCS.cash_out = function(e)
     }
   })
 
+  -- Reset the joker that saved the run when cashing out
+  G.GAME.paperback.saved_by = nil
+
   cash_out_ref(e)
 end
 
@@ -170,4 +177,17 @@ SMODS.calculate_repetitions = function(card, context, reps)
   end
 
   return calculate_repetitions_ref(card, context, reps)
+end
+
+-- New context for when a tag is added
+local add_tag_ref = add_tag
+function add_tag(tag)
+  SMODS.calculate_context {
+    paperback = {
+      tag_acquired = true,
+      tag = tag
+    }
+  }
+
+  return add_tag_ref(tag)
 end

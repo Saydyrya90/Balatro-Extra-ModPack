@@ -4,7 +4,6 @@ SMODS.Joker {
     extra = {
       money = 5,
       rank = 'Ace',
-      id = 14,
       suit = 'Spades'
     }
   },
@@ -13,7 +12,7 @@ SMODS.Joker {
   atlas = "jokers_atlas",
   cost = 4,
   unlocked = true,
-  discovered = true,
+  discovered = false,
   blueprint_compat = true,
   eternal_compat = true,
 
@@ -40,7 +39,7 @@ SMODS.Joker {
     if context.individual and context.cardarea == G.play then
       local c = context.other_card
 
-      if c and c:is_suit(card.ability.extra.suit) and c:get_id() == card.ability.extra.id then
+      if c and c:is_suit(card.ability.extra.suit) and PB_UTIL.is_rank(c, card.ability.extra.rank) then
         return {
           dollars = card.ability.extra.money,
           message_card = c,
@@ -67,7 +66,6 @@ function PB_UTIL.reset_find_jimbo(card)
   if #valid_cards > 0 then
     local selected_card = pseudorandom_element(valid_cards, pseudoseed('find_jimbo'))
     card.ability.extra.rank = selected_card.base.value
-    card.ability.extra.id = selected_card.base.id
     card.ability.extra.suit = selected_card.base.suit
   end
 end

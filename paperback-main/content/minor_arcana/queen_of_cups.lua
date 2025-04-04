@@ -7,7 +7,7 @@ PB_UTIL.MinorArcana {
   atlas = 'minor_arcana_atlas',
   pos = { x = 5, y = 1 },
   unlocked = true,
-  discovered = true,
+  discovered = false,
   paperback = {
     requires_enhancements = true
   }

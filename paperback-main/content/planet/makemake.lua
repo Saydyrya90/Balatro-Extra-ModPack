@@ -2,7 +2,7 @@ PB_UTIL.Planet {
   key = 'makemake',
   atlas = 'planets_atlas',
   pos = { x = 3, y = 0 },
-  discovered = true,
+  discovered = false,
   unlocked = true,
   is_dwarf = true,
   config = {

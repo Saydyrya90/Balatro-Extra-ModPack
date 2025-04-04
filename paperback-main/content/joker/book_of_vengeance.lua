@@ -5,7 +5,7 @@ SMODS.Joker {
   atlas = 'jokers_atlas',
   cost = 9,
   unlocked = true,
-  discovered = true,
+  discovered = false,
   blueprint_compat = false,
   eternal_compat = false,
   perishable_compat = true,
@@ -33,6 +33,11 @@ SMODS.Joker {
   end,
 
   calculate = function(self, card, context)
+    if context.first_hand_drawn and G.GAME.blind.boss then
+      local eval = function() return G.GAME.current_round.hands_played == 0 end
+      juice_card_until(card, eval, true)
+    end
+
     if not context.blueprint and context.end_of_round and context.main_eval
         and G.GAME.blind.boss and G.GAME.current_round.hands_played <= 1 then
       local other_joker
@@ -59,5 +64,25 @@ SMODS.Joker {
         }
       end
     end
+  end,
+
+  joker_display_def = function(JokerDisplay)
+    return {
+      reminder_text = {
+        { ref_table = 'card.joker_display_values', ref_value = 'active', scale = 0.35 },
+      },
+
+      calc_function = function(card)
+        card.joker_display_values.active = (G.GAME.blind.boss and G.GAME.current_round.hands_played == 0) and
+            localize('k_active') or localize('paperback_inactive')
+      end,
+
+      style_function = function(card, text, reminder_text, extra)
+        if reminder_text and reminder_text.children[1] then
+          reminder_text.children[1].config.colour = card.joker_display_values.active == localize('k_active') and
+              G.C.GREEN or G.C.UI.TEXT_INACTIVE
+        end
+      end
+    }
   end
 }

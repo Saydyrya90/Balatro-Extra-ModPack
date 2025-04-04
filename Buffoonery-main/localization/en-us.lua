@@ -210,7 +210,8 @@ return {
 				name = "Integral",
 				text = {"Gives {X:expchips,C:white}^0.02{} Chips",
 						"per {X:mult,C:white}X1{} Mult",
-						"triggered each hand",
+						"triggered before this",
+						"Joker each hand",
 				},
 				unlock = {"Solve the {E:1,C:buf_spc}special{}",
 						"requirement of",
@@ -338,24 +339,24 @@ return {
 			j_buf_sayajimbo = {
 				name = "Sayajimbo",
 				text = {"{C:chips}+#1#{} Chips",
-						"Score at least {C:attention}#2#{}",
-						"to {C:attention}transform{}",
+						"Score at least {C:attention}#2#{} in one",
+						"hand to {C:attention}transform{}",
 						"{C:inactive}(Next level: {C:mult}+20{C:inactive} Mult)",
 				}
 			},
 			j_buf_sayajimbo_s1 = {
 				name = "Super Sayajimbo",
 				text = {"{C:mult}+#1#{} Mult",
-						"Score at least {C:attention}#6#{}",
-						"#5# times to {C:attention}transform{}",
+						"Score at least {C:attention}#6#{} in one",
+						"hand #5# times to {C:attention}transform{}",
 						"{C:inactive}(#4#/#5#, Next level: {X:mult,C:white}X3{C:inactive} Mult)",
 				}
 			},
 			j_buf_sayajimbo_s2 = {
 				name = "Super Sayajimbo 2",
 				text = {"{X:mult,C:white}X#2#{} Mult",
-						"Score at least {C:attention}#6#{}",
-						"#5# times to {C:attention}transform{}",
+						"Score at least {C:attention}#6#{} in one",
+						"hand #5# times to {C:attention}transform{}",
 						"{C:inactive}(#4#/#5#, Next level: {X:expmult,C:white}^1.3{C:inactive} Mult)",
 				}
 			},

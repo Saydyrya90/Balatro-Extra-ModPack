@@ -501,8 +501,8 @@ return {
             c_ReduxArcanum_philosopher_stone = {
                 name = "The Philosopher's Stone",
                 text = {
-                    "{C:attention}Retrigger{} the",
-                    "next {C:legendary,E:1}played hand{}"
+                    "{C:legendary,E:1}Rescores{} the",
+                    "next {C:attention}played hand{}"
                 }
             },
             c_ReduxArcanum_philosopher_stone_classic = {

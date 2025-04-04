@@ -10,10 +10,8 @@ SMODS.load_file("utilities/cross-mod.lua")()
 -- Load the atlases
 SMODS.load_file("content/atlas.lua")()
 
--- Load Jokers if they are enabled
-if PB_UTIL.config.jokers_enabled then
-  PB_UTIL.register_items(PB_UTIL.ENABLED_JOKERS, "content/joker")
-end
+-- Load Jokers
+PB_UTIL.register_items(PB_UTIL.ENABLED_JOKERS, "content/joker")
 
 -- Load Minor Arcana if they are enabled
 if PB_UTIL.config.minor_arcana_enabled then
@@ -55,6 +53,7 @@ if PB_UTIL.config.enhancements_enabled then
   PB_UTIL.register_items(PB_UTIL.ENABLED_ENHANCEMENTS, "content/enhancement")
 end
 
+-- Load editions if they are enabled
 if PB_UTIL.config.editions_enabled then
   PB_UTIL.register_items(PB_UTIL.ENABLED_EDITIONS, "content/edition")
 end
@@ -63,6 +62,9 @@ end
 if PB_UTIL.config.paperclips_enabled then
   PB_UTIL.register_items(PB_UTIL.ENABLED_PAPERCLIPS, "content/paperclip")
 end
+
+-- Load stickers regardless of config
+PB_UTIL.register_items(PB_UTIL.ENABLED_STICKERS, 'content/stickers')
 
 -- Load custom suits and spectrums if they are enabled
 if PB_UTIL.config.suits_enabled then
@@ -78,6 +80,11 @@ end
 -- Load Vouchers if they're enabled
 if PB_UTIL.config.vouchers_enabled then
   PB_UTIL.register_items(PB_UTIL.ENABLED_VOUCHERS, "content/voucher")
+end
+
+-- Load Blinds if they're enabled
+if PB_UTIL.config.blinds_enabled then
+  PB_UTIL.register_items(PB_UTIL.ENABLED_BLINDS, "content/blind")
 end
 
 -- Load Tags if they're enabled
@@ -99,14 +106,14 @@ for _, data in ipairs(PB_UTIL.DECK_SKINS) do
 
     local atlas_lc = SMODS.Atlas {
       key = key .. '_lc',
-      path = 'collabs/' .. key .. '_lc.png',
+      path = 'collabs/lc/' .. key .. '_lc.png',
       px = 71,
       py = 95
     }
 
     local atlas_hc = SMODS.Atlas {
       key = key .. '_hc',
-      path = 'collabs/' .. key .. '_hc.png',
+      path = 'collabs/hc/' .. key .. '_hc.png',
       px = 71,
       py = 95
     }

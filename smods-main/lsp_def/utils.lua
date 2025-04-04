@@ -58,6 +58,17 @@
 ---@field modify_scoring_hand? true Check if `true` for modifying the scoring hand. 
 ---@field ending_booster? true Check if `true` for effects after a Booster Pack ends. 
 ---@field starting_shop? true Check if `true` for effects when the shop is first opened. 
+---@field blind_disabled? true Check if `true` for effects when the blind is disabled. 
+---@field blind_defeated? true Check if `true` for effects when the blind is disabled. 
+---@field press_play? true Check if `true` for effects when the Play button is pressed.
+---@field debuff_card? Card|table The card being checked for if it should be debuffed. 
+---@field ignore_debuff? true Sets if `self.debuff` checks are ignored. 
+---@field debuff_hand? true Check if `true` for calculating if the played hand should be debuffed. 
+---@field check? true `true` when the blind is being checked for if it debuffs the played hand. 
+---@field stay_flipped? true Check if `true` for effects when a card is being drawn. 
+---@field to_area? CardArea|table CardArea the card is being drawn to. 
+---@field from_area? CardArea|table CardArea the card is being drawn from. 
+---@field modify_hand? true Check if `true` for modifying the chips and mult of the played hand. 
 
 --- Util Functions
 
@@ -81,6 +92,7 @@ function SMODS.get_optional_features() end
 
 ---@param context CalcContext|table 
 ---@param return_table? table 
+---@return table
 --- Used to calculate contexts across `G.jokers`, `scoring_hand` (if present), `G.play` and `G.GAME.selected_back`.
 --- Hook this function to add different areas to MOST calculations
 function SMODS.calculate_context(context, return_table) end
@@ -270,6 +282,16 @@ function SMODS.juice_up_blind() end
 ---@return string? msg If it failed, a message describing what went wrong. 
 function SMODS.change_base(card, suit, rank) end
 
+--- Modify a card's rank by the specified amount.
+--- Increase rank if amount is positive, decrease rank if negative.
+--- It is recommended to wrap this function in `assert` to prevent unnoticed errors.
+---@nodiscard
+---@param card Card|table
+---@param amount number
+---@return Card|table? cardOrErr If successful the card. If it failed `nil`.
+---@return string? msg If it failed, a message describing what went wrong.  
+function SMODS.modify_rank(card, amount) end
+
 ---@param key string
 ---@param count_debuffed true?
 ---@return Card[]|table[]
@@ -285,6 +307,8 @@ function SMODS.find_card(key, count_debuffed) end
 ---@field soulable? boolean Card could be replace by a legendary version, if applicable. 
 ---@field key? string Created card is forced to have a center matching this key. 
 ---@field key_append? string Appends this string to seeds. 
+---@field discover? boolean Discovers the card when created.
+---@field bypass_discovery_center? boolean Creates the card's proper sprites and UI even if it hasn't been discovered.
 ---@field no_edition? boolean Ignore natural edition application. 
 ---@field edition? string Apply this edition. 
 ---@field enhancement? string Apply this enhancement. 

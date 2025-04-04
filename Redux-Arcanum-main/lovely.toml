@@ -251,21 +251,6 @@ payload = '''
 if v == 'polychrome_alchemical' then info_queue[#info_queue+1] = {key = 'e_polychrome_alchemical', set = 'Edition', config = {extra = 1.5}} end
 '''
 
-# patched by saydyrya to try to fix codex arcanum crashes with multiple mods(seems to be working)
-[[patches]]
-[patches.pattern]
-target = 'functions/common_events.lua'
-pattern = '''if amt > 0 or amt < 0 then'''
-position = 'before'
-match_indent = true
-times = 1
-payload = '''
-if type(amt) == "table" and amt.to_number then
-    amt = amt:to_number()
-end
-'''
-
-
 [[patches]]
 [patches.pattern]
 target = "card.lua"
@@ -334,3 +319,50 @@ payload = '''
 if G.booster_pack and not G.booster_pack.alignment.offset.py and ((card.ability.consumeable and not is_alchemy_pack_card) or not (G.GAME.pack_choices and G.GAME.pack_choices > 1)) then
 '''
 match_indent = true
+
+
+
+
+
+## Let's alchemical cards be selected from booster packs (rather than used)
+
+# G.UIDEF.card_focus_ui()
+[[patches]]
+[patches.pattern]
+target = "functions/UI_definitions.lua"
+pattern = '''local base_attach = base_background:get_UIE_by_ID('ATTACH_TO_ME')'''
+position = "after"
+payload = '''
+if (card.ability.set == "Alchemical" or card.ability.name == "c_ReduxArcanum_philosopher_stone") and (G.STATE == G.STATES.SMODS_BOOSTER_OPENED or G.STATE == G.STATES.SPECTRAL_PACK) and (card.area == G.pack_cards and G.pack_cards) then
+    base_attach.children.use = G.UIDEF.card_focus_button{
+      card = card, parent = base_attach, type = 'select',
+      func = 'can_select_alchemical', button = 'use_card', card_width = card_width
+    }
+    return base_background
+end
+'''
+match_indent = true
+
+# G.UIDEF.card_focus_ui()
+[[patches]]
+[patches.pattern]
+target = 'functions/UI_definitions.lua'
+pattern = '''function G.UIDEF.use_and_sell_buttons(card)'''
+position = 'after'
+match_indent = true
+payload = '''
+if (card.ability.set == "Alchemical" or card.ability.name == "c_ReduxArcanum_philosopher_stone") and (G.STATE == G.STATES.SMODS_BOOSTER_OPENED or G.STATE == G.STATES.SPECTRAL_PACK) and (card.area == G.pack_cards and G.pack_cards) then
+    return {
+        n = G.UIT.ROOT, config = { padding = 0, colour = G.C.CLEAR }, nodes = {
+            { n = G.UIT.R, config = { mid = true }, nodes = {} },
+            {
+                n = G.UIT.R,
+                config = { ref_table = card, r = 0.08, padding = 0.1, align = "bm", minw = 0.5 * card.T.w - 0.15, minh = 0.8 * card.T.h, maxw = 0.7 * card.T.w - 0.15, hover = true, shadow = true, colour = G.C.UI.BACKGROUND_INACTIVE, one_press = true, button = 'use_card', func = 'can_select_alchemical' },
+                nodes = {
+                    { n = G.UIT.T, config = { text = localize("b_select"), colour = G.C.UI.TEXT_LIGHT, scale = 0.55, shadow = true } }
+                }
+            },
+        }
+    }
+end
+'''

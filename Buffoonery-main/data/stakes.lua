@@ -1,7 +1,8 @@
 SMODS.Stake{ -- Palladium Stake
     key = 'palladium',
-    applied_stakes = {'gold'},
-    above_stake = 'gold',
+	unlocked_stake = 'buf_spinel',
+    applied_stakes = {prestake_pldm}, -- Use variable for compatibility with bunco/prism's stakes (see Buffoonery.lua, compat section)
+    above_stake = prestake_pldm,
     prefix_config = {above_stake = {mod = false}, applied_stakes = {mod = false}},
 
     modifiers = function()

@@ -87,6 +87,16 @@ function alchemical_use(func)
     end
 end
 
+G.FUNCS.can_select_alchemical = function(e)
+    if (e.config.ref_table.edition and e.config.ref_table.edition.negative) or #G.consumeables.cards < G.consumeables.config.card_limit then
+        e.config.colour = G.C.GREEN
+        e.config.button = 'use_card'
+    else
+        e.config.colour = G.C.UI.BACKGROUND_INACTIVE
+        e.config.button = nil
+    end
+end
+
 -- -+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 --     HANDLING POLYCHROME
 -- -+-+-+-+-+-+-+-+-+-+-+-+-+-+-

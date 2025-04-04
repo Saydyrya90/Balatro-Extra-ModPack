@@ -1,4 +1,5 @@
 -- TODO: Jeb art: Quaoar, Makemake, Sedna, Haumea
+-- Saya continue art
 
 -- defs --
 Buffoonery = SMODS.current_mod
@@ -90,10 +91,21 @@ buf.compat = {
 	unstable = (SMODS.Mods['UnStable'] or {}).can_load,
 	talisman = (SMODS.Mods['Talisman'] or {}).can_load,
 	bunco = (SMODS.Mods['Bunco'] or {}).can_load,
+	prism = (SMODS.Mods['Prism'] or {}).can_load,
 }
 
 if not buf.compat.talisman then
 	NFS.load(Buffoonery.path .. 'notalisman.lua')()
+end
+
+prestake_pldm = 'gold' -- Load palladium stake after vanilla gold stake by default
+if buf.compat.bunco then
+	prestake_pldm = 'bunco_gold' -- Makes sure to be loaded after the Gold Stake if that's modified by bunco
+	if buf.compat.prism then
+		prestake_pldm = 'prism_platinum' -- Palladium Stake comes after prism's Platinum Stake if that mod's loaded
+	end
+elseif buf.compat.prism then
+	prestake_pldm = 'prism_platinum'
 end
 
 -- UTILS / FUNCS --

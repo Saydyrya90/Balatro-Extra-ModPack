@@ -6,7 +6,7 @@ PB_UTIL.MinorArcana {
   atlas = 'minor_arcana_atlas',
   pos = { x = 0, y = 1 },
   unlocked = true,
-  discovered = true,
+  discovered = false,
 
   loc_vars = function(self, info_queue, card)
     return {

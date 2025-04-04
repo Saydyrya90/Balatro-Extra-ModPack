@@ -23,9 +23,9 @@ SMODS.current_mod.config_tab = function()
                 ref_value = 'tags_enabled'
               },
               create_toggle {
-                label = localize('paperback_ui_enable_jokers'),
+                label = localize('paperback_ui_enable_blinds'),
                 ref_table = PB_UTIL.config,
-                ref_value = 'jokers_enabled',
+                ref_value = 'blinds_enabled',
               },
               create_toggle {
                 label = localize('paperback_ui_enable_vouchers'),

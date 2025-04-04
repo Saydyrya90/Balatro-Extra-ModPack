@@ -14,6 +14,25 @@ SMODS.Atlas {
   path = 'MinorArcana.png'
 }
 
+-- Registers the atlas for Blinds
+SMODS.Atlas {
+  key = 'music_blinds_atlas',
+  px = 34,
+  py = 34,
+  path = 'MusicBlinds.png',
+  frames = 21,
+  atlas_table = 'ANIMATION_ATLAS'
+}
+
+SMODS.Atlas {
+  key = 'wingding_blinds_atlas',
+  px = 34,
+  py = 34,
+  path = 'WingdingBlinds.png',
+  frames = 21,
+  atlas_table = 'ANIMATION_ATLAS'
+}
+
 -- Registers the atlas for Planets
 SMODS.Atlas {
   key = 'planets_atlas',
@@ -83,6 +102,14 @@ SMODS.Atlas {
   path = 'suits_ui_hc.png',
   px = 18,
   py = 18
+}
+
+-- Register Stickers atlas
+SMODS.Atlas {
+  key = 'stickers_atlas',
+  path = 'Stickers.png',
+  px = 71,
+  py = 95
 }
 
 -- Register Paperclips atlas

@@ -1,10 +1,16 @@
 -- Load mod config
 PB_UTIL.config = SMODS.current_mod.config
 
+-- Enable optional features
+SMODS.current_mod.optional_features = {
+  retrigger_joker = true
+}
+
 -- Update values that get reset at the start of each round
 SMODS.current_mod.reset_game_globals = function(run_start)
   G.GAME.paperback.round.scored_clips = 0
-  PB_UTIL.reset_weather_radio()
+  G.GAME.paperback.weather_radio_hand = PB_UTIL.get_random_visible_hand('weather_radio')
+  G.GAME.paperback.joke_master_hand = PB_UTIL.get_random_visible_hand('joke_master')
 end
 
 PB_UTIL.base_poker_hands = {
@@ -112,6 +118,7 @@ PB_UTIL.ENABLED_JOKERS = {
   -- "moai",
   "meeple",
   "solemn_lament",
+  "boundary_of_death",
   "furioso",
   "mismatched_sock",
   "basic_energy",
@@ -144,6 +151,7 @@ PB_UTIL.ENABLED_JOKERS = {
   "full_moon",
   "black_rainbows",
   "emergency_broadcast",
+  "blue_marble",
   "triple_moon_goddess",
   -- "plague_doctor",
   -- "white_night",
@@ -151,14 +159,17 @@ PB_UTIL.ENABLED_JOKERS = {
   "angel_investor",
   "shopping_center",
   -- "tutor",
+  "high_speed_rail",
   "grand_strategy",
   "great_wave",
   "let_it_happen",
+  "joker_cd_i",
   "prince_of_darkness",
   "jester_of_nihil",
   "wild_prize",
   "deadringer",
   "bicycle",
+  "joke_master",
   "pride_flag",
   "bismuth",
   "cherry_blossoms",
@@ -177,6 +188,7 @@ PB_UTIL.ENABLED_JOKERS = {
   "subterfuge",
   "the_world",
   "paranoia",
+  "touch_tone_joker",
   "jestrica",
   "you_are_a_fool",
   "alert",
@@ -186,9 +198,11 @@ PB_UTIL.ENABLED_JOKERS = {
   "find_jimbo",
   -- "jimbocards",
   -- "banana_man",
+  "the_normal_joker",
   "jimbo_adventure",
   "ddakji",
   "pocket_pair",
+  "ultra_rare",
   "the_quiet",
   "big_misser",
   "heretical_joker",
@@ -196,11 +210,16 @@ PB_UTIL.ENABLED_JOKERS = {
   "rock_candy",
   "rockin_stick",
   "birches",
+  "black_star",
+  "shooting_star",
+  "blue_star",
+  "j_and_js",
   "fraudulent_joker",
   "pyrite",
   "tanghulu",
   "sweet_stick",
   "wheat_field",
+  "manilla_folder",
   "clothespin",
   "kintsugi_joker",
   "watercolor_joker",
@@ -217,7 +236,6 @@ PB_UTIL.ENABLED_JOKERS = {
   -- "highlander",
   -- "peanuts",
   -- "aurora_borealis",
-  -- "blue_marble",
   -- "claw",
   -- "marksman",
   -- "built_to_last",
@@ -284,6 +302,17 @@ PB_UTIL.ENABLED_MINOR_ARCANA = {
   -- "knight_of_pentacles",
   -- "queen_of_pentacles",
   -- "king_of_pentacles",
+}
+
+PB_UTIL.ENABLED_BLINDS = {
+  "quarter",
+  "half",
+  "whole",
+  "rest",
+  "flat",
+  "sharp",
+  "natural",
+  "coda",
 }
 
 PB_UTIL.DECK_SKINS = {
@@ -419,10 +448,16 @@ PB_UTIL.ENABLED_DECKS = {
   'silver',
 }
 
+PB_UTIL.ENABLED_STICKERS = {
+  'energized',
+  'temporary'
+}
+
 -- Define a Booster object with certain shared properties for Minor Arcana packs
 if PB_UTIL.config.minor_arcana_enabled then
   PB_UTIL.MinorArcanaBooster = SMODS.Booster:extend {
     group_key = 'paperback_minor_arcana_pack',
+    kind = 'paperback_minor_arcana',
     draw_hand = true,
 
     loc_vars = function(self, info_queue, card)
@@ -481,7 +516,7 @@ if PB_UTIL.config.minor_arcana_enabled then
   PB_UTIL.MinorArcana = SMODS.Consumable:extend {
     set = 'paperback_minor_arcana',
     unlocked = true,
-    discovered = true,
+    discovered = false,
 
     loc_vars = function(self, info_queue, card)
       if not self.config then return end

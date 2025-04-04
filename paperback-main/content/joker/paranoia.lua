@@ -2,7 +2,7 @@ SMODS.Joker {
   key = 'paranoia',
   config = {
     extra = {
-      a_mult = 5
+      a_mult = 3
     }
   },
   rarity = 3,
@@ -10,7 +10,7 @@ SMODS.Joker {
   atlas = 'jokers_atlas',
   cost = 8,
   unlocked = true,
-  discovered = true,
+  discovered = false,
   blueprint_compat = true,
   eternal_compat = true,
   perishable_compat = false,

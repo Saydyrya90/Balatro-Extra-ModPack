@@ -210,7 +210,8 @@ return {
 				name = "Integral",
 				text = {"Dá {X:expchips,C:white}^0.02{} Fichas",
 						"por {X:mult,C:white}X1{} Multi",
-						"pontuado a cada mão",
+						"pontuado antes deste",
+						"Curinga cada mão",
 				},
 				unlock = {"Resolva o requerimento",
 						"{E:1,C:buf_spc}especial{} do",
@@ -338,24 +339,24 @@ return {
 			j_buf_sayajimbo = {
 				name = "Sayajimbo",
 				text = {"{C:chips}+#1#{} Fichas",
-						"Pontue ao menos {C:attention}#2#{}",
-						"para {C:attention}transformar{}",
+						"Pontue ao menos {C:attention}#2#{} em",
+						"uma mão para {C:attention}transformar{}",
 						"{C:inactive}(Próximo Nível: {C:mult}+20{C:inactive} Mult)",
 				}
 			},
 			j_buf_sayajimbo_s1 = {
 				name = "Super Sayajimbo",
 				text = {"{C:mult}+#1#{} Multi",
-						"Pontue ao menos {C:attention}#6#{}",
-						"#4# vezes para {C:attention}transformar{}",
+						"Pontue ao menos {C:attention}#6#{} em uma",
+						"mão #5# vezes para {C:attention}transformar{}",
 						"{C:inactive}(#4#/#5#, Próx. Nível: {X:mult,C:white}X3{C:inactive} Multi)",
 				}
 			},
 			j_buf_sayajimbo_s2 = {
 				name = "Super Sayajimbo 2",
 				text = {"{X:mult,C:white}X#2#{} Multi",
-						"Pontue ao menos {C:attention}#6#{}",
-						"#4# vezes para {C:attention}transformar{}",
+						"Pontue ao menos {C:attention}#6#{} em uma",
+						"mão #5# vezes para {C:attention}transformar{}",
 						"{C:inactive}(#4#/#5#, Próx. Nível: {X:expmult,C:white}^1.3{C:inactive} Multi)",
 				}
 			},
@@ -613,7 +614,6 @@ return {
 			},
 			buf_cf_show_spc = "Mostrar cartas Especiais na Coleção",
 			buf_cf_show_info = "Mostrar informações adicionais",
-			buf_cf_memcard_perf = "Modo de desempenho do Memory Card",
 			-------- CREDITS --------
 			buf_cr_artcode = "Arte & Código",
 			buf_cr_localization = "Tradução",

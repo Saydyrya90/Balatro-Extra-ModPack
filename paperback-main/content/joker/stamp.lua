@@ -12,34 +12,11 @@ SMODS.Joker {
   atlas = "jokers_atlas",
   cost = 8,
   unlocked = true,
-  discovered = true,
+  discovered = false,
   blueprint_compat = true,
   eternal_compat = true,
   perishable_compat = false,
-  soul_pos = nil,
-
-  -- Sets the sprite and hitbox
-  set_ability = function(self, card, initial, delay_sprites)
-    local w_scale, h_scale = 35 / 71, 45 / 95
-
-    card.T.h = card.T.h * h_scale
-    card.T.w = card.T.w * w_scale
-  end,
-
-  set_sprites = function(self, card, front)
-    local w_scale, h_scale = 35 / 71, 45 / 95
-
-    card.children.center.scale.y = card.children.center.scale.y * h_scale
-    card.children.center.scale.x = card.children.center.scale.x * w_scale
-  end,
-
-  load = function(self, card, card_table, other_card)
-    local w_scale, h_scale = 35 / 71, 45 / 95
-
-    card.T.h = card.T.h * h_scale
-    card.T.w = card.T.w * w_scale
-  end,
-  -----------------------------
+  pixel_size = { w = 35, h = 45 },
 
   loc_vars = function(self, info_queue, card)
     return {

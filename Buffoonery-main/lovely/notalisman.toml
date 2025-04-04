@@ -9,7 +9,7 @@ target = "functions/common_events.lua"
 pattern = "local extrafunc = nil"
 position = "after"
 payload = '''
-if not buf.compat.talisman then
+if (not buf.compat.talisman) then
 	if eval_type == 'e_mult' then 
 		sound = 'buf_emult'
 		amt = amt

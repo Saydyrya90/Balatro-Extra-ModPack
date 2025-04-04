@@ -75,7 +75,7 @@ function get_most_common_suit()
     local top_count = -1;
     for suit, count in pairs(suit_to_card_counter) do
         if top_count < count then
-            top_suit = localize(suit, 'suits_plural')
+            top_suit = suit
             top_count = count
         end
     end
@@ -1019,7 +1019,7 @@ borax = { -- Borax
     -- },
     loc_vars = function(self, info_queue, card)
         local top_suit = get_most_common_suit()
-        local vars = { get_modified_extra_value(card), top_suit, colours = { G.C.SUITS[top_suit] } }
+        local vars = { get_modified_extra_value(card), localize(top_suit, 'suits_plural'), colours = { G.C.SUITS[top_suit] } }
         return { vars = vars }
     end,
     unlocked = true,

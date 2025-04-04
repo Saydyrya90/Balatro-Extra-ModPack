@@ -8,14 +8,14 @@
 	"main_file": "ReduxArcanum.lua",
 	"badge_colour": "C09D75",
 	"badge_text_colour": "FFFFFF",
-	"version": "2.0.0~PreRelease3",
+	"version": "2.0.0~PreRelease5",
 	"dependencies": [
-		"Steamodded (>=1.0.0~ALPHA-1306a)"
+		"Steamodded (>=1.0.0~ALPHA-1306a)",
+		"Lovely (>=0.7.1)"
 	],
 	"conflicts": [
 		"CardSleeves (<<1.6.0)",
-		"CodexArcanum",
-		"Lovely (==0.7.0)"
+		"CodexArcanum"
 	],
 	"provides": [
 		"CodexArcanum"

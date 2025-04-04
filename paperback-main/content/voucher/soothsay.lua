@@ -2,7 +2,7 @@ SMODS.Voucher {
   key = 'soothsay',
   atlas = 'vouchers_atlas',
   pos = { x = 0, y = 1 },
-  discovered = true,
+  discovered = false,
   requires = {
     'v_paperback_celtic_cross'
   },

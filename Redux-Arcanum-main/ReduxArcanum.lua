@@ -219,12 +219,6 @@ if JokerDisplay then
 end
 
 -- -+-+-+-+-+-+-+-+-+-+-+-+-+-+-
---          OVERRIDES
--- -+-+-+-+-+-+-+-+-+-+-+-+-+-+-
-
-SMODS.load_file("/data/overrides.lua")()
-
--- -+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 --     TAROTS (and spectral)
 -- -+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 

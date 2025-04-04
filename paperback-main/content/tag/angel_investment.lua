@@ -6,7 +6,7 @@ SMODS.Tag {
   },
   atlas = 'tags_atlas',
   pos = { x = 0, y = 0 },
-  discovered = true,
+  discovered = false,
 
   loc_vars = function(self, info_queue)
     local dollars = math.floor(G.GAME.dollars / self.config.every * self.config.money)

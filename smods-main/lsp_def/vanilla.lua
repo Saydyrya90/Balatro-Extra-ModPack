@@ -84,8 +84,30 @@ function AnimatedSprite:__call(...) return self end
 ---@overload fun(...: any): Blind|table
 Blind = {}
 function Blind:__call(...) return self end
+
 ---@type Blind|table|nil
 G.GAME.blind = Blind()
+
+---@param self Blind
+---@param area CardArea
+---@param card Card|table
+---@param from_area CardArea
+---@return boolean? 
+--- Determines if the card should stay flipped when drawn. 
+function Blind:stay_flipped(area, card, from_area) end
+
+---@param self Blind
+---@param cards (Card|table)[]
+---@param poker_hands table[]
+---@param text string
+---@param mult number
+---@param hand_chips number
+---@param scoring_hand (table|Card)[]
+---@return number mult
+---@return number hand_chips
+---@return boolean modded
+--- Calculates modifications of played hand. 
+function Blind:modify_hand(cards, poker_hands, text, mult, hand_chips, scoring_hand) end
 
 ---@class Card: Moveable
 ---@field ability? table
@@ -95,6 +117,7 @@ G.GAME.blind = Blind()
 Card = {}
 function Card:__call(...) return self end
 
+---@param self Card
 ---@param vars_only? boolean Only return description values
 ---@return table # Becomes `loc_vars` if `vars_only` is `true`. 
 ---@return table? man_start Only returns if `vars_only` is `true`. 

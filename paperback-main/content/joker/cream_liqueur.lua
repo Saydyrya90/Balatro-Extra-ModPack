@@ -12,7 +12,7 @@ SMODS.Joker {
   atlas = "jokers_atlas",
   cost = 4,
   unlocked = true,
-  discovered = true,
+  discovered = false,
   blueprint_compat = true,
   eternal_compat = false,
   soul_pos = nil,
@@ -36,6 +36,16 @@ SMODS.Joker {
       }
     end
 
+    if not context.blueprint and context.paperback and context.paperback.tag_acquired then
+      if card.ability.extra.rounds > 0 and card.ability.extra.rounds < card.ability.extra.rounds_reset then
+        card.ability.extra.rounds = card.ability.extra.rounds_reset
+
+        return {
+          message = localize('k_reset')
+        }
+      end
+    end
+
     if not context.blueprint and context.end_of_round and context.main_eval then
       card.ability.extra.rounds = card.ability.extra.rounds - 1
 
@@ -57,20 +67,17 @@ SMODS.Joker {
         }
       end
     end
+  end,
+
+  joker_display_def = function(JokerDisplay)
+    return {
+      reminder_text = {
+        { text = '(',                       colour = G.C.UI.TEXT_INACTIVE },
+        { ref_table = 'card.ability.extra', ref_value = 'rounds',         colour = G.C.IMPORTANT },
+        { text = '/',                       colour = G.C.UI.TEXT_INACTIVE },
+        { ref_table = 'card.ability.extra', ref_value = 'rounds_reset',   colour = G.C.UI.TEXT_INACTIVE },
+        { text = ')',                       colour = G.C.UI.TEXT_INACTIVE },
+      }
+    }
   end
 }
-
-local add_tag_ref = add_tag
-function add_tag(tag)
-  -- When a tag is added, reset the countdown for each existing Cream Liqueur
-  for _, v in ipairs(SMODS.find_card('j_paperback_cream_liqueur')) do
-    if v.ability.extra.rounds > 0 and v.ability.extra.rounds < v.ability.extra.rounds_reset then
-      v.ability.extra.rounds = v.ability.extra.rounds_reset
-
-      SMODS.calculate_effect({
-        message = localize('k_reset')
-      }, v)
-    end
-  end
-  return add_tag_ref(tag)
-end

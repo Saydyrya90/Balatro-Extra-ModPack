@@ -8,7 +8,8 @@
   "Lua.workspace.library": [
     "../lovely/dump",
     "../smods",
-    "../Steamodded"
+    "../Steamodded",
+    "../JokerDisplay"
   ],
   "Lua.runtime.version": "Lua 5.1",
   "Lua.codeLens.enable": true,

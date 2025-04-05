@@ -923,13 +923,24 @@ local function createClickableModBox(modInfo, scale)
                 shadow = true,
             },
         })
-    end 
+    end
     if modInfo.config_tab then
         table.insert(but.nodes[1].nodes[1].nodes, {
             n = G.UIT.O,
             config = {
                 object = Sprite(0,0,0.4,0.4, G.ASSET_ATLAS['mod_tags'], {x=2,y=0})
             }
+        })
+    end
+    if not _RELEASE_MODE and modInfo.priority then
+        table.insert(but.nodes[1].nodes[2].nodes, {
+            n = G.UIT.T,
+            config = {
+                text = ('(%s%s) '):format(localize('b_priority'), number_format(modInfo.priority)),
+                scale = scale*0.8,
+                colour = version_col,
+                shadow = true,
+            },
         })
     end
     return {

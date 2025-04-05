@@ -316,3 +316,12 @@ pattern = "function Card:set_seal(_seal, silent, immediate)"
 position = "after"
 payload = "SMODS.enh_cache:write(self, nil)"
 match_indent = true
+
+# safeguards an infloop with debuff context
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = 'if not initial then G.GAME.blind:debuff_card(self) end'
+position = 'at'
+payload = 'if not initial and delay_sprites ~= "quantum" then G.GAME.blind:debuff_card(self) end'
+match_indent = true

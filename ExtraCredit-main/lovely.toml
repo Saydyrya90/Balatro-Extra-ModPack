@@ -184,9 +184,8 @@ end
 [patches.pattern]
 target = 'functions/state_events.lua'
 match_indent = true
-pattern = '''G.GAME.first_used_hand_level = nil
-end'''
-position = 'after'
+pattern = '''if G.GAME.current_round.current_hand.handname ~= disp_text then delay(0.3) end'''
+position = 'before'
 payload = '''
 if next(find_joker("Lucky 7")) then
     local thunk = false
@@ -197,6 +196,7 @@ if next(find_joker("Lucky 7")) then
     end
     if thunk then
         for i=1, #scoring_hand do
+            SMODS.enh_cache:write(scoring_hand[i], nil)
             scoring_hand[i].gambling = true
         end
     end

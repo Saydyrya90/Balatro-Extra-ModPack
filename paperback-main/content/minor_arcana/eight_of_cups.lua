@@ -44,7 +44,8 @@ PB_UTIL.MinorArcana {
     -- so we pass custom arguments that can be used to include the suit here
     local _, suit = pseudorandom_element(pool, pseudoseed('eight_of_cups'), {
       paperback = {
-        eight_of_cups = true
+        include_stars = true,
+        include_crowns = true
       }
     })
 

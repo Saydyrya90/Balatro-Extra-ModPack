@@ -192,6 +192,10 @@ for _, v in ipairs(objects) do
         ret = ret and PB_UTIL.has_suit_in_deck('paperback_Stars', true)
       end
 
+      if config.requires_spectrum_or_suit then
+        ret = ret and (PB_UTIL.spectrum_played() or PB_UTIL.has_modded_suit_in_deck())
+      end
+
       return ret, dupes
     end
   end

@@ -87,6 +87,47 @@ return {
       },
     },
     Joker = {
+      j_paperback_king_me = {
+        name = "King Me",
+        text = {
+          "Scored {V:1}#1#{} increase",
+          "their rank by {C:attention}#2#"
+        }
+      },
+      j_paperback_gambit = {
+        name = "Gambit",
+        text = {
+          "If played hand contains a",
+          "scoring {V:1}#1#{}, destroy the",
+          "first non-{V:1}#1#{} card in hand",
+          "and give its {C:chips}chip value{} to",
+          "the first scored {V:1}#1#"
+        }
+      },
+      j_paperback_solar_eclipse = {
+        name = "Solar Eclipse",
+        text = {
+          "Scored {C:paperback_light_suit}light suits",
+          "become {V:1}#1#"
+        }
+      },
+      j_paperback_prism = {
+        name = "Prism",
+        text = {
+          "If played hand contains a {C:attention}#1#",
+          "convert all {C:attention}scored cards{} into",
+          "random {C:attention}different suits"
+        }
+      },
+      j_paperback_master_spark = {
+        name = "Master Spark",
+        text = {
+          "If played hand contains a {C:attention}Spectrum{},",
+          "destroy all cards {C:attention}held in hand{} and",
+          "all played cards gain {C:dark_edition}Polychrome",
+          "{S:1.1,C:red,E:2}self destructs",
+        }
+      },
       j_paperback_j_and_js = {
         name = "J&J's",
         text = {

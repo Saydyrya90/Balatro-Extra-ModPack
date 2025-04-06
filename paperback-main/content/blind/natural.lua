@@ -10,7 +10,7 @@ SMODS.Blind {
 
   calculate = function(self, blind, context)
     if context.before and not blind.disabled then
-      if G.GAME.hands[context.scoring_name].level > 1 then
+      if G.GAME.hands[context.scoring_name].level > to_big(1) then
         for k, v in pairs(context.scoring_hand) do
           v:set_debuff(true)
           v.debuffed_by_blind = true

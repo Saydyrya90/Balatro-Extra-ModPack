@@ -17,13 +17,12 @@ SMODS.Joker {
   eternal_compat = true,
 
   loc_vars = function(self, info_queue, card)
-    local vars = {}
-    for k, _ in pairs(card.ability.extra) do
-      vars[#vars + 1] = localize(k, 'ranks')
-    end
-
     return {
-      vars = vars
+      vars = {
+        localize("Ace", 'ranks'),
+        localize("7", 'ranks'),
+        localize("9", 'ranks'),
+      }
     }
   end,
 

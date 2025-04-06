@@ -780,6 +780,17 @@ function PB_UTIL.spectrum_played()
   return spectrum_played
 end
 
+--- Whether the played hand contains a spectrum
+---@param hands table obtained from `context.poker_hands`
+---@return boolean | nil
+function PB_UTIL.contains_spectrum(hands)
+  for k, v in pairs(hands) do
+    if k:find('Spectrum', nil, true) and #v > 0 then
+      return true
+    end
+  end
+end
+
 --- @return boolean
 function PB_UTIL.has_modded_suit_in_deck()
   for k, v in ipairs(G.playing_cards or {}) do

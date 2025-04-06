@@ -231,7 +231,7 @@ function loadMods(modsDirectory)
                             if v.check then v.check(mod, mod[k]) end
                         end
                     end)
-                    if not success then
+                    if not success then 
                         valid = false
                         err = e
                     end
@@ -239,13 +239,13 @@ function loadMods(modsDirectory)
                 if not valid then
                     sendErrorMessage(('Found invalid metadata JSON file at %s, ignoring: %s'):format(file_path, err), 'Loader')
                 else
-                    sendInfoMessage('Valid JSON file found', 'Loader')
+                    sendInfoMessage('Valid JSON file found')
                     if NFS.getInfo(directory..'/.lovelyignore') then
                         mod.disabled = true
                     end
                     if mod.prefix and used_prefixes[mod.prefix] then
                         mod.can_load = false
-                        mod.load_issues = {
+                        mod.load_issues = { 
                             prefix_conflict = used_prefixes[mod.prefix],
                             dependencies = {},
                             conflicts = {},

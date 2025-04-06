@@ -147,7 +147,7 @@ SMODS.DrawStep {
     order = -10,
     func = function(self, layer)
         --Draw the main part of the card
-        if (self.edition and self.edition.negative and not self.delay_edition) or (self.ability.name == 'Antimatter' and (self.config.center.discovered or self.bypass_discovery_center)) then
+        if (self.edition and self.edition.negative) or (self.ability.name == 'Antimatter' and (self.config.center.discovered or self.bypass_discovery_center)) then
             self.children.center:draw_shader('negative', nil, self.ARGS.send_to_shader)
         elseif not self:should_draw_base_shader() then
             -- Don't render base dissolve shader.
@@ -190,7 +190,7 @@ SMODS.DrawStep {
     order = 0,
     func = function(self, layer)
         --Draw the main part of the card
-        if (self.edition and self.edition.negative and not self.delay_edition) or (self.ability.name == 'Antimatter' and (self.config.center.discovered or self.bypass_discovery_center)) then
+        if (self.edition and self.edition.negative) or (self.ability.name == 'Antimatter' and (self.config.center.discovered or self.bypass_discovery_center)) then
             if self.children.front and (self.ability.delayed or (self.ability.effect ~= 'Stone Card' and not self.config.center.replace_base_card)) then
                 self.children.front:draw_shader('negative', nil, self.ARGS.send_to_shader)
             end
@@ -240,7 +240,7 @@ SMODS.DrawStep {
     key = 'edition',
     order = 20,
     func = function(self, layer)
-        if self.edition and not self.delay_edition then
+        if self.edition then
             for k, v in pairs(G.P_CENTER_POOLS.Edition) do
                 if self.edition[v.key:sub(3)] and v.shader then
                     if type(v.draw) == 'function' then

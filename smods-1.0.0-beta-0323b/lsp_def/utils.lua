@@ -82,14 +82,10 @@ function SMODS.merge_lists(...) end
 ---@field quantum_enhancements? boolean Enables "Quantum Enhancement" contexts. Cards can count as having multiple enhancements at once. 
 ---@field retrigger_joker? boolean Enables "Joker Retrigger" contexts. Jokers can be retriggered by other jokers or effects. 
 ---@field post_trigger? boolean Enables "Post Trigger" contexts. Allows calculating effects after a Joker has been calculated. 
----@field cardareas? SMODS.optional_features.cardareas Enables additional CardArea calculation. 
-
----@class SMODS.optional_features.cardareas: table
----@field deck? boolean Enables "Deck Calculation". Decks are included in calculation.
----@field discard? boolean Enables "Discard Calculation". Discarded cards are included in calculation.
+---@field cardarea? table<string, boolean> Enables additional CardArea calculation. Currently supports: `deck`, `discards`, `unscored`. 
 
 ---@type SMODS.optional_features
-SMODS.optional_features = { cardareas = {} }
+SMODS.optional_features = { cardarea = {} }
 
 --- Inserts all SMODS features enabled by loaded mods into `SMODS.optional_features`. 
 function SMODS.get_optional_features() end
@@ -156,12 +152,12 @@ function SMODS.calculate_retriggers(card, context, _ret) end
 ---@return table[] reps
 function SMODS.calculate_repetitions(card, context, reps) end
 
----@param copier Card|table
----@param copied_card Card|table
+---@param card Card|table
+---@param blueprint_card Card|table 
 ---@param context CalcContext|table
 ---@return table?
---- Helper function to copy the ability of another joker. Useful for implementing Blueprint-like jokers.
-function SMODS.blueprint_effect(copier, copied_card, context) end
+--- Calculates blueprint-like effects.
+function SMODS.blueprint_effect(card, blueprint_card, context) end
 
 ---@param _type string
 ---@param _context string

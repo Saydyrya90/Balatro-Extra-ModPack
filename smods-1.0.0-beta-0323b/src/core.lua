@@ -75,5 +75,3 @@ for _, path in ipairs {
 } do
     assert(load(NFS.read(SMODS.path..path), ('=[SMODS _ "%s"]'):format(path)))()
 end
-
-sendInfoMessage("Steamodded v" .. SMODS.version, "SMODS")

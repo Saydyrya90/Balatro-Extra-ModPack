@@ -331,7 +331,7 @@ return {
 				name = "Russian Roulette",
 				text = {"When {C:attention}Blind{} is selected, earn {C:money}$#3#{}",          
 						"{C:green}#1# in #2#{} chance you {E:1,C:mult}lose the game{} instead",
-						"If chance reaches {C:green}1 in 2{} and you win,",
+						"If chance reaches {C:green}#1# in 2{} and you win,",
 						"create a random {C:legendary}Legendary{} Joker",
 						"{C:inactive,s:0.7}(Chance and payout increase each round)"
 				}

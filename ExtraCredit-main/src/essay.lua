@@ -1,5 +1,6 @@
 local mod = SMODS.current_mod
 SMODS.Atlas({key = "ECjokers", path = "ECjokers.png", px = 71, py = 95, atlas_table = "ASSET_ATLAS"}):register()
+SMODS.Atlas({key = "ECother", path = "ECother.png", px = 71, py = 95, atlas_table = "ASSET_ATLAS"}):register()
 
 ECconfig = SMODS.current_mod.config
 SMODS.current_mod.optional_features = { quantum_enhancements = true }
@@ -2925,9 +2926,34 @@ end
 
 
 
+
+
+SMODS.Back{ --Bazaar Deck
+    name = "Bazaar Deck",
+	key = "bazaardeck",  
+  loc_txt = {      
+    name = 'Bazaar Deck',      
+    text = {
+        "Start run with",
+        "{C:money,T:v_clearance_sale}#1#{},",
+        "{C:attention,T:v_magic_trick}#2#{},",
+        "and {C:dark_edition,T:v_hone}#3#",
+    } 
+  }, 
+	order = 16,
+  unlocked = true,
+  discovered = true,
+	config = {vouchers = {"v_clearance_sale","v_magic_trick","v_hone"}},
+  loc_vars = function(self, info_queue, center)
+    return {vars = {localize{type = 'name_text', key = 'v_clearance_sale', set = 'Voucher'}, localize{type = 'name_text', key = 'v_magic_trick', set = 'Voucher'}, localize{type = 'name_text', key = 'v_hone', set = 'Voucher'}}}
+  end,
+	pos = { x = 0, y = 0 },
+	atlas = "ECother"
+}
+
 -- no art yet lol but feel free to uncomment and play with them
 
--- SMODS.Back{ --Bazaar Deck
+-- SMODS.Back{ --Archeology Deck
 --     name = "Archeology Deck",
 -- 	key = "archeologydeck",  
 --   loc_txt = {      
@@ -2937,7 +2963,7 @@ end
 --       "{C:attention}-1{} hand size"
 --     } 
 --   }, 
--- 	order = 16,
+-- 	order = 17,
 --   unlocked = true,
 --   discovered = true,
 -- 	config = {},
@@ -2954,29 +2980,6 @@ end
 --   end
 -- }
 
--- SMODS.Back{ --Archeology Deck
---     name = "Bazaar Deck",
--- 	key = "bazaardeck",  
---   loc_txt = {      
---     name = 'Bazaar Deck',      
---     text = {
---         "Start run with",
---         "{C:money,T:v_clearance_sale}#1#{},",
---         "{C:attention,T:v_magic_trick}#2#{},",
---         "and {C:dark_edition,T:v_hone}#3#",
---     } 
---   }, 
--- 	order = 16,
---   unlocked = true,
---   discovered = true,
--- 	config = {vouchers = {"v_clearance_sale","v_magic_trick","v_hone"}},
---   loc_vars = function(self, info_queue, center)
---     return {vars = {localize{type = 'name_text', key = 'v_clearance_sale', set = 'Voucher'}, localize{type = 'name_text', key = 'v_magic_trick', set = 'Voucher'}, localize{type = 'name_text', key = 'v_hone', set = 'Voucher'}}}
---   end,
--- 	pos = { x = 2, y = 0 },
--- 	atlas = "ECjokers"
--- }
-
 -- SMODS.Back{ --Echo Deck
 --     name = "Echo Deck",
 -- 	key = "echodeck",  
@@ -2987,7 +2990,7 @@ end
 --       "{C:red}X2{} base Blind size"
 --     } 
 --   }, 
--- 	order = 16,
+--     order = 18,
 --   unlocked = true,
 --   discovered = true,
 -- 	config = {},
@@ -3019,4 +3022,3 @@ end
 --     end
 --   end
 -- }
-

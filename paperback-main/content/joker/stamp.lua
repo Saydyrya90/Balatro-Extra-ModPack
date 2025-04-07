@@ -4,10 +4,10 @@ SMODS.Joker {
     extra = {
       chips = 0,
       chip_mod = 25,
-      odds = 3
+      odds = 2
     }
   },
-  rarity = 3,
+  rarity = 2,
   pos = { x = 8, y = 0 },
   atlas = "jokers_atlas",
   cost = 8,

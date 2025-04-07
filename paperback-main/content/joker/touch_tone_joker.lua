@@ -10,7 +10,7 @@ SMODS.Joker {
       }
     }
   },
-  rarity = 3,
+  rarity = 2,
   pos = { x = 11, y = 9 },
   atlas = "jokers_atlas",
   cost = 8,

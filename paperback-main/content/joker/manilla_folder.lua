@@ -2,7 +2,7 @@ SMODS.Joker {
   key = "manilla_folder",
   config = {
     extra = {
-      money = 1
+      money = 2
     }
   },
   rarity = 1,

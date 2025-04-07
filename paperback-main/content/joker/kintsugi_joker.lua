@@ -2,7 +2,7 @@ SMODS.Joker {
   key = "kintsugi_joker",
   config = {
     extra = {
-      increase = 1,
+      increase = 2,
       total = 0,
       enhancement = 'm_paperback_ceramic'
     }

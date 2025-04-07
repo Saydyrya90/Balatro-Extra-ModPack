@@ -2,7 +2,7 @@ SMODS.Joker {
   key = 'sake_cup',
   config = {
     extra = {
-      odds = 3,
+      odds = 2,
       rank = "9",
     }
   },

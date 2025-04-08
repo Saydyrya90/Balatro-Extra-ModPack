@@ -12,7 +12,7 @@ function init()
     primary_colour = HEX("4f6367"),
     secondary_colour = HEX("4f6367"),
     collection_rows = { 4, 4 },
-    shop_rate = 0.0,
+    shop_rate = 1.0, -- originally it was zero because implementing shop items used to be jank but now it isnt so it isnt
     loc_txt = {},
     default = "c_mf_deepblue",
     can_stack = false,
@@ -143,6 +143,48 @@ function init()
       return { vars = { card.config.center.config.choose, card.ability.extra } }
     end,
     group_key = "k_colour_pack",
+  })
+
+  SMODS.Tag({
+    key = "colour",
+    atlas = "mf_tags",
+    pos = { x = 0, y = 0 },
+    unlocked = true,
+    discovered = true,
+    loc_vars = function(self, info_queue)
+      info_queue[#info_queue + 1] = { set = "Other", key = "p_mf_colour_jumbo_1", specific_vars = { 1, 4 } }
+      return { vars = {} }
+    end,
+    apply = function(self, tag, context)
+      if context.type == "new_blind_choice" then
+        tag:yep("+", G.C.SECONDARY_SET.Code, function()
+          local key = "p_mf_colour_jumbo_1"
+          local card = Card(
+            G.play.T.x + G.play.T.w / 2 - G.CARD_W * 1.27 / 2,
+            G.play.T.y + G.play.T.h / 2 - G.CARD_H * 1.27 / 2,
+            G.CARD_W * 1.27,
+            G.CARD_H * 1.27,
+            G.P_CARDS.empty,
+            G.P_CENTERS[key],
+            { bypass_discovery_center = true, bypass_discovery_ui = true }
+          )
+          card.cost = 0
+          card.from_tag = true
+          G.FUNCS.use_card({ config = { ref_table = card } })
+          -- uh. should this be here??
+          if G.GAME.modifiers.cry_force_edition and not G.GAME.modifiers.cry_force_random_edition then
+            card:set_edition(nil, true, true)
+          elseif G.GAME.modifiers.cry_force_random_edition then
+            local edition = Cryptid.poll_random_edition()
+            card:set_edition(edition, true, true)
+          end
+          card:start_materialize()
+          return true
+        end)
+        tag.triggered = true
+        return true
+      end
+    end,
   })
 
   SMODS.Consumable({
@@ -819,8 +861,50 @@ function init()
     config = {
       val = 0,
       partial_rounds = 0,
-      upgrade_rounds = 7,
+      upgrade_rounds = 2,
     },
+    cost = 4,
+    atlas = "mf_colours",
+    unlocked = true,
+    discovered = true,
+    display_size = { w = 71, h = 87 },
+    pixel_size = { w = 71, h = 87 },
+    can_use = function(self, card)
+      return true
+    end,
+    use = function(self, card, area, copier)
+      local card_type = "Rotarot"
+      local rng_seed = "peach"
+      for i = 1, card.ability.val do
+        G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
+          play_sound('timpani')
+          local n_card = create_card(card_type, G.consumeables, nil, nil, nil, nil, nil, rng_seed)
+          n_card:add_to_deck()
+          n_card:set_edition({negative = true}, true)
+          G.consumeables:emplace(n_card)
+          card:juice_up(0.3, 0.5)
+          return true end }))
+      end
+      delay(0.6)
+    end,
+    loc_vars = function(self, info_queue, card)
+      local val, max = progressbar(card.ability.partial_rounds, card.ability.upgrade_rounds)
+      return { vars = {card.ability.val, val, max, card.ability.upgrade_rounds} }
+    end
+  })
+  
+  SMODS.Consumable({
+    object_type = "Consumable",
+    set = "Colour",
+    name = "col_Gold",
+    key = "new_gold",
+    pos = { x = 1, y = 6 },
+    config = {
+      val = 0,
+      partial_rounds = 0,
+      upgrade_rounds = 4,
+    },
+    hidden = (Jen ~= nil),
     cost = 4,
     atlas = "mf_colours",
     unlocked = true,
@@ -947,6 +1031,7 @@ function init()
           partial_rounds = 0,
           upgrade_rounds = 9,
         },
+        hidden = (Jen ~= nil),
         cost = 4,
         atlas = "mf_colours",
         unlocked = true,
@@ -1020,7 +1105,7 @@ function init()
     end
   end
 
-  if SMODS.find_mod("aikoyorisshenanigans") then
+  if next(SMODS.find_mod("aikoyorisshenanigans")) then
     -- hell yeah 2
     SMODS.Consumable({
       object_type = "Consumable",

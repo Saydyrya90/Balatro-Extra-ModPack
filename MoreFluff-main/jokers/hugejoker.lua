@@ -1,3 +1,9 @@
+local huger = SMODS.current_mod.config["Huger Joker"]
+local scale = 1.5
+if huger then
+  scale = 2
+end
+
 local joker = {
   name = "Huge Joker",
   config = {
@@ -14,7 +20,7 @@ local joker = {
   blueprint_compat = true,
   eternal_compat = true,
   perishable_compat = true,
-  display_size = { w = 71.0 * 1.5, h = 95 * 1.5 },
+  display_size = { w = 71.0 * scale, h = 95 * scale },
 	pools = { ["Meme"] = true },
   loc_txt = {
     name = "Huge Joker",

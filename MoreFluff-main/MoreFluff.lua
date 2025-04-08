@@ -28,9 +28,12 @@ end
 if mf_config["Achievements"] == nil then
   mf_config["Achievements"] = true
 end
-if mf_config["Unfinished"] == nil then
-  mf_config["Unfinished"] = false
+if mf_config["Huger Joker"] == nil then
+  mf_config["Huger Joker"] = false
 end
+-- if mf_config["Unfinished"] == nil then
+--   mf_config["Unfinished"] = false
+-- end
 
 if Cryptid then
   SMODS.load_mod_config(SMODS.Mods.Cryptid)
@@ -66,6 +69,20 @@ SMODS.Sound({
       )
     )
 	end,
+})
+
+SMODS.Sound({
+  key = "music_modded",
+  path = "music_modded.ogg",
+  select_music_track = function()
+    return (
+      mf_config["Music"] and
+      (
+        (SMODS.OPENED_BOOSTER or {}).ability or {}).modded_pack 
+        and G.booster_pack and not G.booster_pack.REMOVED
+      )
+      and 2
+  end,
 })
 
 -- comment out the shit you dont want
@@ -109,7 +126,6 @@ local joker_list = {
   "teacup",
   "recycling",
   "virtual",
-  "yuckyrat",
 
   -- rare
   "bloodpact",
@@ -117,7 +133,6 @@ local joker_list = {
   "cba",
   "fleshprison",
   "hugejoker",
-  "hyperjimbo",
   "jankman",
   "mashupalbum",
   "pixeljoker",
@@ -127,13 +142,23 @@ local joker_list = {
 
   -- legendary!!
   "triangle",
-  "marigold",
 
   -- epic?????
   -- "fleshpanopticon", -- IT'S IN CRYPTID NOW
 
   -- exotic?!?!
   "colorem",
+
+  -- 1.3
+  "junkmail",
+  "gemstonejoker",
+  "tealjoker",
+  "yuckyrat",
+  "allicantdo",
+  "brass",
+  "hyperjimbo",
+  "top10",
+  "marigold",
 }
 
 if not mf_config["Jokers"] then
@@ -182,83 +207,83 @@ for _, v in ipairs(joker_list) do
   ::continue::
 end
 
-if mf_config["Unfinished"] then
+-- if mf_config["Unfinished"] then
 
-  local ortalab_jokers = {
-    -- common
-    "clintcondition",
-    "sheetsuggestion",
+--   local ortalab_jokers = {
+--     -- common
+--     "clintcondition",
+--     "sheetsuggestion",
 
-    -- uncommon
-    "devilsknife",
+--     -- uncommon
+--     "devilsknife",
 
-    -- rare
-    "twotrucks"
-  }
+--     -- rare
+--     "twotrucks"
+--   }
 
-  local familiar_jokers = {
-    -- common
-    "jimbojjoker"
-  }
+--   local familiar_jokers = {
+--     -- common
+--     "jimbojjoker"
+--   }
 
-  if not mf_config["Jokers"] then
-    ortalab_jokers = {}
-    familiar_jokers = {}
-  end
+--   if not mf_config["Jokers"] then
+--     ortalab_jokers = {}
+--     familiar_jokers = {}
+--   end
 
-  for _, v in ipairs(ortalab_jokers) do
-    print(v)
-    local joker = SMODS.load_file("jokers/ortalab/"..v..".lua")()
-    if not joker then
-      goto eunitnoc
-    end
-    joker.key = v
-    joker.atlas = "mf_srekoj"
-    if not joker.pos then
-      joker.pos = { x = 0, y = 0 }
-    end
+--   for _, v in ipairs(ortalab_jokers) do
+--     print(v)
+--     local joker = SMODS.load_file("jokers/ortalab/"..v..".lua")()
+--     if not joker then
+--       goto eunitnoc
+--     end
+--     joker.key = v
+--     joker.atlas = "mf_srekoj"
+--     if not joker.pos then
+--       joker.pos = { x = 0, y = 0 }
+--     end
 
-    local joker_obj = SMODS.Joker(joker)
-    for k_, v_ in pairs(joker) do
-      if type(v_) == 'function' then
-        joker_obj[k_] = joker[k_]
-      end
-    end
-    joker_obj.jank_force_badge = {
-      name = "ffulF eroM",
-      col = G.C.GREEN
-    }
+--     local joker_obj = SMODS.Joker(joker)
+--     for k_, v_ in pairs(joker) do
+--       if type(v_) == 'function' then
+--         joker_obj[k_] = joker[k_]
+--       end
+--     end
+--     joker_obj.jank_force_badge = {
+--       name = "ffulF eroM",
+--       col = G.C.GREEN
+--     }
 
-    ::eunitnoc::
-  end
+--     ::eunitnoc::
+--   end
 
-  for _, v in ipairs(familiar_jokers) do
-    print(v)
-    local joker = SMODS.load_file("jokers/familiar/"..v..".lua")()
-    if not joker then
-      goto continue_fam
-    end
-    joker.key = v
-    joker.atlas = "mf_srekoj"
-    if not joker.pos then
-      joker.pos = { x = 0, y = 0 }
-    end
-    joker.pos.x = joker.pos.x + 10
+--   for _, v in ipairs(familiar_jokers) do
+--     print(v)
+--     local joker = SMODS.load_file("jokers/familiar/"..v..".lua")()
+--     if not joker then
+--       goto continue_fam
+--     end
+--     joker.key = v
+--     joker.atlas = "mf_srekoj"
+--     if not joker.pos then
+--       joker.pos = { x = 0, y = 0 }
+--     end
+--     joker.pos.x = joker.pos.x + 10
 
-    local joker_obj = SMODS.Joker(joker)
-    for k_, v_ in pairs(joker) do
-      if type(v_) == 'function' then
-        joker_obj[k_] = joker[k_]
-      end
-    end
-    joker_obj.jank_force_badge = {
-      name = "Ectoplasm",
-      col = G.C.DARK_EDITION
-    }
+--     local joker_obj = SMODS.Joker(joker)
+--     for k_, v_ in pairs(joker) do
+--       if type(v_) == 'function' then
+--         joker_obj[k_] = joker[k_]
+--       end
+--     end
+--     joker_obj.jank_force_badge = {
+--       name = "Ectoplasm",
+--       col = G.C.DARK_EDITION
+--     }
 
-    ::continue_fam::
-  end
-end
+--     ::continue_fam::
+--   end
+-- end
 
 local smods_cmb = SMODS.create_mod_badges
 function SMODS.create_mod_badges(obj, badges)
@@ -373,6 +398,12 @@ if CardSleeves then
     py = 95 
   })
 end
+SMODS.Atlas({
+  key = "tags",
+  path = "mf_tags.png",
+  px = 34,
+  py = 34
+})
 
 -- add a way for these to be disabled
 if mf_config["Colour Cards"] then
@@ -390,6 +421,11 @@ if mf_config["45 Degree Rotated Tarot Cards"] then
   init_rotarots = SMODS.load_file("other/rotarots.lua")()
   init_rotarots()
 end
+
+-- modded pack
+init_moddedpack = SMODS.load_file("other/moddedpack.lua")()
+init_moddedpack()
+
 
 -- maybe another day
 
@@ -837,7 +873,7 @@ function Game:update_round_eval(dt)
   update_round_evalref(self, dt)
   
   for _, other_card in pairs(G.deck.cards) do
-    SMODS.debuff_card(other_card, false, "brass_card")
+    SMODS.debuff_card(other_card, false, "allicantdo")
   end
 
   -- thanks feder
@@ -919,8 +955,10 @@ local morefluffTabs = function() return {
         create_toggle({ label = localize("mf_config_rotarot_cards"), ref_table = mf_config, ref_value = "45 Degree Rotated Tarot Cards" })
       settings.nodes[#settings.nodes + 1] =
         create_toggle({ label = localize("mf_config_achievements"), ref_table = mf_config, ref_value = "Achievements" })
+      -- settings.nodes[#settings.nodes + 1] =
+      --   create_toggle({ label = localize("mf_config_unfinished"), ref_table = mf_config, ref_value = "Unfinished" })
       settings.nodes[#settings.nodes + 1] =
-        create_toggle({ label = localize("mf_config_unfinished"), ref_table = mf_config, ref_value = "Unfinished" })
+        create_toggle({ label = localize("mf_config_huger_joker"), ref_table = mf_config, ref_value = "Huger Joker" })
 			config = { n = G.UIT.R, config = { align = "tm", padding = 0 }, nodes = { settings } }
 			mf_nodes[#mf_nodes + 1] = config
 			return {
@@ -940,3 +978,46 @@ local morefluffTabs = function() return {
 	},
 } end
 SMODS.current_mod.extra_tabs = morefluffTabs
+
+-- -- thank you mr cryptid
+-- local g_main_menu = Game.main_menu
+-- function Game:main_menu(change_context)
+--   local ret = g_main_menu(self, change_context)
+--   local newcard = Card(
+--     G.title_top.T.x,
+--     G.title_top.T.y,
+--     G.CARD_W,
+--     G.CARD_H,
+--     G.P_CARDS.empty,
+--     G.P_CENTERS.j_mf_philosophical,
+--     { bypass_discovery_center = true }
+--   )
+--   -- recenter the title
+--   G.title_top.T.w = G.title_top.T.w + G.CARD_W * 0.7675 -- uh if i do this again then it gets really big so uh. Manually it is then
+--   G.title_top.T.x = G.title_top.T.x - 0.8
+--   G.title_top:emplace(newcard)
+--   -- make the card look the same way as the title screen Ace of Spades
+--   newcard.T.w = newcard.T.w * 1.1 * 1.2
+--   newcard.T.h = newcard.T.h * 1.1 * 1.2
+--   newcard.no_ui = true
+--   newcard.states.visible = false
+
+--   G.E_MANAGER:add_event(Event({
+--     trigger = "after",
+--     delay = 0,
+--     blockable = false,
+--     blocking = false,
+--     func = function()
+--       if change_context == "splash" then
+--         newcard.states.visible = true
+--         newcard:start_materialize({ G.C.WHITE, G.C.WHITE }, true, 2.5)
+--       else
+--         newcard.states.visible = true
+--         newcard:start_materialize({ G.C.WHITE, G.C.WHITE }, nil, 1.2)
+--       end
+--       return true
+--     end,
+--   }))
+
+--   return ret
+-- end

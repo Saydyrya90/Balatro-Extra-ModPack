@@ -376,7 +376,7 @@ return {
         name = "Marigold",
         text = {
           "{C:attention}Retriggers{} played and held",
-          "{C:attention}Marigold Cards{} #1# time#<s>1#"
+          "{C:attention}Marigold Cards{} #1# times"
         },
       },
       j_mf_yuckyrat = { 
@@ -396,6 +396,59 @@ return {
           "before scoring if {C:attention}played hand",
           "contains exactly {C:attention}4{} cards"
         },
+      },
+      j_mf_brass = {
+        name = "Brass Joker",
+        text = {
+          "{C:attention}Retrigger{} the joker",
+          "to the right once for every",
+          "{C:attention}#4# Brass Cards{} destroyed",
+          "{C:inactive}(Currently {C:attention}#1#{C:inactive}, {}[{C:attention}#2#{C:inactive}#3#{}]{C:inactive})"
+        }
+      },
+      j_mf_allicantdo = {
+        name = "All I Can't Do",
+        text = {
+          "{C:red}Debuffs{} first drawn hand",
+          "Gains {X:red,C:white} X#1# {} Mult for",
+          "each played {C:red}debuffed{} card",
+          "{C:inactive}(Currently {X:red,C:white} X#2# {C:inactive})"
+        }
+      },
+      j_mf_tealjoker = {
+        name = "Teal Joker",
+        text = {
+          "Gives {X:chips,C:white} X#1# {} Chips",
+          "for each {C:attention}Teal Card",
+          "in your {C:attention}full deck",
+          "{C:inactive}(Currently {X:chips,C:white} X#2# {C:inactive} Chips)",
+        }
+      },
+      j_mf_gemstonejoker = {
+        name = "Gemstone Joker",
+        text = {
+          "Earn {C:money}$#1#{} at end of round",
+          "for each {C:attention}Gemstone Card{}",
+          "in your {C:attention}full deck{}",
+          "{C:inactive}(Currently {C:money}$#2#{C:inactive})"
+        }
+      },
+      j_mf_top10 = {
+        name = "Top 10 Jokers from One through Ten",
+        text = {
+          "Earn {C:money}$#1#{} at end of round",
+          "for each {C:green}unique digit{} displayed",
+          "in {C:attention}current money{}",
+          "{C:inactive}(They are 0, 1, 2, 3, 4, 5, 6, 7, 8, and 9.)",
+        }
+      },
+      j_mf_junkmail = {
+        name = "Junk Mail",
+        text = {
+          "Creates a {C:attention}Voucher{} which",
+          "costs {C:money}#1#x{} as much at",
+          "the start of each Shop",
+        }
       },
       -- ORTALAB SWAPS
       j_mf_clintcondition = {
@@ -580,9 +633,18 @@ return {
       c_mf_peach = {
         name = "Peach",
         text = {
+          "Create a random {C:dark_edition}Negative{}",
+          "{C:rotarot}45 Degree Rotated Tarot{} card for",
+          "every {C:attention}#4#{} rounds this has been held",
+          "{C:inactive}(Currently {C:attention}#1#{C:inactive}, {}[{C:attention}#2#{C:inactive}#3#{}]{C:inactive})"
+        },
+      },
+      c_mf_new_gold = {
+        name = "Gold",
+        text = {
           "Create a {C:dark_edition}Negative{} {C:spectral}Soul{}",
-          "card for every {C:attention}#4#{}",
-          "rounds this has been held",
+          "card for every {C:attention}#4#{} rounds",
+          "this has been held",
           "{C:inactive}(Currently {C:attention}#1#{C:inactive}, {}[{C:attention}#2#{C:inactive}#3#{}]{C:inactive})"
         },
       },
@@ -857,7 +919,7 @@ return {
         name = "Brass Card",
         text = {
           "{C:attention}Retriggers{} #1# additional",
-          "time#<s>1# when scored",
+          "times when scored",
 					"{C:green}#2# in #3#{} chance to be",
 					"{C:red}destroyed{} after being scored",
         }
@@ -1040,6 +1102,34 @@ return {
           "cards to be used immediately"
         }
       },
+      p_mf_modded_normal_1 = {
+        name = "Modded Pack",
+        text = {
+          "Choose {C:attention}#1#{} of up to",
+          "{C:attention}#2#{C:dark_edition} Modded Joker{} cards",
+        }
+      },
+      p_mf_modded_normal_2 = {
+        name = "Modded Pack",
+        text = {
+          "Choose {C:attention}#1#{} of up to",
+          "{C:attention}#2#{C:dark_edition} Modded Joker{} cards",
+        }
+      },
+      p_mf_modded_jumbo_1 = {
+        name = "Jumbo Modded Pack",
+        text = {
+          "Choose {C:attention}#1#{} of up to",
+          "{C:attention}#2#{C:dark_edition} Modded Joker{} cards",
+        }
+      },
+      p_mf_modded_mega_1 = {
+        name = "Mega Modded Pack",
+        text = {
+          "Choose {C:attention}#1#{} of up to",
+          "{C:attention}#2#{C:dark_edition} Modded Joker{} cards",
+        }
+      },
     },
     Sleeve = {
       sleeve_mf_grosmichel = {
@@ -1098,6 +1188,22 @@ return {
         }
       },
     },
+    Tag = {
+      tag_mf_colour = {
+        name = "Painter's Tag",
+        text = {
+          "Gives a free",
+          "{C:colourcard}Jumbo Colour Pack"
+        }
+      },
+      tag_mf_rotarot = {
+        name = "Rotarot Tag",
+        text = {
+          "Gives a free",
+          "{C:rotarot}45 Degree Rotated Mega Arcana Pack"
+        }
+      }
+    },
   },
   misc = {
     dictionary = {
@@ -1111,6 +1217,10 @@ return {
       k_rotarot = "45 Degree Rotated Tarot",
       b_rotarot_cards = "45 Degree Rotated Tarot Cards",
       k_rotarot_pack = "45 Degree Rotated Arcana Pack",
+      
+      k_modded_pack = "Modded Pack",
+      
+      k_plus_voucher = "+1 Voucher",
 
       k_display_for_paul = "(for Paul)",
       k_display_for_paul_ex = "(for Paul!)",
@@ -1139,6 +1249,7 @@ return {
       mf_config_rotarot_cards = "45 Degree Rotated Tarot Cards",
       mf_config_achievements = "Achievements",
       mf_config_unfinished = "Unfinished Content",
+      mf_config_huger_joker = "Huger Joker",
     },
     labels = {
       colour = "Colour"

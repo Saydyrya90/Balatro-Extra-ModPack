@@ -339,12 +339,12 @@ return {
             "增加{C:attention}1{}回合",
             "{C:inactive}(当前{C:attention}#1#{C:inactive}, {}[{C:attention}#2#{C:inactive}#3#{}]{C:inactive})"}
       },
-      c_mf_peach = {
-        name = "桃色",
-        text = {"每持有{C:attention}#4#{}回合",
-            "创建一个{C:dark_edition}负片{} {C:spectral}灵魂{}", "卡",
-            "{C:inactive}(当前{C:attention}#1#{C:inactive}, {}[{C:attention}#2#{C:inactive}#3#{}]{C:inactive})"}
-      },
+      -- c_mf_peach = {
+      --   name = "桃色",
+      --   text = {"每持有{C:attention}#4#{}回合",
+      --       "创建一个{C:dark_edition}负片{} {C:spectral}灵魂{}", "卡",
+      --       "{C:inactive}(当前{C:attention}#1#{C:inactive}, {}[{C:attention}#2#{C:inactive}#3#{}]{C:inactive})"}
+      -- },
       c_mf_purple = {
         name = "紫色",
         text = {"每持有{C:attention}#4#{}回合", "创建一个{C:cry_epic}史诗标签{}",

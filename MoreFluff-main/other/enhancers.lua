@@ -109,7 +109,7 @@ function init()
           card = card,
         }
       end
-      if context.destroying_card and pseudorandom("brass_card") < G.GAME.probabilities.normal/card.ability.chance then
+      if context.destroy_card and context.destroying_card == card and pseudorandom("brass_card") < G.GAME.probabilities.normal/card.ability.chance then
         return {
           remove = true
         }
@@ -228,7 +228,7 @@ function init()
       chance = 2
     },
     calculate = function (self, card, context)
-      if context.destroying_card and pseudorandom("yucky") < G.GAME.probabilities.normal/card.ability.chance then
+      if context.destroy_card and context.destroying_card == card and pseudorandom("yucky") < G.GAME.probabilities.normal/card.ability.chance then
         return {
           remove = true
         }

@@ -15,6 +15,8 @@ local joker = {
   eternal_compat = true,
   perishable_compat = false,
   loc_vars = function(self, info_queue, center)
+    info_queue[#info_queue + 1] = G.P_CENTERS.m_mf_yucky
+    
     return {
       vars = { center.ability.extra.x_mult_mod, center.ability.extra.x_mult }
     }

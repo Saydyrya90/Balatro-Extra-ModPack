@@ -22,6 +22,8 @@ local joker = {
     },
   },
   loc_vars = function(self, info_queue, center)
+    info_queue[#info_queue + 1] = G.P_CENTERS.m_mf_marigold
+    
     return {
       vars = { center.ability.extra.retriggers }
     }

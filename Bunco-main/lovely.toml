@@ -1517,6 +1517,19 @@ position = 'before'
 match_indent = true
 payload = '''G.GAME.money_spend_this_round = 0'''
 
+# Initialize money_spend_this_round on load/new game
+[[patches]]
+[patches.pattern]
+target = 'game.lua'
+# Find the line where G.GAME is assigned from save or initialized
+pattern = 'self.GAME = saveTable and saveTable.GAME or self:init_game_object()'
+position = 'after' # Add our code right after G.GAME is guaranteed to exist
+match_indent = true
+payload = '''
+-- Ensure money_spend_this_round exists when loading or starting a new game
+self.GAME.money_spend_this_round = self.GAME.money_spend_this_round or 0
+'''
+
 # Blind defeat unlocking
 [[patches]]
 [patches.pattern]

@@ -3371,6 +3371,8 @@ payload = '''if G.COLLABS.options[suit.key] and
 (suit.key ~= 'bunc_Halberds' or (suit.key == 'bunc_Halberds' and G.P_CENTERS['b_bunc_fairy'].unlocked)) then'''
 
 # Infinite redebuff fix
+# Infinite redebuff fix (REVISED ATTEMPT)
+# Part 1a: Add 'if' before the first Credit Card check
 [[patches]]
 [patches.pattern]
 target = 'card.lua'
@@ -3381,6 +3383,17 @@ match_indent = true
 payload = '''if not from_debuff then
 '''
 
+# Part 1b: Add 'end' after the first Credit Card check (assuming it's a single line inside the 'if')
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''G.GAME.bankrupt_at = G.GAME.bankrupt_at - self.ability.extra''' # Target the line *inside* the if
+position = 'after'
+match_indent = true
+payload = '''
+end'''
+
+# Part 2a: Add 'if' before the second Credit Card check
 [[patches]]
 [patches.pattern]
 target = 'card.lua'
@@ -3391,14 +3404,25 @@ match_indent = true
 payload = '''if not from_debuff then
 '''
 
+# Part 2b: Add 'end' after the second Credit Card check (assuming it's a single line inside the 'if')
 [[patches]]
 [patches.pattern]
 target = 'card.lua'
-pattern = "if G.GAME.blind and G.GAME.blind.in_blind then G.E_MANAGER:add_event(Event({ func = function() G.GAME.blind:set_blind(nil, true, nil); return true end })) end"
-position = 'before'
+pattern = '''G.GAME.bankrupt_at = G.GAME.bankrupt_at + self.ability.extra''' # Target the line *inside* the if
+position = 'after'
 match_indent = true
-payload = '''end
-'''
+payload = '''
+end'''
+
+# Original Part 3 remains commented out or deleted as it's no longer needed for this approach
+# [[patches]]
+# [patches.pattern]
+# target = 'card.lua'
+# pattern = "if G.GAME.blind and G.GAME.blind.in_blind then G.E_MANAGER:add_event(Event({ func = function() G.GAME.blind:set_blind(nil, true, nil); return true end })) end"
+# position = 'before'
+# match_indent = true
+# payload = '''end
+# '''
 
 # Drawstep bypassing
 [[patches]]

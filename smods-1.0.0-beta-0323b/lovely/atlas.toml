@@ -39,3 +39,31 @@ payload = '''
         _atlas = G.ASSET_ATLAS[_smods_atlas] or _atlas
     end'''
 
+## Set ability resizing fix
+[[patches]]
+[patches.pattern]
+target = 'engine/moveable.lua'
+pattern = '''Node.init(self, args)'''
+position = 'after'
+match_indent = true
+payload = '''self.original_T = copy_table(self.T)'''
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''self.T.scale = 0.95'''
+position = 'after'
+match_indent = true
+payload = '''self.original_T = copy_table(self.T)'''
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+match_indent = true
+position = 'before'
+pattern = '''
+local X, Y, W, H = self.T.x, self.T.y, self.T.w, self.T.h
+'''
+payload = '''
+for key, _ in pairs(self.T) do
+    self.T[key] = self.original_T[key]
+end
+'''

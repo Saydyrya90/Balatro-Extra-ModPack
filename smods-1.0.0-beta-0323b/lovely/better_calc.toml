@@ -1177,12 +1177,17 @@ if context.discard and context.other_card == self then
 [patches.pattern]
 target = 'card.lua'
 match_indent = true
+position = 'before'
+pattern = 'context.blueprint = (context.blueprint and (context.blueprint + 1)) or 1'
+payload = 'local context = SMODS.shallow_copy(context)'
+
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+match_indent = true
 position = 'after'
-pattern = 'local other_joker_ret = other_joker:calculate_joker(context)'
-payload = '''
-context.blueprint = nil
-local eff_card = context.blueprint_card or self
-context.blueprint_card = nil'''
+pattern = 'context.blueprint_card = context.blueprint_card or self'
+payload = 'local eff_card = context.blueprint_card'
 
 [[patches]]
 [patches.pattern]

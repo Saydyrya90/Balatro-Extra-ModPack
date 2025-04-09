@@ -52,8 +52,9 @@ function Card:calculate_edition(context) end
 ---@param edition string|{[string]: true}? Both `string` values are the key of the edition to apply. 
 ---@param immediate? boolean
 ---@param silent? boolean 
+---@param delay? boolean
 --- Sets the card's edition. 
-function Card:set_edition(edition, immediate, silent) end
+function Card:set_edition(edition, immediate, silent, delay) end
 
 ---@param _key string Used as the seed
 ---@param _mod? number Scales the chance of landing on an Edition. 

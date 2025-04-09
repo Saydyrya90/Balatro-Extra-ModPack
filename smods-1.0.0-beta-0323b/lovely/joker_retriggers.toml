@@ -44,7 +44,7 @@ pattern = '''[ \t]*if card\.ability\.invis_rounds then card\.ability\.invis_roun
 (?<indent>[ \t]*)G\.jokers:emplace\(card\)'''
 position = "after"
 line_prepend = '$indent'
-payload = "return nil, true"
+payload = "\nreturn nil, true"
 
 # Campfire
 [[patches]]
@@ -99,7 +99,7 @@ pattern = '''
 (?<indent>[ \t]*)elseif context\.skipping_booster'''
 position = "before"
 line_prepend = '$indent'
-payload = "return nil, true"
+payload = "        return nil, true\n"
 
 # Red Card
 [[patches]]
@@ -111,7 +111,7 @@ pattern = '''
 (?<indent>[ \t]*)elseif context\.playing_card_added'''
 position = "before"
 line_prepend = '$indent'
-payload = "return nil, true"
+payload = "        return nil, true\n"
 
 # Hologram
 [[patches]]
@@ -122,7 +122,7 @@ pattern = '''
 (?<indent>[ \t]*)elseif context\.first_hand_drawn'''
 position = "before"
 line_prepend = '$indent'
-payload = "return nil, true"
+payload = "        return nil, true\n"
 
 # Certificate
 [[patches]]
@@ -133,7 +133,7 @@ pattern = '''
 (?<indent>[ \t]*)if self\.ability\.name == 'DNA' and not context\.blueprint'''
 position = "before"
 line_prepend = '$indent'
-payload = "return nil, true"
+payload = "    return nil, true\n"
 
 # Chicot
 [[patches]]
@@ -144,7 +144,7 @@ pattern = '''
 (?<indent>[ \t]*)if self\.ability\.name == 'Madness' '''
 position = "before"
 line_prepend = '$indent'
-payload = "return nil, true"
+payload = "    return nil, true\n"
 
 # Madness
 [[patches]]
@@ -155,7 +155,7 @@ pattern = '''
 (?<indent>[ \t]*)if self\.ability\.name == 'Burglar' '''
 position = "before"
 line_prepend = '$indent'
-payload = "return nil, true"
+payload = "    return nil, true\n"
 
 # Burglar
 [[patches]]
@@ -166,7 +166,7 @@ pattern = '''
 (?<indent>[ \t]*)if self\.ability\.name == 'Riff-raff' '''
 position = "before"
 line_prepend = '$indent'
-payload = "return nil, true"
+payload = "    return nil, true\n"
 
 # Riff-raff
 [[patches]]
@@ -177,7 +177,7 @@ pattern = '''
 (?<indent>[ \t]*)if self\.ability\.name == 'Cartomancer' '''
 position = "before"
 line_prepend = '$indent'
-payload = "return nil, true"
+payload = "    return nil, true\n"
 
 # Cartomancer
 [[patches]]
@@ -188,7 +188,7 @@ pattern = '''
 (?<indent>[ \t]*)if self\.ability\.name == 'Ceremonial Dagger' and not context.blueprint'''
 position = "before"
 line_prepend = '$indent'
-payload = "return nil, true"
+payload = "    return nil, true\n"
 
 # Ceremonial Dagger
 [[patches]]
@@ -200,7 +200,7 @@ pattern = '''
 (?<indent>[ \t]*)if self\.ability\.name == 'Marble Joker' '''
 position = "before"
 line_prepend = '$indent'
-payload = "return nil, true"
+payload = "        return nil, true\n"
 
 # Marble Joker
 [[patches]]
@@ -212,7 +212,7 @@ pattern = '''
 (?<indent>[ \t]*)elseif context.destroying_card'''
 position = "before"
 line_prepend = '$indent'
-payload = "return nil, true"
+payload = "        return nil, true\n"
 
 # Caino
 [[patches]]
@@ -222,7 +222,7 @@ pattern = '''[ \t]*func = function\(\) card_eval_status_text\(self, 'extra', nil
 (?<indent>[ \t]*)end\}\)\)'''
 position = "after"
 line_prepend = '$indent'
-payload = "return nil, true"
+payload = "\nreturn nil, true"
 
 # Glass Joker
 [[patches]]
@@ -234,7 +234,7 @@ pattern = '''glass_cards\}\}\}\)
 (?<indent>[ \t]*)\}\)\)'''
 position = "after"
 line_prepend = '$indent'
-payload = "return nil, true"
+payload = "\nreturn nil, true"
 
 [[patches]]
 [patches.regex]
@@ -246,7 +246,7 @@ pattern = '''
 (?<indent>[ \t]*)if self\.ability\.name == 'Fortune Teller' and not context\.blueprint'''
 position = "before"
 line_prepend = '$indent'
-payload = "return nil, true"
+payload = "        return nil, true\n"
 
 # Fortune Teller
 [[patches]]
@@ -257,7 +257,7 @@ pattern = '''
 (?<indent>[ \t]*)if self\.ability\.name == 'Constellation' and not context\.blueprint'''
 position = "before"
 line_prepend = '$indent'
-payload = "return nil, true"
+payload = "    return nil, true\n"
 
 # Constellation
 [[patches]]
@@ -269,7 +269,7 @@ pattern = '''
 (?<indent>[ \t]*)elseif context.debuffed_hand'''
 position = "before"
 line_prepend = '$indent'
-payload = "nil, true"
+payload = "        nil, true\n"
 
 # Burnt Joker
 [[patches]]
@@ -280,7 +280,7 @@ pattern = '''
 (?<indent>[ \t]*)elseif context.discard'''
 position = "before"
 line_prepend = '$indent'
-payload = "return nil, true"
+payload = "        return nil, true\n"
 
 # Faceless Joker
 [[patches]]
@@ -293,7 +293,7 @@ pattern = '''
 (?<indent>[ \t]*)elseif context.end_of_round'''
 position = "before"
 line_prepend = '$indent'
-payload = "nil, true"
+payload = "            nil, true\n"
 
 # Yorick
 [[patches]]

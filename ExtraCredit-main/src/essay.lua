@@ -64,7 +64,7 @@ SMODS.current_mod.extra_tabs = function() --Credits tab
                     {
                     n = G.UIT.T,
                     config = {
-                        text = "bishopcorrigan, tuzzo, R3venantR3mnant, Neato, Sacto",
+                        text = "bishopcorrigan, tuzzo, R3venantR3mnant, Neato, Sacto, Gote",
                         shadow = false,
                         scale = scale,
                         colour = G.C.MONEY
@@ -2951,74 +2951,72 @@ SMODS.Back{ --Bazaar Deck
 	atlas = "ECother"
 }
 
--- no art yet lol but feel free to uncomment and play with them
+SMODS.Back{ --Archeology Deck
+    name = "Archeology Deck",
+	key = "archeologydeck",  
+  loc_txt = {      
+    name = 'Archeology Deck',      
+    text = {
+      "Start in {C:attention}Ante 0",
+      "{C:attention}-1{} hand size"
+    } 
+  }, 
+	order = 17,
+  unlocked = true,
+  discovered = true,
+	config = {},
+  loc_vars = function(self, info_queue, center)
+    return {vars = {}}
+  end,
+	pos = { x = 1, y = 0 },
+	atlas = "ECother",
+  apply = function(self, back)
+    ease_ante(-1)
+    G.GAME.round_resets.blind_ante = G.GAME.round_resets.blind_ante or G.GAME.round_resets.ante
+    G.GAME.round_resets.blind_ante = G.GAME.round_resets.blind_ante - 1
+    G.GAME.starting_params.hand_size = G.GAME.starting_params.hand_size - 1
+  end
+}
 
--- SMODS.Back{ --Archeology Deck
---     name = "Archeology Deck",
--- 	key = "archeologydeck",  
---   loc_txt = {      
---     name = 'Archeology Deck',      
---     text = {
---       "Start in {C:attention}Ante 0",
---       "{C:attention}-1{} hand size"
---     } 
---   }, 
--- 	order = 17,
---   unlocked = true,
---   discovered = true,
--- 	config = {},
---   loc_vars = function(self, info_queue, center)
---     return {vars = {}}
---   end,
--- 	pos = { x = 1, y = 0 },
--- 	atlas = "ECjokers",
---   apply = function(self, back)
---     ease_ante(-1)
---     G.GAME.round_resets.blind_ante = G.GAME.round_resets.blind_ante or G.GAME.round_resets.ante
---     G.GAME.round_resets.blind_ante = G.GAME.round_resets.blind_ante - 1
---     G.GAME.starting_params.hand_size = G.GAME.starting_params.hand_size - 1
---   end
--- }
+SMODS.Back{ --Echo Deck
+    name = "Echo Deck",
+	key = "echodeck",  
+  loc_txt = {      
+    name = 'Echo Deck',      
+    text = {
+      "{C:attention}Retrigger{} all playing cards",
+      "{C:red}X2{} base Blind size"
+    } 
+  }, 
+    order = 18,
+  unlocked = true,
+  discovered = true,
+	config = {},
+  loc_vars = function(self, info_queue, center)
+    return {vars = {}}
+  end,
+	pos = { x = 2, y = 0 },
+	atlas = "ECother",
+  apply = function(self, back)
+    G.GAME.starting_params.ante_scaling = 2
+  end,
 
--- SMODS.Back{ --Echo Deck
---     name = "Echo Deck",
--- 	key = "echodeck",  
---   loc_txt = {      
---     name = 'Echo Deck',      
---     text = {
---       "{C:attention}Retrigger{} all playing cards",
---       "{C:red}X2{} base Blind size"
---     } 
---   }, 
---     order = 18,
---   unlocked = true,
---   discovered = true,
--- 	config = {},
---   loc_vars = function(self, info_queue, center)
---     return {vars = {}}
---   end,
--- 	pos = { x = 3, y = 0 },
--- 	atlas = "ECjokers",
---   apply = function(self, back)
---     G.GAME.starting_params.ante_scaling = 2
---   end,
+  calculate = function(self, back, context)
+    if context.cardarea == G.play and context.repetition then
+        return {
+            message = localize('k_again_ex'),
+            repetitions = 1,
+            card = card
+        }
 
---   calculate = function(self, back, context)
---     if context.cardarea == G.play and context.repetition then
---         return {
---             message = localize('k_again_ex'),
---             repetitions = 1,
---             card = card
---         }
-
---     elseif context.repetition and context.cardarea == G.hand then
---         if (next(context.card_effects[1]) or #context.card_effects > 1) then
---             return {
---                 message = localize('k_again_ex'),
---                 repetitions = 1,
---                 card = card
---             }
---         end
---     end
---   end
--- }
+    elseif context.repetition and context.cardarea == G.hand then
+        if (next(context.card_effects[1]) or #context.card_effects > 1) then
+            return {
+                message = localize('k_again_ex'),
+                repetitions = 1,
+                card = card
+            }
+        end
+    end
+  end
+}

@@ -197,6 +197,7 @@ return {
             b_unknown = 'Unknown',
             b_lovely_mod = '(Lovely Mod) ',
             b_by = ' By: ',
+            b_priority = 'Priority: ',
 			b_config = "Config",
 			b_additions = 'Additions',
       		b_stickers = 'Stickers',

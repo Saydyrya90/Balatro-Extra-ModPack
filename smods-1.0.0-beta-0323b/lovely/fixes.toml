@@ -164,6 +164,7 @@ pattern = "self.config.center = center"
 position = 'at'
 match_indent = true
 payload = '''
+if delay_sprites == 'quantum' then self.from_quantum = true end
 if self.added_to_deck and old_center and not self.debuff then
     self:remove_from_deck()
     self.added_to_deck = true
@@ -185,7 +186,9 @@ payload = '''
 if self.added_to_deck and old_center and not self.debuff then
     self.added_to_deck = false
     self:add_to_deck()
-end'''
+end
+self.from_quantum = nil'''
+
 
 ## set_ability() transfers over old fields
 # special cases:
@@ -397,7 +400,7 @@ payload = '''if win_ante and (win_ante >= 8) or (v.in_pool and type(v.in_pool) =
 target = "card.lua"
 pattern = 'if G\.GAME\.blind then'
 position = "at"
-payload = "if G.GAME.blind and G.GAME.blind.in_blind then"
+payload = "if G.GAME.blind and G.GAME.blind.in_blind and not self.from_quantum then"
 
 # end_round()
 [[patches]]
@@ -618,7 +621,7 @@ target = "main.lua"
 pattern = "st = require 'luasteam'"
 position = "at"
 payload = """local success, _st = pcall(require, 'luasteam')
-if success then st = _st else sendWarnMessage(_st); st = {} end"""
+if success then st = _st else sendWarnMessage(_st, "LuaSteam"); st = {} end"""
 overwrite = true
 match_indent = true
 

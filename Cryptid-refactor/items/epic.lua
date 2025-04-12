@@ -890,7 +890,7 @@ local number_blocks = {
 		end
 	end,
 	calc_dollar_bonus = function(self, card)
-		if card.ability.extra.money > 0 then
+		if to_big(card.ability.extra.money) > to_big(0) then
 			return card.ability.extra.money
 		end
 	end,
@@ -933,7 +933,6 @@ local double_scale = {
 	cost = 18,
 	immutable = true,
 	atlas = "atlasepic",
-	--todo: support jokers that scale multiple variables
 	cry_scale_mod = function(self, card, joker, orig_scale_scale, true_base, orig_scale_base, new_scale_base)
 		if Cryptid.gameset(self) == "exp_modest" then
 			return true_base * 2

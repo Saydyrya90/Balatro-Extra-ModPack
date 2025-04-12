@@ -170,6 +170,7 @@ position = "before"
 payload = '''
 Cryptid = {}
 Cryptid.aliases = {}
+Cryptid.pointerblist = {}
 function cry_format(...)
 	return ...
 end

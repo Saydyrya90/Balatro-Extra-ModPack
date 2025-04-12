@@ -2135,8 +2135,8 @@ SMODS.Joker{ --Pyromancer
         ['name'] = 'Pyromancer',
         ['text'] = {
             [1] = "{C:mult}+#1#{} Mult if",
-            [2] = "remaining {C:attention}Hands{} do not",
-            [3] = "exceed remaining {C:attention}Discards",
+            [2] = "remaining {C:attention}Hands{} are less",
+            [3] = "than or equal to {C:attention}Discards",
         }
     },
     pos = {
@@ -2719,7 +2719,7 @@ SMODS.Joker{ --Bad Apple
     cost = 4,
     rarity = 1,
     blueprint_compat = true,
-    eternal_compat = true,
+    eternal_compat = false,
     unlocked = true,
     discovered = true,
     atlas = 'ECjokers',
@@ -2853,7 +2853,7 @@ SMODS.Joker{ --Lucky 7
         x = 7,
         y = 3
     },
-    cost = 4,
+    cost = 6,
     rarity = 1,
     blueprint_compat = false,
     eternal_compat = true,
@@ -2985,7 +2985,8 @@ SMODS.Back{ --Echo Deck
     name = 'Echo Deck',      
     text = {
       "{C:attention}Retrigger{} all playing cards",
-      "{C:red}X2{} base Blind size"
+      "{C:red}X1.2{} base Blind size",
+      "Increases by {C:red}X0.2{} each Ante"
     } 
   }, 
     order = 18,
@@ -2998,7 +2999,7 @@ SMODS.Back{ --Echo Deck
 	pos = { x = 2, y = 0 },
 	atlas = "ECother",
   apply = function(self, back)
-    G.GAME.starting_params.ante_scaling = 2
+    G.GAME.starting_params.ante_scaling = 1.2
   end,
 
   calculate = function(self, back, context)
@@ -3017,6 +3018,10 @@ SMODS.Back{ --Echo Deck
                 card = card
             }
         end
+    end
+    
+    if context.end_of_round and not context.repetition and not context.individual and G.GAME.blind.boss then
+        G.GAME.starting_params.ante_scaling = G.GAME.starting_params.ante_scaling + 0.2
     end
   end
 }

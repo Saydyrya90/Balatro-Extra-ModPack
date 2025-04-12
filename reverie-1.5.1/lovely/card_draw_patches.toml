@@ -7,11 +7,11 @@ priority = 0
 [[patches]]
 [patches.regex]
 target = '=[SMODS _ "src/card_draw.lua"]'
-pattern = '''(?<indent>[\t ]*)(?<cond>if self\.edition then)(?<post>\n[\t ]*for k, v in pairs\(G\.P_CENTER_POOLS\.Edition\) do\n[\t ]*if self\.edition\[v\.key:sub\(3\)\] and v\.shader then)'''
+pattern = '''(?<indent>[\t ]*)if self\.edition(?<cond>.* then)(?<post>\n[\t ]*for k, v in pairs\(G\.P_CENTER_POOLS\.Edition\) do\n[\t ]*if self\.edition\[v\.key:sub\(3\)\] and v\.shader then)'''
 position = "at"
 line_prepend = "$indent"
 payload = '''
-    if self.edition and not Reverie.is_cine_or_reverie(self) then
+    if self.edition and not Reverie.is_cine_or_reverie(self)$cond
         $post
 '''
 

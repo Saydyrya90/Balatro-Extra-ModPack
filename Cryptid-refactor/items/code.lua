@@ -2351,21 +2351,6 @@ local delete = {
 		end
 		c:start_dissolve()
 	end,
-	init = function(self)
-		-- dumb hook because i don't feel like aggressively patching get_pack to do stuff
-		-- very inefficient
-		-- maybe smods should overwrite the function and make it more targetable?
-		local getpackref = get_pack
-		function get_pack(_key, _type)
-			local temp_banned = copy_table(G.GAME.banned_keys)
-			for k, v in pairs(G.GAME.cry_banished_keys) do
-				G.GAME.banned_keys[k] = v
-			end
-			local ret = getpackref(_key, _type)
-			G.GAME.banned_keys = copy_table(temp_banned)
-			return ret
-		end
-	end,
 	-- i was gonna use this function and all but... i don't like the way it does things
 	-- leaving it here so nobody screams at me
 	--[[
@@ -3701,7 +3686,9 @@ local alttab = {
 					play_sound("tarot1")
 					local tag = nil
 					local type = G.GAME.blind:get_type()
-					if type == "Boss" then
+					if next(SMODS.find_card("j_cry_kittyprinter")) then
+						tag = Tag("tag_cry_cat")
+					elseif type == "Boss" then
 						tag = Tag(get_next_tag_key())
 					else
 						tag = Tag(G.GAME.round_resets.blind_tags[type])
@@ -4918,7 +4905,12 @@ local copypaste = {
 	pos = { x = 3, y = 4 },
 	order = 110,
 	immune_to_chemach = true,
-	config = { extra = { odds = 2, ckt = nil } }, -- what is a ckt
+	config = {
+		extra = {
+			odds = 2,
+			ckt = nil,
+		},
+	}, -- what is a ckt
 	rarity = "cry_epic",
 	cost = 14,
 	blueprint_compat = true,
@@ -5034,7 +5026,12 @@ local cut = {
 	object_type = "Joker",
 	name = "cry-cut",
 	key = "cut",
-	config = { extra = { Xmult = 1, Xmult_mod = 0.5 } },
+	config = {
+		extra = {
+			Xmult = 1,
+			Xmult_mod = 0.5,
+		},
+	},
 	pos = { x = 2, y = 2 },
 	rarity = 2,
 	cost = 7,
@@ -5060,7 +5057,8 @@ local cut = {
 
 			if codecard_to_destroy then
 				codecard_to_destroy.getting_sliced = true
-				card.ability.extra.Xmult = card.ability.extra.Xmult + card.ability.extra.Xmult_mod
+				card.ability.extra.Xmult =
+					lenient_bignum(to_big(card.ability.extra.Xmult) + card.ability.extra.Xmult_mod)
 				G.E_MANAGER:add_event(Event({
 					func = function()
 						(context.blueprint_card or card):juice_up(0.8, 0.8)
@@ -5095,7 +5093,12 @@ local cut = {
 		end
 	end,
 	loc_vars = function(self, info_queue, center)
-		return { vars = { center.ability.extra.Xmult_mod, center.ability.extra.Xmult } }
+		return {
+			vars = {
+				number_format(center.ability.extra.Xmult_mod),
+				number_format(center.ability.extra.Xmult),
+			},
+		}
 	end,
 	cry_credits = {
 		idea = {
@@ -5160,7 +5163,12 @@ local python = {
 	object_type = "Joker",
 	name = "cry-python",
 	key = "python",
-	config = { extra = { Xmult = 1, Xmult_mod = 0.15 } },
+	config = {
+		extra = {
+			Xmult = 1,
+			Xmult_mod = 0.15,
+		},
+	},
 	pos = { x = 4, y = 2 },
 	rarity = 2,
 	cost = 7,
@@ -5169,7 +5177,12 @@ local python = {
 	atlas = "atlasthree",
 	order = 112,
 	loc_vars = function(self, info_queue, center)
-		return { vars = { center.ability.extra.Xmult_mod, center.ability.extra.Xmult } }
+		return {
+			vars = {
+				number_format(center.ability.extra.Xmult_mod),
+				number_format(center.ability.extra.Xmult),
+			},
+		}
 	end,
 	calculate = function(self, card, context)
 		if
@@ -5177,14 +5190,14 @@ local python = {
 			and context.consumeable.ability.set == "Code"
 			and not context.consumeable.beginning_end
 		then
-			card.ability.extra.Xmult = card.ability.extra.Xmult + card.ability.extra.Xmult_mod
+			card.ability.extra.Xmult = lenient_bignum(to_big(card.ability.extra.Xmult) + card.ability.extra.Xmult_mod)
 			G.E_MANAGER:add_event(Event({
 				func = function()
 					card_eval_status_text(card, "extra", nil, nil, nil, {
 						message = localize({
 							type = "variable",
 							key = "a_xmult",
-							vars = { card.ability.extra.Xmult },
+							vars = { number_format(card.ability.extra.Xmult) },
 						}),
 					})
 					return true
@@ -5194,8 +5207,12 @@ local python = {
 		end
 		if context.joker_main and (to_big(card.ability.extra.Xmult) > to_big(1)) then
 			return {
-				message = localize({ type = "variable", key = "a_xmult", vars = { card.ability.extra.Xmult } }),
-				Xmult_mod = card.ability.extra.Xmult,
+				message = localize({
+					type = "variable",
+					key = "a_xmult",
+					vars = { number_format(card.ability.extra.Xmult) },
+				}),
+				Xmult_mod = lenient_bignum(card.ability.extra.Xmult),
 			}
 		end
 	end,

@@ -1,5 +1,44 @@
 -- overrides.lua - Adds hooks and overrides used by multiple features.
 
+--Get Pack hooks
+
+-- dumb hook because i don't feel like aggressively patching get_pack to do stuff
+-- very inefficient
+-- maybe smods should overwrite the function and make it more targetable?
+local getpackref = get_pack
+function get_pack(_key, _type)
+	local temp_banned = copy_table(G.GAME.banned_keys)
+	--Add banished keys (via DELETE) to banned_keys so they don't appear in shop
+	for k, v in pairs(G.GAME.cry_banished_keys) do
+		G.GAME.banned_keys[k] = v
+	end
+	local abc = getpackref(_key, _type)
+	--Convert banned keys back to what it was originally
+	G.GAME.banned_keys = copy_table(temp_banned)
+	if G.GAME.modifiers.cry_equilibrium then
+		if not P_CRY_ITEMS then
+			P_CRY_ITEMS = {}
+			local valid_pools = { "Joker", "Consumeables", "Voucher", "Booster" }
+			for _, id in ipairs(valid_pools) do
+				for k, v in pairs(G.P_CENTER_POOLS[id]) do
+					if not Cryptid.no(v, "doe", k) then
+						P_CRY_ITEMS[#P_CRY_ITEMS + 1] = v.key
+					end
+				end
+			end
+			for k, v in pairs(G.P_CARDS) do
+				if not Cryptid.no(v, "doe", k) then
+					P_CRY_ITEMS[#P_CRY_ITEMS + 1] = v.key
+				end
+			end
+		end
+		return G.P_CENTERS[pseudorandom_element(
+			P_CRY_ITEMS,
+			pseudoseed("cry_equipackbrium" .. G.GAME.round_resets.ante)
+		)]
+	end
+	return abc
+end
 -- get_currrent_pool hook for Deck of Equilibrium and Copies
 local gcp = get_current_pool
 function get_current_pool(_type, _rarity, _legendary, _append, override_equilibrium_effect)
@@ -109,7 +148,7 @@ function Blind:defeat(s)
 	dft(self, s)
 	local obj = self.config.blind
 	-- Ignore blinds with loc_vars because orb does not properly work with them yet
-	if obj.boss and (obj.boss.no_orb or obj.boss.epic or obj.loc_vars) then
+	if obj.boss and (obj.boss.no_orb or obj.loc_vars) then
 		return
 	end
 	if
@@ -1071,60 +1110,6 @@ function create_card(_type, area, legendary, _rarity, skip_materialize, soulable
 	-- during the update function. Cryptid can create jokers mid-scoring, meaning
 	-- those values will be unset during scoring unless update() is manually called.
 	card:update(0.016) -- dt is unused in the base game, but we're providing a realistic value anyway
-
-	--Debuff jokers if certain boss blinds are active
-	if _type == "Joker" and G.GAME and G.GAME.blind and not G.GAME.blind.disabled then
-		if
-			G.GAME.blind.name == "cry-box"
-			or (G.GAME.blind.name == "cry-Obsidian Orb" and G.GAME.defeated_blinds["bl_cry_box"] == true)
-		then
-			if card.config.center.rarity == 1 and not card.debuff then
-				card.debuff = true
-				card.debuffed_by_blind = true
-			end
-		end
-		if
-			G.GAME.blind.name == "cry-windmill"
-			or (G.GAME.blind.name == "cry-Obsidian Orb" and G.GAME.defeated_blinds["bl_cry_windmill"] == true)
-		then
-			if card.config.center.rarity == 2 and not card.debuff then
-				card.debuff = true
-				card.debuffed_by_blind = true
-			end
-		end
-		if
-			G.GAME.blind.name == "cry-striker"
-			or (G.GAME.blind.name == "cry-Obsidian Orb" and G.GAME.defeated_blinds["bl_cry_striker"] == true)
-		then
-			if card.config.center.rarity == 3 and not card.debuff then
-				card.debuff = true
-				card.debuffed_by_blind = true
-			end
-		end
-		if
-			G.GAME.blind.name == "cry-shackle"
-			or (G.GAME.blind.name == "cry-Obsidian Orb" and G.GAME.defeated_blinds["bl_cry_shackle"] == true)
-		then
-			if (card.edition and card.edition.negative == true) and not card.debuff then
-				card.debuff = true
-				card.debuffed_by_blind = true
-			end
-		end
-		if
-			G.GAME.blind.name == "cry-pin"
-			or (G.GAME.blind.name == "cry-Obsidian Orb" and G.GAME.defeated_blinds["bl_cry_pin"] == true)
-		then
-			if
-				card.config.center.rarity ~= 3
-				and card.config.center.rarity ~= 2
-				and card.config.center.rarity ~= 1
-				and card.config.center.rarity ~= 5
-			then
-				card.debuff = true
-				card.debuffed_by_blind = true
-			end
-		end
-	end
 	return card
 end
 
@@ -1188,7 +1173,7 @@ end
 local gfcfbs = G.FUNCS.check_for_buy_space
 G.FUNCS.check_for_buy_space = function(card)
 	if
-		(card.ability.name == "cry-Negative Joker" and card.ability.extra >= 1)
+		(card.ability.name == "cry-Negative Joker" and card.ability.extra.slots >= 1)
 		or (card.ability.name == "cry-soccer" and card.ability.extra.holygrail >= 1)
 		or (card.ability.name == "cry-Tenebris" and card.ability.extra.slots >= 1)
 	then
@@ -1200,7 +1185,7 @@ end
 local gfcsc = G.FUNCS.can_select_card
 G.FUNCS.can_select_card = function(e)
 	if
-		(e.config.ref_table.ability.name == "cry-Negative Joker" and e.config.ref_table.ability.extra >= 1)
+		(e.config.ref_table.ability.name == "cry-Negative Joker" and e.config.ref_table.ability.extra.slots >= 1)
 		or (e.config.ref_table.ability.name == "cry-soccer" and e.config.ref_table.ability.extra.holygrail >= 1)
 		or (e.config.ref_table.ability.name == "cry-Tenebris" and e.config.ref_table.ability.extra.slots >= 1)
 	then

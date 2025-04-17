@@ -127,18 +127,62 @@ if Talisman.config_file.break_infinity then
       return mc(x)
   end
 
+function lenient_bignum(x)
+    if type(x) == "number" then return x end
+    if to_big(x) < to_big(1e300) and to_big(x) > to_big(-1e300) then
+      return x:to_number()
+    end
+    return x
+  end
+
+  --prevent some log-related crashes
+  local sns = score_number_scale
+  function score_number_scale(scale, amt)
+    local ret = sns(scale, amt)
+    if type(ret) == "table" then
+      if ret > to_big(1e300) then return 1e300 end
+      return ret:to_number()
+    end
+    return ret
+  end
+
+  local gftsj = G.FUNCS.text_super_juice
+  function G.FUNCS.text_super_juice(e, _amount)
+    if type(_amount) == "table" then
+      if _amount > to_big(1e300) then
+        _amount = 1e300
+      else
+        _amount = _amount:to_number()
+      end
+    end
+    return gftsj(e, _amount)
+  end
+
   local l10 = math.log10
   function math.log10(x)
-      if type(x) == 'table' then return l10(math.min(x:to_number(),1e300)) end--x:log10() end
-      return l10(x)
+      if type(x) == 'table' then 
+        if x.log10 then return lenient_bignum(x:log10()) end
+        return lenient_bignum(l10(math.min(x:to_number(),1e300)))
+      end
+      return lenient_bignum(l10(x))
   end
 
   local lg = math.log
   function math.log(x, y)
       if not y then y = 2.718281828459045 end
-      if type(x) == 'table' then return lg(math.min(x:to_number(),1e300),y) end --x:log(y) end
-      return lg(x,y)
+      if type(x) == 'table' then 
+        if x.log then return lenient_bignum(x:log(to_big(y))) end
+        if x.logBase then return lenient_bignum(x:logBase(to_big(y))) end
+        return lenient_bignum(lg(math.min(x:to_number(),1e300),y))
+      end
+      return lenient_bignum(lg(x,y))
   end
+
+  function math.exp(x)
+    local big_e = to_big(2.718281828459045)
+    
+    return lenient_bignum(big_e:pow(x))
+  end 
 
   if SMODS then
     function SMODS.get_blind_amount(ante)
@@ -284,7 +328,11 @@ if Talisman.config_file.break_infinity then
 
   local tsj = G.FUNCS.text_super_juice
   function G.FUNCS.text_super_juice(e, _amount)
-    if _amount > 2 then _amount = 2 end
+    if type(_amount) == 'table' then
+      if _amount > to_big(2) then _amount = 2 end
+    else
+      if _amount > 2 then _amount = 2 end
+    end
     return tsj(e, _amount)
   end
 
@@ -346,7 +394,9 @@ function is_number(x)
 end
 
 function to_big(x, y)
-  if Big and Big.m then
+  if type(x) == 'string' and x == "0" then --hack for when 0 is asked to be a bignumber need to really figure out the fix
+    return 0
+  elseif Big and Big.m then
     return Big:new(x,y)
   elseif Big and Big.array then
     local result = Big:create(x)
@@ -384,6 +434,10 @@ local jc = juice_card
 function juice_card(x)
     if not Talisman.config_file.disable_anims then jc(x) end
 end
+local cju = Card.juice_up
+function Card:juice_up(...)
+    if not Talisman.config_file.disable_anims then cju(self, ...) end
+end
 function tal_uht(config, vals)
     local col = G.C.GREEN
     if vals.chips and G.GAME.current_round.current_hand.chips ~= vals.chips then
@@ -419,8 +473,8 @@ function tal_uht(config, vals)
             G.GAME.current_round.current_hand.hand_level = vals.level
         else
             G.GAME.current_round.current_hand.hand_level = ' '..localize('k_lvl')..tostring(vals.level)
-            if is_number(vals.level) then 
-                G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[to_big(math.min(vals.level, 7)):to_number()]
+            if is_number(vals.level) then
+                G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[type(vals.level) == "number" and math.floor(math.min(vals.level, 7)) or math.floor(to_big(math.min(vals.level, 7))):to_number()]
             else
                 G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[1]
             end
@@ -441,6 +495,25 @@ function update_hand_text(config, vals)
     else uht(config, vals)
     end
 end
+
+
+G.FUNCS.evaluate_play = function(e)
+  Talisman.scoring_state = "intro"
+  text, disp_text, poker_hands, scoring_hand, non_loc_disp_text, percent, percent_delta = evaluate_play_intro()
+  if not G.GAME.blind:debuff_hand(G.play.cards, poker_hands, text) then
+    Talisman.scoring_state = "main"
+    text, disp_text, poker_hands, scoring_hand, non_loc_disp_text, percent, percent_delta = evaluate_play_main(text, disp_text, poker_hands, scoring_hand, non_loc_disp_text, percent, percent_delta)
+  else
+    Talisman.scoring_state = "debuff"
+    text, disp_text, poker_hands, scoring_hand, non_loc_disp_text, percent, percent_delta = evaluate_play_debuff(text, disp_text, poker_hands, scoring_hand, non_loc_disp_text, percent, percent_delta)
+  end
+  Talisman.scoring_state = "final_scoring"
+  text, disp_text, poker_hands, scoring_hand, non_loc_disp_text, percent, percent_delta = evaluate_play_final_scoring(text, disp_text, poker_hands, scoring_hand, non_loc_disp_text, percent, percent_delta)
+  Talisman.scoring_state = "after"
+  evaluate_play_after(text, disp_text, poker_hands, scoring_hand, non_loc_disp_text, percent, percent_delta)
+  Talisman.scoring_state = nil
+end
+
 local upd = Game.update
 function Game:update(dt)
     upd(self, dt)
@@ -459,25 +532,29 @@ if not Talisman.F_NO_COROUTINE then
   --scoring coroutine
   local oldplay = G.FUNCS.evaluate_play
 
-  function G.FUNCS.evaluate_play()
+  function G.FUNCS.evaluate_play(...)
       G.SCORING_COROUTINE = coroutine.create(oldplay)
       G.LAST_SCORING_YIELD = love.timer.getTime()
       G.CARD_CALC_COUNTS = {} -- keys = cards, values = table containing numbers
-      local success, err = coroutine.resume(G.SCORING_COROUTINE)
+      local success, err = coroutine.resume(G.SCORING_COROUTINE, ...)
       if not success then
         error(err)
       end
   end
 
+  function G.FUNCS.tal_abort()
+      tal_aborted = true
+  end
 
   local oldupd = love.update
+
   function love.update(dt, ...)
       oldupd(dt, ...)
       if G.SCORING_COROUTINE then
         if collectgarbage("count") > 1024*1024 then
           collectgarbage("collect")
         end
-          if coroutine.status(G.SCORING_COROUTINE) == "dead" then
+          if coroutine.status(G.SCORING_COROUTINE) == "dead" or tal_aborted then
               G.SCORING_COROUTINE = nil
               G.FUNCS.exit_overlay_menu()
               local totalCalcs = 0
@@ -486,6 +563,12 @@ if not Talisman.F_NO_COROUTINE then
               end
               G.GAME.LAST_CALCS = totalCalcs
               G.GAME.LAST_CALC_TIME = G.CURRENT_CALC_TIME
+              G.CURRENT_CALC_TIME = 0
+              if tal_aborted and Talisman.scoring_state == "main" then
+                evaluate_play_final_scoring(text, disp_text, poker_hands, scoring_hand, non_loc_disp_text, percent, percent_delta)
+              end
+              tal_aborted = nil
+              Talisman.scoring_state = nil
           else
               G.SCORING_TEXT = nil
               if not G.OVERLAY_MENU then
@@ -500,7 +583,15 @@ if not Talisman.F_NO_COROUTINE then
                       {n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.scoring_text, ref_value = 3}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4, silent = true})}},
                       }},{n = G.UIT.R,  nodes = {
                       {n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.scoring_text, ref_value = 4}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4, silent = true})}},
-                  }}}}}
+                      }},{n = G.UIT.R,  nodes = {
+                      UIBox_button({
+                        colour = G.C.BLUE,
+                        button = "tal_abort",
+                        label = { "Abort" },
+                        minw = 4.5,
+                        focus_args = { snap_to = true },
+                      })}},
+                    }}}
                   G.FUNCS.overlay_menu({
                       definition = 
                       {n=G.UIT.ROOT, minw = G.ROOM.T.w*5, minh = G.ROOM.T.h*5, config={align = "cm", padding = 9999, offset = {x = 0, y = -3}, r = 0.1, colour = {G.C.GREY[1], G.C.GREY[2], G.C.GREY[3],0.7}}, nodes= G.SCORING_TEXT}, 
@@ -935,6 +1026,13 @@ if SMODS and SMODS.calculate_individual_effect then
     for _, v in ipairs({'x_chips', 'xchips', 'Xchip_mod'}) do
     table.insert(SMODS.calculation_keys, v)
   end
+  end
+
+  -- prvent juice animations
+  local smce = SMODS.calculate_effect
+  function SMODS.calculate_effect(effect, ...)
+    if Talisman.config_file.disable_anims then effect.juice_card = nil end
+    return smce(effect, ...)
   end
 end
 

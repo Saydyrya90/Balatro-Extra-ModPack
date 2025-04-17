@@ -55,34 +55,6 @@ local equilibrium = {
 	apply = function(self)
 		G.GAME.modifiers.cry_equilibrium = true
 	end,
-	init = function(self)
-		local gp = get_pack
-		function get_pack(k, t)
-			if G.GAME.modifiers.cry_equilibrium then
-				if not P_CRY_ITEMS then
-					P_CRY_ITEMS = {}
-					local valid_pools = { "Joker", "Consumeables", "Voucher", "Booster" }
-					for _, id in ipairs(valid_pools) do
-						for k, v in pairs(G.P_CENTER_POOLS[id]) do
-							if not Cryptid.no(v, "doe", k) then
-								P_CRY_ITEMS[#P_CRY_ITEMS + 1] = v.key
-							end
-						end
-					end
-					for k, v in pairs(G.P_CARDS) do
-						if not Cryptid.no(v, "doe", k) then
-							P_CRY_ITEMS[#P_CRY_ITEMS + 1] = v.key
-						end
-					end
-				end
-				return G.P_CENTERS[pseudorandom_element(
-					P_CRY_ITEMS,
-					pseudoseed("cry_equipackbrium" .. G.GAME.round_resets.ante)
-				)]
-			end
-			return gp(k, t)
-		end
-	end,
 	unlocked = false,
 	check_for_unlock = function(self, args)
 		if Cryptid.safe_get(G, "jokers") then

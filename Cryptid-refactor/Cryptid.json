@@ -12,7 +12,7 @@
 	"version": "0.5.5b",
 	"dependencies": [
 		"Talisman (>=2.0.9)",
-		"Steamodded (>=1.0.0~BETA-0314c)"
+		"Steamodded (>=1.0.0~BETA-0323b)"
 	],
 	"conflicts": [
 		"Saturn",

@@ -68,7 +68,7 @@ local white_hole = {
 		if modest then
 			level_up_hand(used_consumable, _hand, false, 4)
 		else
-			level_up_hand(used_consumable, _hand, false, 3 * removed_levels)
+			level_up_hand(used_consumable, _hand, false, math.min((3 * removed_levels), 1e300))
 		end
 		update_hand_text(
 			{ sound = "button", volume = 0.7, pitch = 1.1, delay = 0 },
@@ -109,7 +109,7 @@ local white_hole = {
 		if modest then
 			level_up_hand(used_consumable, _hand, false, 4 * number)
 		else
-			level_up_hand(used_consumable, _hand, false, removed_levels * 3 ^ number)
+			level_up_hand(used_consumable, _hand, false, math.min(((3 ^ number) * removed_levels), 1e300))
 		end
 		update_hand_text(
 			{ sound = "button", volume = 0.7, pitch = 1.1, delay = 0 },

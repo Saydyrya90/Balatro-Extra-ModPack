@@ -51,7 +51,9 @@ local ballin = {
 	key = "ballin",
 	order = 1,
 	rules = {
-		custom = {},
+		custom = {
+			{ id = "cry_force_enhancement", value = "m_stone" },
+		},
 		modifiers = {
 			{ id = "joker_slots", value = 3 },
 		},
@@ -66,20 +68,6 @@ local ballin = {
 	restrictions = {
 		banned_cards = {
 			{ id = "j_vampire" },
-			{ id = "c_magician" },
-			{ id = "c_empress" },
-			{ id = "c_heirophant" },
-			{ id = "c_lovers" },
-			{ id = "c_chariot" },
-			{ id = "c_justice" },
-			{ id = "c_devil" },
-			{ id = "c_tower" },
-			{ id = "c_cry_seraph" },
-			{ id = "c_familiar" },
-			{ id = "c_grim" },
-			{ id = "c_incantation" },
-			{ id = "c_cry_eclipse" },
-			{ id = "c_cry_class" },
 		},
 		banned_other = {},
 	},

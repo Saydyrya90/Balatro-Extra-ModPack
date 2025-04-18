@@ -7,7 +7,7 @@ SMODS.Atlas{
 
 --- SDM_0's Sleeve
 
-if sdm_config.sdm_jokers then
+if SDM_0s_Stuff_Config.sdm_jokers then
     CardSleeves.Sleeve {
         key = "sdm_0_s",
         atlas = "sdm_sleeves",
@@ -17,44 +17,36 @@ if sdm_config.sdm_jokers then
             return {vars = {self.config.extra}}
         end,
         unlocked = true,
-        apply = function(self)
-            G.E_MANAGER:add_event(Event({
-                func = function()
-                    local rand_jokers = get_random_sdm_modded_card("j_sdm", self.config.extra)
-                    for i = 1, #rand_jokers do
-                        add_joker2(rand_jokers[i], nil, true, true)
-                    end
-                    return true
-                end
-            }))
-        end,
+        -- Sleeve effect in "lovely.toml"
     }
 end
 
 --- Bazaar Sleeve
 
-if sdm_config.sdm_consus then
+if SDM_0s_Stuff_Config.sdm_consus then
     CardSleeves.Sleeve {
         key = "bazaar",
         atlas = "sdm_sleeves",
         pos = { x = 1, y = 0 },
-        config = {extra = 2},
+        config = {extra = 1},
         loc_vars = function(self)
             return {vars = {self.config.extra}}
         end,
         unlocked = true,
-        apply = function(self)
-            G.E_MANAGER:add_event(Event({
-                func = function()
-                    local rand_cons = get_random_sdm_modded_card("c_", self.config.extra)
-                    for i = 1, #rand_cons do
-                        local card = create_card('Tarot' or 'Spectral', G.consumeables, nil, nil, nil, nil, rand_cons[i], 'bzr')
-                        card:add_to_deck()
-                        G.consumeables:emplace(card)
+        trigger_effect = function(self, args)
+            if args.context == 'eval' and G.GAME.last_blind and G.GAME.last_blind.boss then
+                G.E_MANAGER:add_event(Event({
+                    func = function()
+                        local rand_cons = get_random_sdm_modded_card("c_", self.config.extra)
+                        for i = 1, #rand_cons do
+                            local card = create_card('Tarot' or 'Spectral', G.consumeables, nil, nil, nil, nil, rand_cons[i], 'bzr')
+                            card:add_to_deck()
+                            G.consumeables:emplace(card)
+                        end
+                        return true
                     end
-                    return true
-                end
-            }))
+                }))
+            end
         end,
     }
 end
@@ -78,15 +70,18 @@ CardSleeves.Sleeve {
 
 --- Lucky 7 Sleeve
 
-if sdm_config.sdm_jokers then
+if SDM_0s_Stuff_Config.sdm_jokers then
     CardSleeves.Sleeve {
         key = "lucky_7",
         atlas = "sdm_sleeves",
         pos = { x = 3, y = 0 },
+        config = {ante_scaling = 1.5},
         unlocked = true,
         loc_vars = function(self)
             if self.get_current_deck_key() == "b_sdm_lucky_7" or self.get_current_deck_key() == "b_sdm_deck_of_stuff" then
                 return {key = self.key .. '_alt', vars = {}}
+            else
+                return {vars = {self.config.ante_scaling}}
             end
         end,
         apply = function(self)
@@ -97,12 +92,9 @@ if sdm_config.sdm_jokers then
                             G.playing_cards[i]:set_ability(G.P_CENTERS.m_lucky)
                         end
                     end
-                    if self.get_current_deck_key() ~= "b_sdm_lucky_7" and self.get_current_deck_key() ~= "b_sdm_deck_of_stuff" then
-                        add_joker("j_sdm_lucky_joker", nil, true, true)
-                    else
-                        if G.jokers.cards and #G.jokers.cards > 0 then
-                            G.jokers.cards[1]:set_edition({["negative"] = true}, true, true)
-                        end
+                    G.GAME.starting_params.ante_scaling = (G.GAME.starting_params.ante_scaling or 1) * self.config.ante_scaling
+                    add_joker("j_sdm_lucky_joker", nil, true, true)
+                    if self.get_current_deck_key() == "b_sdm_lucky_7" or self.get_current_deck_key() == "b_sdm_deck_of_stuff" then
                         for k, v in pairs(G.GAME.probabilities) do
                             G.GAME.probabilities[k] = v*2
                         end
@@ -223,22 +215,156 @@ CardSleeves.Sleeve {
     key = "hoarder",
     atlas = "sdm_sleeves",
     pos = { x = 2, y = 1 },
-    config = {extra_discard_bonus = 3, no_interest = true},
+    config = {extra_discard_bonus = 3},
     unlocked = true,
     loc_vars = function(self)
         local key
         if self.get_current_deck_key() == "b_green" then
             key = self.key .. "_alt"
-            self.config = {extra_discard_bonus = 2, no_interest = true}
+            self.config = {extra_discard_bonus = 2}
             return {key = key, vars = {self.config.extra_discard_bonus}}
         end
         return {vars = {self.config.extra_discard_bonus}}
     end,
     apply = function(self)
         G.GAME.modifiers.no_interest = true
-        G.GAME.modifiers.money_per_discard = self.config.extra_discard_bonus
+        G.GAME.modifiers.money_per_discard = (G.GAME.modifiers.money_per_discard or 0) + self.config.extra_discard_bonus
         if self.get_current_deck_key() ~= "b_green" then
             G.GAME.modifiers.no_extra_hand_money = true
         end
     end,
+}
+
+--- Modder's Sleeve
+
+CardSleeves.Sleeve {
+    key = "modders",
+    atlas = "sdm_sleeves",
+    pos = { x = 3, y = 1 },
+    unlocked = true,
+    loc_vars = function(self)
+        if self.get_current_deck_key() == "b_sdm_modders" or self.get_current_deck_key() == "b_sdm_deck_of_stuff" then
+            local key = self.key .. "_alt"
+            return {key = key, vars = {}}
+        elseif Tsunami then
+            return {key = self.key .. "_tsunami", vars = {}}
+        end
+    end,
+    apply = function(self)
+        -- Vanilla pool changes applied in "lovely.toml"
+        if Cryptid and self.get_current_deck_key() == "b_cry_equilibrium" or self.get_current_deck_key() == "b_cry_antimatter" then
+            for _, v in pairs(G.P_CENTER_POOLS["Joker"]) do
+                if not v.original_key or (v.class_prefix..'_'..v.original_key == v.key) then
+                    v.no_doe = true
+                end
+            end
+        end
+    end,
+}
+
+--- Reverb Sleeve
+
+CardSleeves.Sleeve {
+    key = "reverb",
+    atlas = "sdm_sleeves",
+    pos = { x = 0, y = 2 },
+    unlocked = true,
+    loc_vars = function(self)
+        local key
+        local vars = {}
+        if self.get_current_deck_key() == "b_sdm_reverb" or self.get_current_deck_key() == "b_sdm_deck_of_stuff" then
+            key = self.key .. "_alt"
+            self.config = {retrigger = 1}
+            vars = {self.config.retrigger}
+        else
+            key = self.key
+            self.config = {joker_slot = -2, retrigger = 1}
+            vars = {self.config.joker_slot, self.config.retrigger}
+        end
+        return { key = key, vars = vars }
+    end,
+    calculate = function(self, sleeve, context)
+        if context.retrigger_joker_check and not context.retrigger_joker then
+            if SDM_0s_Stuff_Config.retrigger_on_deck then
+                return {
+                    repetitions = self.config.retrigger,
+                    message = localize('k_again_ex'),
+                }
+            else
+                return {
+                    repetitions = self.config.retrigger,
+                    remove_default_message = true,
+                    func = function()
+                        card_eval_status_text(context.other_card, 'extra', nil, nil, nil, {
+                            message = localize('k_again_ex'),
+                        })
+                    end
+                }
+            end
+        end
+    end,
+}
+
+--- Roguelike Sleeve
+
+CardSleeves.Sleeve {
+    key = "roguelike",
+    atlas = "sdm_sleeves",
+    pos = { x = 0, y = 0 },
+    unlocked = true,
+    loc_vars = function(self)
+        local key
+        local vars = {}
+        if self.get_current_deck_key() == "b_sdm_roguelike" or self.get_current_deck_key() == "b_sdm_deck_of_stuff" then
+            key = self.key .. "_alt"
+            self.config = {extra_slot = 1, vouchers = {'v_overstock_plus'}}
+            vars = {localize{type = 'name_text', key = 'v_overstock_plus', set = 'Voucher'}, self.config.extra_slot}
+        else
+            key = self.key
+            self.config = {extra_slot = 1, vouchers = {'v_overstock_norm'}}
+            vars = {localize{type = 'name_text', key = 'v_overstock_norm', set = 'Voucher'}, self.config.extra_slot}
+        end
+        return { key = key, vars = vars }
+    end,
+    apply = function(self)
+        G.GAME.modifiers.sdm_no_reroll = true   -- No reroll effect in utils.lua overrides
+        for _, v in pairs(self.config.vouchers) do
+            G.GAME.used_vouchers[v] = true
+            G.GAME.starting_voucher_count = (G.GAME.starting_voucher_count or 0) + 1
+            G.E_MANAGER:add_event(Event({
+                func = function()
+                    Card.apply_to_run(nil, G.P_CENTERS[v])
+                    return true
+                end
+            }))
+        end
+        if self.get_current_deck_key() == "b_sdm_roguelike" or self.get_current_deck_key() == "b_sdm_deck_of_stuff" then
+            SMODS.change_voucher_limit(self.config.extra_slot)
+        else
+            SMODS.change_booster_limit(self.config.extra_slot)
+        end
+    end,
+}
+
+--- Baker's Sleeve
+
+CardSleeves.Sleeve {
+    key = "bakers",
+    atlas = "sdm_sleeves",
+    pos = { x = 4, y = 1 },
+    unlocked = true,
+    loc_vars = function(self)
+        local key
+        local vars = {}
+        if self.get_current_deck_key() == "b_sdm_bakers" or self.get_current_deck_key() == "b_sdm_deck_of_stuff" then
+            key = self.key .. "_alt"
+            self.config = {vouchers = {'v_sdm_bakery_shop'}}
+            vars = {localize{type = 'name_text', key = 'v_sdm_bakery_shop', set = 'Voucher'}}
+        else
+            key = self.key
+            self.config = {voucher = 'v_sdm_bakery_stall', consumable_slot = 1}
+            vars = {localize{type = 'name_text', key = 'v_sdm_bakery_stall', set = 'Voucher'}, self.config.consumable_slot}
+        end
+        return { key = key, vars = vars }
+    end
 }

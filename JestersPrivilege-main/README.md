@@ -1,54 +1,63 @@
-this is my very first mod in balatro
-Jester's Privilege version 0.9.3
-it currently adds 15 jokers. 
+**Buzzer Beater** _Uncommon_ Defeating the boss blind on last hand increase xmult by 0.5 
 
-**_Common Jokers_**
+**Microtransaction** _Rare_ Every item purchased from the shop adds 0.05 Xmult
 
-**Bobo Doll**
-Joker gains 10 chips is played hand is the same as previously played hand
+**Dredd Joker** _Uncommon_ 1 in 4 chance to create Judgement, Justice, or Hanged Man
 
-**Draw Four**
-Gains 4 Mult for every Wild Card scored (need to make it so only spawns when wild cards are present)
+**Bobo Doll** _Common_ Joker gains 10 chips is played hand is the same as previously played hand
 
-**Gorgon**
-Played face cards turn into Stone cards
+**Neon Joker** _Rare_ All scored Glass Cards are given Polychrome
 
-**Hermit Crab**
-1 in 6 Chance to spawn a Hermit card
 
-**Metro Card**
-Gain 3 Mult when playing shown poker hand. Changes when that hand is played.
+**Metro Card** _Common_ Gain 3 Mult when playing shown poker hand. Changes when that hand is played.
 
-**Nosferatu**
-Played cards are transformed into mult cards (doesn't work for current scored hand which i want to fix)
+**Hermit Crab** _Common_ 1 in 6 Chance to spawn a Hermit card
 
-**Receipt**
-This Joker's sell value is equal to the combined sell value of the other owned Jokers
+**Familiar Faces** _Uncommon_ 1 in 4 chance to create a Familiar card
 
-**_Uncommon Jokers_**
+**Gorgon** _Common_ Played face cards turn into Stone cards
 
-**Breakout**
-After 10 rounds, this joker gains 4x Mult (might be too strong for uncommon...)
+**Nosferatu** _Common_ (should maybe be uncommon) Played cards are transformed into mult cards (doesn't work for current scored hand which i want to fix)
 
-**Buzzer Beater** 
-Defeating the boss blind on last hand increase xmult by 0.5
 
-**Countdown**
-When playing next card in the countdown, gain 0.1 xmult. 
+**Draw Four** _Common_ Gains 4 Mult for every Wild Card scored 
 
-**Dredd Joker**
-1 in 4 chance to create Judgement, Justice, or Hanged Man
+**Breakout**  _Uncommon_ After 10 rounds, this joker gains 4x Mult
 
-**Familiar Faces**
-1 in 4 chance to create a Familiar card
+**Seal of Approval** _Uncommon_ Gain 0.5x xmult for every seal card in deck 
 
-**Seal of Approval**
-Gain 0.5x mult for every seal card in deck (need to make it so only spawns when seal cards are present)
+**Countdown** _Uncommon_ When playing next card in the countdown, gain 0.1 xmult. (10 9 8 7 6 5 4 3 2 Ace)
 
-**_Rare Jokers_**
+**Receipt** _Common_ This Joker's sell value is equal to the combined sell value of the other owned Jokers
 
-**Microtransaction**
-Every item purchased from the shop adds 0.05 Xmult
 
-**Neon Joker**
-All scored Glass Cards are given Polychrome
+**Wallhacks** _Uncommon_ Flips and Shuffles all Jokers. All cards are now retriggered
+
+**Fried** _Common_ Gain $1 per Joker owned
+
+**Monolith** _Rare_ Gain 0.1x mult is played hand is not least played hand -- doesnt work yet
+
+**Handle with Care** _Rare_ All Glass Cards are retriggered
+
+**BlackJack** _Common_ Gain 21 Chips for every Jack of Spades or Jack of Clubs scored
+
+
+**Pocket Aces** _Uncommon_ If hand contains a pair of aces, they are retriggered.
+
+**Money Laundry** _Rare_ Gain 1 extra hand size for every $20 you have
+
+**Keycard** _Rare_ Gain a random Tag at the end of shop
+
+**Make it Rain** _Common_ Gain chips quadruple to the value of this Joker
+
+**Minimise** _Rare_ Gain X1 Mult for every hand size below 8 
+
+**Fleeman** _Legendary_ Gain a Fool for every item bought in the shop (must have room) (is the last drawing with the weirdly long hat)
+
+**Hudson** _Legendary_ Gain 0.25X Mult for every hand that is a high card (long green hat fellow)
+
+**Sommers** _Legendary_ Retrigger all Queens 3 times 
+
+
+**Grim Reaper** _Uncommon_ Gain 0.2x Mult for every Death used.
+

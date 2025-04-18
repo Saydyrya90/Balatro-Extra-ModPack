@@ -704,6 +704,13 @@ return {
 					"and {C:attention}Jolly Joker",
 				},
 			},
+			set_cry_meme = {
+				name = "Meme",
+				text = {
+					"Things related to",
+					"multiple references",
+				},
+			},
 			set_cry_misc = {
 				name = "Misc.",
 				text = {
@@ -877,6 +884,17 @@ return {
 					"scoring card#<s>4#, gain {X:mult,C:white}X#1#{} Mult and",
 					"increase requirement by {C:attention}5{}",
 					"{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)",
+				},
+			},
+			m_cry_abstract = {
+				name = "Abstract Card",
+				text = {
+					"{X:dark_edition,C:white}^#1#{} Mult,",
+					"Counts as it's {C:attention}own{} rank and suit",
+					"{C:green}#2# in #3#{} chance card to",
+					"{C:red,E:2}destroy{} card after scoring",
+					"{C:green}#4# in #5#{} chance card to",
+					"{C:red,E:2}destroy{} card {C:attention}after round",
 				},
 			},
 		},
@@ -1574,6 +1592,15 @@ return {
 					"{X:dark_edition,C:white}^#1#{} Mult if",
 					"played cards are scored",
 					"{C:attention}#2#{} or fewer times",
+				},
+			},
+			j_cry_familiar_currency = {
+				name = "Familiar Currency",
+				text = {
+					"Create a {C:attention}Meme Joker{}",
+					"at the end of round",
+					"for {C:money}$#1#{} {C:inactive}(if possible)",
+					"{C:inactive}(Must have room)",
 				},
 			},
 			j_cry_filler = {
@@ -2500,6 +2527,13 @@ return {
 					"{C:red}self destructs{}, and creates",
 					"a {C:dark_edition}Negative{} {C:spectral}Gateway{} card",
 					'{C:inactive,s:0.8}"This prison... to hold... me?"',
+				},
+			},
+			j_cry_sock_and_sock = {
+				name = "Sock and Sock",
+				text = {
+					"Retrigger all played",
+					"{C:attention}Abstract{} cards {C:attention}#1#{} time#<s>1#",
 				},
 			},
 			j_cry_spaceglobe = {
@@ -3657,6 +3691,13 @@ return {
 				text = {
 					"Enhances {C:attention}#1#{} selected card#<s>1#",
 					"into an {C:attention}Echo Card",
+				},
+			},
+			c_cry_instability = {
+				name = "Instability",
+				text = {
+					"Enhances {C:attention}#1#{} selected card#<s>1#",
+					"into an {C:attention}Abstract Card",
 				},
 			},
 			c_cry_meld = {

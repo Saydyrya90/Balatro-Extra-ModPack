@@ -1780,6 +1780,7 @@ local class = {
 				m_lucky = { "lucky", "rng" },
 				m_cry_echo = { "echo", "retrigger", "retriggers" },
 				m_cry_light = { "light" },
+				m_cry_abstract = { "abstracted", "abstract", "tadc" },
 				ccd = { "ccd" },
 				null = { "nil" },
 			}
@@ -4179,6 +4180,7 @@ local pointer = {
 			-- Cryptid Tarots
 			automaton = "the automaton",
 			eclipse = "c_cry_eclipse",
+			instability = "c_cry_instability",
 			-- Planets
 			x = "planet x",
 			X = "planet x",
@@ -5020,7 +5022,6 @@ local cut = {
 	dependencies = {
 		items = {
 			"set_cry_code",
-			"set_cry_misc_joker",
 		},
 	},
 	object_type = "Joker",
@@ -5116,7 +5117,6 @@ local blender = {
 	dependencies = {
 		items = {
 			"set_cry_code",
-			"set_cry_misc_joker",
 		},
 	},
 	object_type = "Joker",
@@ -5157,7 +5157,6 @@ local python = {
 	dependencies = {
 		items = {
 			"set_cry_code",
-			"set_cry_misc_joker",
 		},
 	},
 	object_type = "Joker",

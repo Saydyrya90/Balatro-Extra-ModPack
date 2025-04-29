@@ -686,9 +686,7 @@ local summoning = {
 			"AlexZGreat",
 		},
 		art = {
-			--Summoning's sprite takes some parts from an unused sprite by Rattlingsnow so i'm crediting both users
-			"Kailen",
-			"RattlingSnow353",
+			"Nova",
 		},
 		code = {
 			"Jevonn",

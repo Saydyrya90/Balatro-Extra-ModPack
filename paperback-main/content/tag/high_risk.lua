@@ -2,7 +2,7 @@ SMODS.Tag {
   key = 'high_risk',
   atlas = 'tags_atlas',
   pos = { x = 3, y = 0 },
-  discovered = false,
+  discovered = true,
   config = {
     money = 25
   },

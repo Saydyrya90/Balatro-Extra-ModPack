@@ -2,7 +2,7 @@ SMODS.Tag {
   key = 'dichrome',
   atlas = 'tags_atlas',
   pos = { x = 1, y = 0 },
-  discovered = false,
+  discovered = true,
 
   loc_vars = function(self, info_queue)
     info_queue[#info_queue + 1] = G.P_CENTERS.e_paperback_dichrome

@@ -19,7 +19,7 @@ SMODS.Edition {
     per = 1,
     vol = 0.4
   },
-  discovered = false,
+  discovered = true,
   weight = 3,     -- As rare as polychrome
   in_shop = true,
   extra_cost = 5, -- As expensive as polychrome

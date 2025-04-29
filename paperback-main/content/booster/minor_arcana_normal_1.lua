@@ -8,5 +8,5 @@ PB_UTIL.MinorArcanaBooster {
   },
   weight = 1,
   cost = 4,
-  discovered = false,
+  discovered = true,
 }

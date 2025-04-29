@@ -2,7 +2,7 @@ SMODS.Joker {
   key = "big_misser",
   config = {
     extra = {
-      Xmult_mod = 0.75,
+      Xmult_mod = 1,
       Xmult = 0
     }
   },
@@ -11,7 +11,7 @@ SMODS.Joker {
   atlas = 'jokers_atlas',
   cost = 6,
   unlocked = true,
-  discovered = false,
+  discovered = true,
   blueprint_compat = true,
   eternal_compat = true,
 
@@ -51,18 +51,5 @@ SMODS.Joker {
         x_mult = card.ability.extra.Xmult,
       }
     end
-  end,
-
-  joker_display_def = function(JokerDisplay)
-    return {
-      text = {
-        {
-          border_nodes = {
-            { text = 'X' },
-            { ref_table = 'card.ability.extra', ref_value = 'Xmult' }
-          }
-        }
-      },
-    }
   end
 }

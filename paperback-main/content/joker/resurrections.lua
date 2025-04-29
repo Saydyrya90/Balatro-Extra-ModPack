@@ -12,7 +12,7 @@ SMODS.Joker {
   atlas = 'jokers_atlas',
   cost = 8,
   unlocked = true,
-  discovered = false,
+  discovered = true,
   blueprint_compat = false,
   eternal_compat = true,
 
@@ -30,30 +30,29 @@ SMODS.Joker {
   end,
 
   calculate = function(self, card, context)
-    if not context.blueprint and context.selling_card and context.card ~= card and context.card.ability.set == 'Joker' then
+    if not context.blueprint and context.selling_card and context.card ~= card and
+        context.card.ability.set == 'Joker' and not context.card.ability.paperback_resurrected then
       local chance = G.GAME.probabilities.normal * card.ability.extra.chance_mult
       local roll = pseudorandom("resurrections") < chance / card.ability.extra.odds
 
       if roll then
+        context.card.ability.paperback_resurrected = true
+
         G.E_MANAGER:add_event(Event {
           func = function()
-            -- Create a copy of the sold Joker
             local copy = copy_card(context.card)
+            copy:set_edition('e_negative', true)
+            -- Remove resurrected flag from copy
+            copy.ability.paperback_resurrected = nil
             copy:add_to_deck()
             G.jokers:emplace(copy)
-
-            -- Create the negative copy
-            local n_copy = copy_card(context.card)
-            n_copy:set_edition('e_negative', true)
-            n_copy:add_to_deck()
-            G.jokers:emplace(n_copy)
-            PB_UTIL.set_sell_value(n_copy, -card.ability.extra.sell_cost)
+            PB_UTIL.set_sell_value(copy, -card.ability.extra.sell_cost)
             return true
           end
         })
 
-        -- Self destruct
-        PB_UTIL.destroy_joker(card)
+        -- Reset chance after a successful roll
+        card.ability.extra.chance_mult = 1
 
         return {
           message = localize('k_duplicated_ex')

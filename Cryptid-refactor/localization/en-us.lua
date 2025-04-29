@@ -284,7 +284,8 @@ return {
 				name = "The Clock",
 				text = {
 					"+0.1X blind requirements every",
-					"12 seconds spent this ante",
+					"12 seconds spent this ante,",
+					"multiplied by game speed",
 				},
 			},
 			bl_cry_hammer = {
@@ -312,7 +313,8 @@ return {
 				name = "Lavender Loop",
 				text = {
 					"1.25X blind requirements every",
-					"6 seconds spent this round",
+					"6 seconds spent this round,",
+					"multiplied by game speed",
 				},
 			},
 			bl_cry_obsidian_orb = {
@@ -396,6 +398,13 @@ return {
 					"discarded cards",
 				},
 			},
+			bl_cry_greed = {
+				name = "The Greed",
+				text = {
+					"+#2# blind requirement",
+					"per $#1# when selected",
+				},
+			},
 			bl_cry_pinkbow = {
 				name = "Pink Bow",
 				text = {
@@ -468,6 +477,14 @@ return {
 			},
 		},
 		Code = {
+			c_cry_assemble = {
+				name = "://ASSEMBLE",
+				text = {
+					"Add {C:cry_code}Mult{} to the",
+					"{C:cry_code}selected hand{} equal to",
+					"how many jokers are owned",
+				},
+			},
 			c_cry_alttab = {
 				name = "://ALTTAB",
 				text = {
@@ -510,7 +527,6 @@ return {
 					"{C:cry_code}Banish{} any {C:cry_code}selected{}",
 					"shop item, it will no longer",
 					"appear normally this run",
-					"{C:inactive}Multiuse: ({C:cry_code}#1#{C:inactive} remaining)",
 				},
 			},
 			c_cry_divide = {
@@ -526,15 +542,28 @@ return {
 					"{C:cry_code}Choose{} a {C:cry_code}currently visible{} poker hand,",
 					"next hand is {C:cry_code}calculated{} as that hand,",
 					"and gains {C:cry_code}one{} temp {C:cry_code}Ascension Power{}",
-					"{C:inactive}Multiuse: ({C:cry_code}#1#{C:inactive} remaining)",
+				},
+			},
+			c_cry_cryfunction = {
+				name = "FUNCTION://",
+				text = {
+					"Saves the {C:cry_code}Last Three{} consumables used,",
+					"using this card again creates a copy of",
+					"the first with a {C:cry_code}Function://{} sticker",
+				},
+			},
+			c_cry_global = {
+				name = "://GLOBAL",
+				text = {
+					"Select a playing card",
+					"to become {C:cry_code}Global{}",
 				},
 			},
 			c_cry_hook = {
 				name = "HOOK://",
 				text = {
-					"Select two Jokers to become {C:cry_code}Hooked",
-					"{C:inactive,s:0.8}Only works properly if Jokers trigger in the same context,",
-					"{C:inactive,s:0.8}such as Joker and The Duo (both post-scoring)",
+					"To Be {C:cry_code}Implemented{}",
+					"in a future {C:cry_code}update{}",
 				},
 			},
 			c_cry_inst = {
@@ -543,6 +572,21 @@ return {
 					"Draw a card with selected card's {C:cry_code}rank{}",
 					"and one with selected card's {C:cry_code}suit{}",
 					"{C:inactive}(if possible){}",
+				},
+			},
+			c_cry_keygen = {
+				name = "://KEYGEN",
+				text = {
+					"Create a random {C:cry_code}Perishable Banana{}",
+					"voucher, {C:cry_code}destroy{} previously created",
+					"voucher created this way.",
+				},
+			},
+			c_cry_crylog = {
+				name = "://LOG",
+				text = {
+					"To Be {C:cry_code}Implemented{}",
+					"in a future {C:cry_code}update{}",
 				},
 			},
 			c_cry_machinecode = {
@@ -570,6 +614,13 @@ return {
 					"end of round",
 				},
 			},
+			c_cry_nperror = {
+				name = "://NPERROR",
+				text = {
+					"Returns the {C:cry_code}last played hand{}",
+					"to your hand",
+				},
+			},
 			c_cry_patch = {
 				name = "://PATCH",
 				text = {
@@ -592,6 +643,13 @@ return {
 					"{C:cry_code}#1#{} extra card#<s>1# and",
 					"{C:cry_code}#1#{} extra choice#<s>1#",
 					"{C:inactive}(Currently {C:cry_code}+#2#{C:inactive})",
+				},
+			},
+			c_cry_quantify = {
+				name = "://QUANTIFY",
+				text = {
+					"To Be {C:cry_code}Implemented{}",
+					"in a future {C:cry_code}update{}",
 				},
 			},
 			c_cry_reboot = {
@@ -642,6 +700,13 @@ return {
 				text = {
 					"Create a {C:cry_code}Glitched",
 					"Food Joker",
+				},
+			},
+			c_cry_cryupdate = {
+				name = "://UPDATE",
+				text = {
+					"To Be {C:cry_code}Determined{}",
+					"in a future {C:cry_code}update{}",
 				},
 			},
 			c_cry_variable = {
@@ -890,7 +955,7 @@ return {
 				name = "Abstract Card",
 				text = {
 					"{X:dark_edition,C:white}^#1#{} Mult,",
-					"Counts as it's {C:attention}own{} rank and suit",
+					"Counts as its {C:attention}own{} rank and suit",
 					"{C:green}#2# in #3#{} chance card to",
 					"{C:red,E:2}destroy{} card after scoring",
 					"{C:green}#4# in #5#{} chance card to",
@@ -2536,6 +2601,15 @@ return {
 					"{C:attention}Abstract{} cards {C:attention}#1#{} time#<s>1#",
 				},
 			},
+			j_cry_brokenhome = {
+				name = "Broken Home",
+				text = {
+					"{X:mult,C:white} X#1# {} Mult",
+					"{C:green}#2# in #3#{} chance this",
+					"card is destroyed",
+					"at end of round",
+				},
+			},
 			j_cry_spaceglobe = {
 				name = "Celestial Globe",
 				text = {
@@ -2859,7 +2933,7 @@ return {
 				unlock = {
 					"Win a run with",
 					"your final hand being",
-					"a {E:1,C:attention}Clusterfuck",
+					"a {E:1,C:attention}#1#",
 				},
 			},
 			j_cry_zooble = {
@@ -3202,7 +3276,7 @@ return {
 				text = {
 					"Create a card",
 					"of {C:cry_code}your choice",
-					"{C:inactive,s:0.8}(Exotic Jokers #1#excluded)",
+					"{C:inactive,s:0.8}(Exotic Jokers excluded)",
 				},
 			},
 			c_cry_replica = {
@@ -3900,8 +3974,8 @@ return {
 			v_cry_quantum_computing = {
 				name = "Quantum Computing",
 				text = {
-					"{C:cry_code}Code{} cards can spawn",
-					"with {C:dark_edition}Negative{} edition",
+					"All future {C:cry_code}Code{} cards each",
+					"have {C:cry_code}+#1#{} Multiuse",
 				},
 			},
 			v_cry_repair_man = {
@@ -4063,6 +4137,13 @@ return {
 					"trigger {C:cry_code}#1#",
 				},
 			},
+			cry_global_sticker = {
+				name = "Global",
+				text = {
+					"Always drawn after",
+					"{C:cry_code}First Hand Drawn{}",
+				},
+			},
 			cry_flickering = {
 				name = "Flickering",
 				text = {
@@ -4076,6 +4157,21 @@ return {
 				text = {
 					"Destroyed after",
 					"{C:attention}#1#{} trigger#<s>1#",
+				},
+			},
+			cry_function_sticker = {
+				name = "Function://",
+				text = {
+					"Creates {C:cry_code}#1#{}",
+					"when used",
+				},
+			},
+			cry_function_sticker_desc = { --for function:// card
+				name = "Function://",
+				text = {
+					"Creates the next",
+					"{C:cry_code}Function://{} consumable",
+					"{C:inactive}Currently #1#, #2# and #3#{}",
 				},
 			},
 			cry_possessed = {
@@ -4409,6 +4505,12 @@ return {
 					'{C:inactive,s:0.8}"I hate this card" - SDM_0, 2024{}',
 				},
 			},
+			cry_multiuse = {
+				name = "m",
+				text = {
+					"{C:inactive}Multiuse: ({C:cry_code}#1#{C:inactive} remaining)",
+				},
+			},
 		},
 		Unique = {
 			c_cry_potion = {
@@ -4695,6 +4797,7 @@ return {
 			cry_unredeemed = "Unredeemed...",
 			cry_active = "Active",
 			cry_inactive = "Inactive",
+			cry_divorced = "Divorced!",
 
 			k_disable_music = "Disable Music",
 
@@ -4744,6 +4847,7 @@ return {
 			unique = "Unique",
 			cry_rigged = "Rigged",
 			cry_hooked = "Hooked",
+			cry_global_sticker = "Global",
 			cry_flickering = "Flickering",
 			cry_possessed = "Possessed",
 

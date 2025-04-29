@@ -2,7 +2,7 @@ SMODS.Joker {
   key = "matcha",
   config = {
     extra = {
-      odds = 5,
+      odds = 8,
       a_chips = 2,
       chips = 0
     }
@@ -12,7 +12,7 @@ SMODS.Joker {
   atlas = "jokers_atlas",
   cost = 3,
   unlocked = true,
-  discovered = false,
+  discovered = true,
   blueprint_compat = true,
   eternal_compat = false,
   perishable_compat = true,

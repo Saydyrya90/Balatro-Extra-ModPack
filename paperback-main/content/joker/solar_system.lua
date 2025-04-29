@@ -11,7 +11,7 @@ SMODS.Joker {
   atlas = "jokers_atlas",
   cost = 8,
   unlocked = true,
-  discovered = false,
+  discovered = true,
   blueprint_compat = true,
   eternal_compat = true,
   soul_pos = nil,
@@ -62,5 +62,5 @@ function PB_UTIL.update_solar_system(card)
   end
 
   -- set the card's x_mult to a value depending on the minimum level
-  card.ability.extra.x_mult = card.ability.extra.x_mult_mod * math.max(1, to_number(min_level)) - 1
+  card.ability.extra.x_mult = card.ability.extra.x_mult_mod * math.max(1, to_number(min_level))
 end

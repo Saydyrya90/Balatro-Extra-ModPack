@@ -60,6 +60,21 @@ if G.GAME.boostertag and G.GAME.boostertag > 0 then
     self.ability.extra = self.ability.extra * 2
     G.GAME.pack_choices = G.GAME.pack_choices * 2
     G.GAME.boostertag = math.max(0, G.GAME.boostertag - 1)
+    if G.GAME.boostertag > 0 then
+    	G.E_MANAGER:add_event(Event({
+		func = function()
+			attention_text({
+				scale = 1,
+				text = localize({ type = "name_text", set = "Tag", key = "tag_cry_booster" }) .. ": " .. localize{type = 'variable', key = ('loyalty_inactive'), vars = {G.GAME.boostertag}},
+				hold = 2,
+				align = "cm",
+				offset = { x = 0, y = -2.7 },
+				major = G.play,
+			})
+			return true
+		end,
+	}))
+    end
 end
 self.ability.extra = math.min(self.ability.extra, 1000)
 G.GAME.pack_choices = math.min(G.GAME.pack_choices, 1000)

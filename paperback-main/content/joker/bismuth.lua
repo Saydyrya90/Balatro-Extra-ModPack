@@ -12,7 +12,7 @@ SMODS.Joker {
   atlas = "jokers_atlas",
   cost = 7,
   unlocked = true,
-  discovered = false,
+  discovered = true,
   blueprint_compat = false,
   eternal_compat = true,
   paperback = {
@@ -73,44 +73,5 @@ SMODS.Joker {
         }
       end
     end
-  end,
-
-  joker_display_def = function(JokerDisplay)
-    return {
-      reminder_text = {
-        { text = '(' },
-        { ref_table = 'card.joker_display_values', ref_value = 'localized_suit1' },
-        { text = ', ' },
-        { ref_table = 'card.joker_display_values', ref_value = 'localized_suit2' },
-        { text = ')' }
-      },
-
-      extra = {
-        {
-          { text = '(' },
-          { ref_table = 'card.joker_display_values', ref_value = 'odds' },
-          { text = ')' }
-        },
-      },
-      extra_config = {
-        colour = G.C.GREEN,
-        scale = 0.3,
-      },
-
-      calc_function = function(card)
-        card.joker_display_values.localized_suit1 = localize(card.ability.extra.suit1, 'suits_plural')
-        card.joker_display_values.localized_suit2 = localize(card.ability.extra.suit2, 'suits_plural')
-        card.joker_display_values.odds = localize { type = 'variable', key = 'jdis_odds', vars = { (G.GAME and G.GAME.probabilities.normal or 1), card.ability.extra.odds } }
-      end,
-
-      style_function = function(card, text, reminder_text, extra)
-        if reminder_text and reminder_text.children[2] and reminder_text.children[4] then
-          reminder_text.children[2].config.colour = G.C.SUITS[card.ability.extra.suit1]
-          reminder_text.children[4].config.colour = G.C.SUITS[card.ability.extra.suit2]
-        end
-
-        return false
-      end,
-    }
   end
 }

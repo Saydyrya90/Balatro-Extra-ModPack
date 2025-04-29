@@ -6,7 +6,7 @@ SMODS.Joker {
   atlas = 'jokers_atlas',
   cost = 6,
   unlocked = true,
-  discovered = false,
+  discovered = true,
   blueprint_compat = false,
   eternal_compat = false,
   soul_pos = nil,
@@ -27,38 +27,29 @@ SMODS.Joker {
   end,
 
   calculate = function(self, card, context)
-    if not context.blueprint and context.selling_self then
-      return {
-        func = function()
-          -- Adds the negative tag
-          G.E_MANAGER:add_event(Event {
-            func = function()
-              PB_UTIL.add_tag('tag_negative')
-              card:juice_up()
-              return true
-            end
-          })
+    if context.selling_self then
+      -- Adds the negative tag
+      PB_UTIL.add_tag('tag_negative', true)
 
-          -- Creates the negative spectral card
-          G.E_MANAGER:add_event(Event({
-            trigger = 'after',
-            delay = 1.2,
-            func = (function()
-              SMODS.add_card {
-                set = 'Spectral',
-                key_append = 'ghost_cola',
-                edition = 'e_negative'
-              }
-              card:juice_up()
-              return true
-            end
-            )
-          }))
-
-          -- Make Ghost Cola extinct
-          G.GAME.pool_flags.ghost_cola_can_spawn = false
+      -- Creates the negative spectral card
+      G.E_MANAGER:add_event(Event({
+        trigger = 'before',
+        delay = 0.0,
+        func = (function()
+          local card = create_card('Spectral', G.consumeables, nil, nil, nil, nil, nil, 'sea')
+          local edition = { negative = true }
+          card:set_edition(edition, true)
+          card:add_to_deck()
+          G.consumeables:emplace(card)
+          return true
         end
-      }
+        )
+      }))
+
+      -- Make Ghost Cola extinct
+      G.GAME.pool_flags.ghost_cola_can_spawn = false
+
+      return nil, true
     end
   end,
 }

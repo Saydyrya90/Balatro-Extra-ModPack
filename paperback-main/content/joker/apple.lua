@@ -11,7 +11,7 @@ SMODS.Joker {
   atlas = 'jokers_atlas',
   cost = 1,
   unlocked = true,
-  discovered = false,
+  discovered = true,
   blueprint_compat = false,
   eternal_compat = false,
   perishable_compat = true,
@@ -64,32 +64,5 @@ SMODS.Joker {
         end
       end
     end
-  end,
-
-  joker_display_def = function(JokerDisplay)
-    return {
-      reminder_text = {
-        { text = "(" },
-        { ref_table = "card.joker_display_values", ref_value = 'localized_text', colour = lighten(G.C.SUITS['Hearts'], 0.35) },
-        { text = ")" }
-      },
-
-      extra = {
-        {
-          { text = "(" },
-          { ref_table = "card.joker_display_values", ref_value = 'odds' },
-          { text = ")" }
-        }
-      },
-      extra_config = {
-        colour = G.C.GREEN,
-        scale = 0.3
-      },
-
-      calc_function = function(card)
-        card.joker_display_values.odds = localize { type = 'variable', key = 'jdis_odds', vars = { (G.GAME and G.GAME.probabilities.normal or 1), card.ability.extra.odds } }
-        card.joker_display_values.localized_text = localize("Hearts", 'suits_plural')
-      end,
-    }
-  end,
+  end
 }

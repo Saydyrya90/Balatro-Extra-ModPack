@@ -6,7 +6,7 @@ PB_UTIL.MinorArcana {
   atlas = 'minor_arcana_atlas',
   pos = { x = 0, y = 1 },
   unlocked = true,
-  discovered = false,
+  discovered = true,
 
   loc_vars = function(self, info_queue, card)
     return {
@@ -44,8 +44,7 @@ PB_UTIL.MinorArcana {
     -- so we pass custom arguments that can be used to include the suit here
     local _, suit = pseudorandom_element(pool, pseudoseed('eight_of_cups'), {
       paperback = {
-        include_stars = true,
-        include_crowns = true
+        eight_of_cups = true
       }
     })
 

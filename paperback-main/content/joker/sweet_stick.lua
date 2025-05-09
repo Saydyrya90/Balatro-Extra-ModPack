@@ -10,7 +10,7 @@ SMODS.Joker {
   atlas = 'jokers_atlas',
   cost = 7,
   unlocked = true,
-  discovered = false,
+  discovered = true,
   blueprint_compat = true,
   eternal_compat = true,
   yes_pool_flag = "sticks_can_spawn",
@@ -29,6 +29,16 @@ SMODS.Joker {
     }
   end,
 
-  calculate = PB_UTIL.stick_joker_logic,
-  joker_display_def = PB_UTIL.stick_joker_display_def
+  calculate = function(self, card, context)
+    if context.joker_main then
+      local xMult = PB_UTIL.calculate_stick_xMult(card)
+
+      if xMult ~= 1 then
+        return {
+          x_mult = xMult,
+          card = card
+        }
+      end
+    end
+  end
 }

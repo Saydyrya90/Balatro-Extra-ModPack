@@ -2,7 +2,7 @@ SMODS.Joker {
   key = "angel_investor",
   config = {
     extra = {
-      tags = 1
+      tags = 2
     }
   },
   rarity = 1,
@@ -10,7 +10,7 @@ SMODS.Joker {
   atlas = 'jokers_atlas',
   cost = 4,
   unlocked = true,
-  discovered = false,
+  discovered = true,
   blueprint_compat = true,
   eternal_compat = true,
   paperback = {

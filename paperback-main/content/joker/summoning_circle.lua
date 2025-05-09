@@ -10,7 +10,7 @@ SMODS.Joker {
   atlas = "jokers_atlas",
   cost = 8,
   unlocked = true,
-  discovered = false,
+  discovered = true,
   blueprint_compat = true,
   eternal_compat = true,
 

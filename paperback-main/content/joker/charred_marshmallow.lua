@@ -3,9 +3,7 @@ SMODS.Joker {
   config = {
     extra = {
       mult = 5,
-      odds = 4,
-      suit = 'Spades',
-      stick_key = 'j_paperback_sticky_stick'
+      odds = 4
     }
   },
   rarity = 1,
@@ -13,7 +11,7 @@ SMODS.Joker {
   atlas = 'jokers_atlas',
   cost = 6,
   unlocked = true,
-  discovered = false,
+  discovered = true,
   blueprint_compat = true,
   eternal_compat = false,
   soul_pos = nil,
@@ -32,6 +30,43 @@ SMODS.Joker {
     }
   end,
 
-  calculate = PB_UTIL.stick_food_joker_logic,
-  joker_display_def = PB_UTIL.stick_food_joker_display_def,
+  calculate = function(self, card, context)
+    -- Give the mult during play if card is a Spade
+    if context.individual and context.cardarea == G.play then
+      if context.other_card:is_suit("Spades") then
+        return {
+          mult = card.ability.extra.mult,
+          card = card
+        }
+      end
+    end
+
+    -- Check if the Joker needs to be eaten
+    if context.end_of_round and not context.blueprint and context.main_eval then
+      if pseudorandom("Charred Marshmallow") < G.GAME.probabilities.normal / card.ability.extra.odds then
+        PB_UTIL.destroy_joker(card, function()
+          -- Remove Charred Marshmallow from the pool
+          G.GAME.pool_flags.charred_marshmallow_can_spawn = false
+
+          -- Create Popsicle Stick
+          SMODS.add_card {
+            key = 'j_paperback_sticky_stick',
+            edition = card.edition
+          }
+        end)
+
+        return {
+          message = localize('k_eaten_ex'),
+          colour = G.C.MULT,
+          card = card
+        }
+      else
+        return {
+          message = localize('k_safe_ex'),
+          colour = G.C.CHIPS,
+          card = card
+        }
+      end
+    end
+  end
 }

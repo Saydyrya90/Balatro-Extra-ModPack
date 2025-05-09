@@ -249,7 +249,7 @@ local tax = {
 	key = "tax",
 	pos = { x = 0, y = 0 },
 	boss = {
-		min = 1,
+		min = 2,
 		max = 10,
 	},
 	atlas = "blinds",
@@ -327,7 +327,7 @@ local clock = {
 	pos = { x = 0, y = 1 },
 	mult = 0,
 	boss = {
-		min = 1,
+		min = 2,
 		max = 10,
 	},
 	config = {
@@ -347,6 +347,8 @@ local clock = {
 	end,
 	cry_ante_base_mod = function(self, dt)
 		if G.SETTINGS.paused then
+			return 0
+		elseif G.GAME.round == 0 and G.GAME.skips == 0 then
 			return 0
 		else
 			return 0.1 * (dt * math.min(G.SETTINGS.GAMESPEED, 4) / 4) / 3
@@ -457,6 +459,7 @@ local hammer = {
 		if card.area ~= G.jokers and not G.GAME.blind.disabled then
 			if
 				not SMODS.has_no_rank(card)
+				and not SMODS.has_enhancement(card, "m_cry_abstract")
 				and (
 					card.base.value == "3"
 					or card.base.value == "5"
@@ -492,6 +495,7 @@ local magic = {
 		if card.area ~= G.jokers and not G.GAME.blind.disabled then
 			if
 				not SMODS.has_no_rank(card)
+				and not SMODS.has_enhancement(card, "m_cry_abstract")
 				and (
 					card.base.value == "2"
 					or card.base.value == "4"
@@ -737,6 +741,98 @@ local greed = {
 	disable = function(self, silent)
 		G.GAME.blind.chips = get_blind_amount(G.GAME.round_resets.ante) * G.GAME.starting_params.ante_scaling
 		G.GAME.blind.chip_text = number_format(G.GAME.blind.chips)
+	end,
+}
+--Fasten all jokers after hand or discard
+--After defeat, open a baneful buffoon pack containing:
+---4 cursed jokers (can overflow)
+---a "unique consumeable" that will banish the rightmost joker
+--Only after that, are jokers unfastened
+local decision = {
+	dependencies = {
+		items = {
+			"set_cry_blind",
+			"set_cry_cursed",
+		},
+	},
+	mult = 2,
+	object_type = "Blind",
+	name = "cry-Decision",
+	key = "decision",
+	pos = { x = 0, y = 20 },
+	dollars = 5,
+	boss = {
+		min = 4,
+		max = 666666,
+	},
+	atlas = "blinds",
+	order = 22,
+	boss_colour = HEX("474931"),
+	get_loc_debuff_text = function(self)
+		return localize("cry_blind_baneful_pack")
+	end,
+	calculate = function(self, blind, context)
+		if context.discard and not G.GAME.blind.disabled and not G.GAME.cry_fastened then
+			--visual cue to wiggle all jokers
+			G.GAME.cry_fastened = true
+			if G.jokers.cards then
+				G.GAME.blind:wiggle()
+				G.GAME.blind.triggered = true
+				for i, v in pairs(G.jokers.cards) do
+					v:juice_up(0, 0.25)
+				end
+			end
+		end
+	end,
+	cry_before_play = function(self)
+		if not G.GAME.blind.disabled and not G.GAME.cry_fastened then
+			--visual cue to wiggle all jokers
+			G.GAME.cry_fastened = true
+			if G.jokers.cards then
+				G.GAME.blind:wiggle()
+				G.GAME.blind.triggered = true
+				for i, v in pairs(G.jokers.cards) do
+					v:juice_up(0, 0.25)
+				end
+			end
+		end
+	end,
+	cry_before_cash = function(self)
+		--Always fasten if before cash context (gaming chair, debug mode)
+		G.GAME.cry_fastened = true
+		G.GAME.blind:wiggle()
+		G.GAME.blind.triggered = true
+		--PLACEHOLDER: Will open a random booster pack for now
+		--Booster will contain:
+		--4 cursed Jokers
+		--1 "tarot" to banish the rightmost joker
+		G.E_MANAGER:add_event(Event({
+			trigger = "before",
+			func = function()
+				local key = "p_cry_baneful_1"
+				local card = Card(
+					G.play.T.x + G.play.T.w / 2 - G.CARD_W * 1.27 / 2,
+					G.play.T.y + G.play.T.h / 2 - G.CARD_H * 1.27 / 2,
+					G.CARD_W * 1.27,
+					G.CARD_H * 1.27,
+					G.P_CARDS.empty,
+					G.P_CENTERS[key],
+					{ bypass_discovery_center = true, bypass_discovery_ui = true }
+				)
+				card.cost = 0
+				card.from_tag = true
+				G.FUNCS.use_card({ config = { ref_table = card } })
+				card:start_materialize()
+				pack_opened = true
+				return true
+			end,
+		}))
+	end,
+	disable = function(self, silent)
+		G.GAME.cry_fastened = nil
+	end,
+	defeat = function(self, silent)
+		G.GAME.cry_fastened = nil
 	end,
 }
 --It seems Showdown blind order is seperate from normal blind collection order? convenient for me at least
@@ -1412,6 +1508,21 @@ local obsidian_orb = {
 			end
 		end
 	end,
+	cry_before_cash = function(self)
+		local decision_made = false
+		for k, _ in pairs(G.GAME.defeated_blinds) do
+			s = G.P_BLINDS[k]
+			if s.cry_before_cash then
+				decision_made = true
+				s:cry_before_cash()
+			end
+		end
+		if not decision_made then
+			G.GAME.cry_make_a_decision = nil
+			G.STATE = G.STATES.ROUND_EVAL
+			G.STATE_COMPLETE = false
+		end
+	end,
 	get_loc_debuff_text = function(self)
 		if not G.GAME.blind.debuff_boss then
 			return localize("cry_debuff_obsidian_orb")
@@ -1470,6 +1581,7 @@ local trophy = {
 		end
 	end,
 }
+
 local items_togo = {
 	oldox,
 	oldhouse,
@@ -1499,5 +1611,6 @@ local items_togo = {
 	clock,
 	lavender_loop,
 	trophy,
+	decision,
 }
 return { name = "Blinds", items = items_togo }

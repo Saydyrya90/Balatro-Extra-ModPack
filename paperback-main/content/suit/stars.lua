@@ -14,8 +14,8 @@ SMODS.Suit {
   ui_pos = { x = 0, y = 1 },
 
   in_pool = function(self, args)
-    -- Allows forcing this suit to be included
-    if args and args.paperback and args.paperback.include_stars then
+    -- Allows Eight of Cups to spawn this suit
+    if args and args.paperback and args.paperback.eight_of_cups then
       return true
     end
 

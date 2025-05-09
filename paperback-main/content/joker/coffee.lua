@@ -12,7 +12,7 @@ SMODS.Joker {
   atlas = 'jokers_atlas',
   cost = 6,
   unlocked = true,
-  discovered = false,
+  discovered = true,
   blueprint_compat = false,
   eternal_compat = false,
   soul_pos = nil,
@@ -57,33 +57,5 @@ SMODS.Joker {
         }
       end
     end
-  end,
-
-  joker_display_def = function(JokerDisplay)
-    return {
-      text = {
-        { text = '+' },
-        { ref_table = 'card.ability.extra', ref_value = 'hand_size' },
-      },
-      text_config = {
-        colour = G.C.IMPORTANT
-      },
-
-      extra = {
-        {
-          { text = '(' },
-          { ref_table = 'card.joker_display_values', ref_value = 'odds' },
-          { text = ')' },
-        }
-      },
-      extra_config = {
-        colour = G.C.GREEN,
-        scale = 0.3,
-      },
-
-      calc_function = function(card)
-        card.joker_display_values.odds = localize { type = 'variable', key = 'jdis_odds', vars = { (G.GAME and G.GAME.probabilities.normal or 1), card.ability.extra.odds } }
-      end
-    }
   end
 }

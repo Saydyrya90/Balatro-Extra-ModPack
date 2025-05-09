@@ -10,7 +10,7 @@ SMODS.Joker {
   atlas = "jokers_atlas",
   cost = 8,
   unlocked = true,
-  discovered = false,
+  discovered = true,
   blueprint_compat = true,
   eternal_compat = true,
   soul_pos = nil,
@@ -50,12 +50,10 @@ SMODS.Joker {
 
       -- Balance the chips if the hand is not debuffed
       if not context.debuffed_hand then
-        return {
-          func = function()
-            PB_UTIL.apply_plasma_effect(context.blueprint_card or card)
-            table.insert(card.ability.extra.hands_played_this_ante, context.scoring_name)
-          end
-        }
+        PB_UTIL.apply_plasma_effect(context.blueprint_card or card)
+        table.insert(card.ability.extra.hands_played_this_ante, context.scoring_name)
+
+        return nil, true
       end
     end
 

@@ -1,11 +1,11 @@
 SMODS.Joker {
   key = 'the_world',
-  rarity = 2,
+  rarity = 3,
   pos = { x = 0, y = 6 },
   atlas = 'jokers_atlas',
   cost = 9,
   unlocked = true,
-  discovered = false,
+  discovered = true,
   blueprint_compat = false,
   eternal_compat = true,
   soul_pos = nil,

@@ -11,7 +11,7 @@ SMODS.Joker {
   atlas = 'jokers_atlas',
   cost = 6,
   unlocked = true,
-  discovered = false,
+  discovered = true,
   blueprint_compat = true,
   eternal_compat = true,
   perishable_compat = false,
@@ -40,21 +40,8 @@ SMODS.Joker {
       end
     end
 
-    -- Upgrade joker if boss blind triggered
-    if context.debuffed_hand and not context.blueprint then
-      if G.GAME.blind.triggered then
-        card.ability.extra.x_mult = card.ability.extra.x_mult + card.ability.extra.Xmult_mod
-
-        return {
-          message = localize('k_upgrade_ex'),
-          colour = G.C.MULT,
-          card = card
-        }
-      end
-    end
-
     if context.joker_main then
-      -- Upgrade joker if boss blind triggered (cards debuffed)
+      -- Upgrade joker if boss blind triggered
       if G.GAME.blind.triggered and G.GAME.blind.boss and not context.blueprint then
         card.ability.extra.x_mult = card.ability.extra.x_mult + card.ability.extra.Xmult_mod
 
@@ -73,17 +60,4 @@ SMODS.Joker {
       end
     end
   end,
-
-  joker_display_def = function(JokerDisplay)
-    return {
-      text = {
-        {
-          border_nodes = {
-            { text = 'X' },
-            { ref_table = 'card.ability.extra', ref_value = 'x_mult' }
-          }
-        }
-      }
-    }
-  end
 }

@@ -14,6 +14,7 @@ Cryptid.misprintize_value_blacklist = {
 	d_size = false,
 	h_size = false,
 	selected_d6_face = false,
+	cry_hook_id = false,
 	-- TARGET: Misprintize Value Blacklist (format: key = false, )
 }
 
@@ -82,8 +83,12 @@ function Cryptid.misprintize_tbl(name, ref_tbl, ref_value, clear, override, stac
 			then
 				return false
 			end
-
-			return Cryptid.misprintize_value_blacklist[k] or true
+			for key, val in pairs(Cryptid.misprintize_value_blacklist) do
+				if tostring(k) == tostring(key) then
+					return val
+				end
+			end
+			return true
 		end
 
 		for k, v in pairs(tbl) do

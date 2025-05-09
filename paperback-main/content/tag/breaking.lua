@@ -5,7 +5,7 @@ SMODS.Tag {
   key = 'breaking',
   atlas = 'tags_atlas',
   pos = { x = 4, y = 0 },
-  discovered = false,
+  discovered = true,
 
   apply = function(self, tag, context)
     if context.type == 'round_start_bonus' and G.GAME.blind.boss and not G.GAME.blind.disabled then

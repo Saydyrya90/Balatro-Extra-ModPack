@@ -11,7 +11,7 @@ SMODS.Joker {
   atlas = 'jokers_atlas',
   cost = 5,
   unlocked = true,
-  discovered = false,
+  discovered = true,
   blueprint_compat = true,
   eternal_compat = true,
 
@@ -30,15 +30,13 @@ SMODS.Joker {
       local amount = #hands[card.ability.extra.hand]
 
       if amount > 0 then
-        return {
-          func = function()
-            for _ = 1, amount do
-              SMODS.calculate_effect({
-                dollars = card.ability.extra.money,
-              }, context.blueprint_card or card)
-            end
-          end
-        }
+        for _ = 1, amount do
+          SMODS.calculate_effect({
+            dollars = card.ability.extra.money,
+          }, context.blueprint_card or card)
+        end
+
+        return nil, true
       end
     end
   end

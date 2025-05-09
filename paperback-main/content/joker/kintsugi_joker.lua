@@ -2,7 +2,7 @@ SMODS.Joker {
   key = "kintsugi_joker",
   config = {
     extra = {
-      increase = 2,
+      increase = 1,
       total = 0,
       enhancement = 'm_paperback_ceramic'
     }
@@ -12,7 +12,7 @@ SMODS.Joker {
   atlas = "jokers_atlas",
   cost = 7,
   unlocked = true,
-  discovered = false,
+  discovered = true,
   blueprint_compat = false,
   eternal_compat = true,
   perishable_compat = false,

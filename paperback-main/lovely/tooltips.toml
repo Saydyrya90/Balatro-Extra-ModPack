@@ -11,6 +11,14 @@ pattern = "local cfg = (card and card.ability) or _c['config']"
 position = "after"
 match_indent = true
 payload = '''
+-- Add the tooltip for Basic Joker Energy if the card is marked by it
+if card and card.ability and card.ability.paperback_energized then
+  info_queue[#info_queue + 1] = {
+    set = 'Other',
+    key = 'paperback_energized'
+  }
+end
+
 -- Add tooltips for items removed from the pool by the paperback config
 if (card and card.config and card.config.center and card.config.center.paperback) or (_c and _c.paperback) then
   local config = (_c and _c.paperback) or card.config.center.paperback

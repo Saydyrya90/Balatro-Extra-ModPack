@@ -5,7 +5,7 @@ SMODS.Joker {
       chips = 0,
       a_chips_held = 10,
       a_chips_scored = 5,
-      rank = "10",
+      rank = 10,
     }
   },
   rarity = 2,
@@ -13,17 +13,16 @@ SMODS.Joker {
   atlas = 'jokers_atlas',
   cost = 7,
   unlocked = true,
-  discovered = false,
+  discovered = true,
   blueprint_compat = true,
   eternal_compat = true,
-  perishable_compat = false,
 
   loc_vars = function(self, info_queue, card)
     return {
       vars = {
         card.ability.extra.a_chips_held,
         card.ability.extra.a_chips_scored,
-        localize(card.ability.extra.rank, 'ranks'),
+        localize(PB_UTIL.get_rank_from_id(card.ability.extra.rank).key, 'ranks'),
         card.ability.extra.chips,
       }
     }
@@ -32,7 +31,7 @@ SMODS.Joker {
   calculate = function(self, card, context)
     -- Gains +10 chips for each 10 held in hand at end of round
     if context.end_of_round and context.individual and context.cardarea == G.hand and not context.blueprint then
-      if PB_UTIL.is_rank(context.other_card, card.ability.extra.rank) then
+      if context.other_card:get_id() == card.ability.extra.rank then
         card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.a_chips_held
 
         return {
@@ -50,7 +49,7 @@ SMODS.Joker {
 
     -- Gains +5 chips for each 10 scored
     if context.individual and context.cardarea == G.play and not context.blueprint then
-      if PB_UTIL.is_rank(context.other_card, card.ability.extra.rank) then
+      if context.other_card:get_id() == card.ability.extra.rank then
         card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.a_chips_scored
 
         return {

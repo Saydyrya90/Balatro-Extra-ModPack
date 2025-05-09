@@ -180,6 +180,7 @@ if card.ability.set == 'Enhanced' then
         ret.enhancement = enhancement
     end
 end
+if context.extra_enhancement then return ret end
 if card.edition then
     local edition = card:calculate_edition(context)
     if edition then
@@ -192,7 +193,8 @@ if card.seal then
         ret.seals = seals
     end
 end
-for k,v in pairs(SMODS.Stickers) do
+for _,k in ipairs(SMODS.Sticker.obj_buffer) do
+    local v = SMODS.Stickers[k]
     local sticker = card:calculate_sticker(context, k)
     if sticker then
         ret[v] = sticker
@@ -214,19 +216,21 @@ if card.ability.set == 'Enhanced' then
         ret.enhancement = enhancement
     end
 end
+if context.extra_enhancement then return ret end
 if card.edition then
     local edition = card:calculate_edition(context)
     if edition then
         ret.edition = edition
     end
 end
-if card.seal and not card.ability.extra_enhancement then
+if card.seal then
     local seals = card:calculate_seal(context)
     if seals then
         ret.seals = seals
     end
 end
-for k,v in pairs(SMODS.Stickers) do
+for _,k in ipairs(SMODS.Sticker.obj_buffer) do
+    local v = SMODS.Stickers[k]
     local sticker = card:calculate_sticker(context, k)
     if sticker then
         ret[v] = sticker
@@ -436,7 +440,7 @@ if next(joker_eval) then
     if joker_eval.retriggers then
         for rt = 1, #joker_eval.retriggers do
             local rt_eval, rt_post = eval_card(_card, {cardarea = G.jokers, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, joker_main = true, retrigger_joker = true})
-            table.insert(effects, {joker_eval.retriggers[rt]})
+            table.insert(effects, {retriggers = joker_eval.retriggers[rt]})
             table.insert(effects, rt_eval)
             for _, v in ipairs(rt_post) do effects[#effects+1] = v end
         end
@@ -480,7 +484,7 @@ for _, _area in ipairs(SMODS.get_card_areas('jokers')) do
             if joker_eval.retriggers then
                 for rt = 1, #joker_eval.retriggers do
                     local rt_eval, rt_post = eval_card(_joker, {full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, [other_key] = _card, retrigger_joker = true})
-                    table.insert(effects, {joker_eval.retriggers[rt]})
+                    table.insert(effects, {retriggers = joker_eval.retriggers[rt]})
                     table.insert(effects, rt_eval)
                     for _, v in ipairs(rt_post) do effects[#effects+1] = v end
                 end
@@ -561,7 +565,9 @@ payload = '''
 -- context.before calculations
 SMODS.calculate_context({full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, before = true})
 
--- TARGET: effects before scoring starts'''
+-- TARGET: effects before scoring starts
+
+SMODS.displayed_hand = nil'''
 
 # context.final_scoring_step
 [[patches]]
@@ -1177,6 +1183,7 @@ pattern = '''context.blueprint = (context.blueprint and (context.blueprint + 1))
 context.blueprint_card = context.blueprint_card or self
 if context.blueprint > #G.jokers.cards + 1 then return end'''
 payload = '''if (context.blueprint or 0) > #G.jokers.cards then return end
+local old_context_blueprint = context.blueprint
 context.blueprint = (context.blueprint and (context.blueprint + 1)) or 1
 local old_context_blueprint_card = context.blueprint_card
 context.blueprint_card = context.blueprint_card or self
@@ -1188,16 +1195,8 @@ target = 'card.lua'
 match_indent = true
 position = 'after'
 pattern = '''local other_joker_ret = other_joker:calculate_joker(context)'''
-payload = '''context.blueprint = nil
+payload = '''context.blueprint = old_context_blueprint
 context.blueprint_card = old_context_blueprint_card'''
-
-[[patches]]
-[patches.pattern]
-target = 'card.lua'
-match_indent = true
-position = 'after'
-pattern = 'context.blueprint_card = context.blueprint_card or self'
-payload = 'local eff_card = context.blueprint_card'
 
 [[patches]]
 [patches.pattern]
@@ -1530,6 +1529,7 @@ payload = '''
 if area and not skip_emplace then area:emplace(card) end
 '''
 
+## playing_card_joker_effects/playing_card_added should get cards, not {true}
 # Marble Joker
 [[patches]]
 [patches.pattern]
@@ -1580,6 +1580,14 @@ G.E_MANAGER:add_event(Event({
 
 playing_card_joker_effects({card})
 '''
+# DNA
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+match_indent = true
+position = 'at'
+pattern = 'playing_cards_created = {true}'
+payload = 'playing_cards_created = {_card}'
 
 ## Remove unneeded area check
 # Card:calculate_joker
@@ -1624,3 +1632,31 @@ payload = '''
 dissolve_colours = dissolve_colours or (type(self.destroyed) == 'table' and self.destroyed.colours) or nil
 dissolve_time_fac = dissolve_time_fac or (type(self.destroyed) == 'table' and self.destroyed.time) or nil
 '''
+
+# Smart level up functionality
+# G.FUNCS.evaluate_play()
+[[patches]]
+[patches.pattern]
+target = 'functions/state_events.lua'
+match_indent = false
+position = 'after'
+pattern = '''delay = G.GAME.current_round.current_hand.handname ~= disp_text and 0.4 or 0}, {handname=disp_text, level=G.GAME.hands[text].level, mult = G.GAME.hands[text].mult, chips = G.GAME.hands[text].chips})'''
+payload = '''    SMODS.displayed_hand = text; SMODS.displaying_scoring = true'''
+[[patches]]
+[patches.pattern]
+target = 'functions/state_events.lua'
+match_indent = true
+position = 'after'
+pattern = '''hand_chips = mod_chips(0)'''
+payload = '''SMODS.displayed_hand = nil'''
+times = 1
+[[patches]]
+[patches.pattern]
+target = 'functions/state_events.lua'
+match_indent = false
+position = 'after'
+pattern = '''
+  func = (function() G.GAME.current_round.current_hand.handname = '';return true end)
+}))
+delay(0.3)'''
+payload = '''    SMODS.displaying_scoring = nil'''

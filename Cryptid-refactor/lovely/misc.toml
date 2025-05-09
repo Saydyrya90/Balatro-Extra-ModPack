@@ -208,10 +208,6 @@ end
 '''
 match_indent = true
 
-# Compat UI for Old Blueprint and Gemini
-
-# I deleted the patches --Jevonn (test)
-
 # calculate wheel fail (for Wheel of Hope)
 [[patches]]
 [patches.pattern]
@@ -321,22 +317,20 @@ match_indent = true
 # More Beta Deck fixes
 [[patches]]
 [patches.pattern]
-target = "functions/state_events.lua"
-pattern = '''for i=1, #G.jokers.cards + #G.consumeables.cards do'''
-position = "at"
+target = '''=[SMODS _ "src/utils.lua"]'''
+pattern = '''-- TARGET: add your own CardAreas for joker evaluation'''
+position = "after"
 payload = '''
-local numcards = #G.jokers.cards + #G.consumeables.cards
-if G.GAME.modifiers.cry_beta then numcards = #G.jokers.cards end
-for i=1, numcards do'''
+if G.GAME.modifiers.cry_beta then t = {G.jokers} end'''
 match_indent = true
 
-# Poker Hand display can have enhancements
+# Fix Boredom crash (somehow)
 [[patches]]
 [patches.pattern]
-target = "functions/UI_definitions.lua"
-pattern = '''local card = Card(0,0, 0.5*G.CARD_W, 0.5*G.CARD_H, G.P_CARDS[v[1]], G.P_CENTERS.c_base)'''
+target = '''=[SMODS _ "src/utils.lua"]'''
+pattern = '''if eff.retrigger_flag then SMODS.calculate_effect(eff, eff.card); j = j+1; _, eff = next(reps[j]) end'''
 position = "at"
-payload = '''local card = Card(0,0, 0.5*G.CARD_W, 0.5*G.CARD_H, G.P_CARDS[v[1]], G.P_CENTERS[v[3] or 'c_base'])'''
+payload = '''if eff.retrigger_flag and reps[j+1] ~= nil then SMODS.calculate_effect(eff, eff.card); j = j+1; _, eff = next(reps[j]) end'''
 match_indent = true
 
 # Adds G.GAME.modifiers.cry_forced_draw_amount

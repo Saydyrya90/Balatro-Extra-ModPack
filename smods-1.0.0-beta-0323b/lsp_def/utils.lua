@@ -96,10 +96,18 @@ function SMODS.get_optional_features() end
 
 ---@param context CalcContext|table 
 ---@param return_table? table 
----@return table
+---@return table? # Will use `return_table` over returning if provided.
 --- Used to calculate contexts across `G.jokers`, `scoring_hand` (if present), `G.play` and `G.GAME.selected_back`.
 --- Hook this function to add different areas to MOST calculations
 function SMODS.calculate_context(context, return_table) end
+
+---@param _type string Type of CardAreas to check
+---@param context CalcContext
+---@param return_table? table
+---@param args? table
+---@return table
+--- Calculates effects on cards across multiple cardareas based on provided `_type`.
+function SMODS.calculate_card_areas(_type, context, return_table, args) end
 
 ---@param card Card|table
 ---@param context CalcContext|table
@@ -107,7 +115,7 @@ function SMODS.calculate_context(context, return_table) end
 function SMODS.score_card(card, context) end
 
 ---@param context CalcContext|table
----@param scoring_hand Card[]|table[]?
+---@param scoring_hand? Card[]|table[]
 --- Handles calculating the scoring hand. Defaults to `context.cardarea.cards` if `scoring_hand` is not provided.
 function SMODS.calculate_main_scoring(context, scoring_hand) end
 
@@ -138,6 +146,14 @@ function SMODS.calculate_individual_effect(effect, scored_card, key, amount, fro
 --- Handles calculating effects on provided `scored_card`. 
 function SMODS.calculate_effect(effect, scored_card, from_edition, pre_jokers) end
 
+---@param effect_table table
+---@param key string
+---@param card Card|table
+---@param ret table
+--- Internal helper for SMODS.calculate_effect.
+--- Calculate one key of an effect table returned from eval_card.
+function SMODS.calculate_effect_table_key(effect_table, key, card, ret) end
+
 ---@param effects table
 ---@param card Card|table
 --- Used to calculate a table of effects generated in evaluate_play
@@ -163,6 +179,25 @@ function SMODS.calculate_repetitions(card, context, reps) end
 --- Helper function to copy the ability of another joker. Useful for implementing Blueprint-like jokers.
 function SMODS.blueprint_effect(copier, copied_card, context) end
 
+---@type string?
+--- Internal global variable for smart_level_up_hand
+--- Holds the currently displayed hand type,
+--- if it hasn't had mult/chips added
+SMODS.displayed_hand = nil
+
+---@type boolean?
+--- Internal global variable for smart_level_up_hand
+--- True if scoring is ongoing (chips/mult/etc. are being displayed on the left)
+SMODS.displaying_scoring = nil
+
+---@param card? Card
+---@param hand string
+---@param instant boolean
+---@param amount? number
+-- Like level_up_hand(), but takes care of calling update_hand_text().
+-- Tries to avoid calling update_hand_text() if unnecessary.
+function SMODS.smart_level_up_hand(card, hand, instant, amount) end
+
 ---@param _type string
 ---@param _context string
 ---@return CardArea[]|table[]
@@ -170,7 +205,7 @@ function SMODS.blueprint_effect(copier, copied_card, context) end
 function SMODS.get_card_areas(_type, _context) end
 
 ---@param card Card|table
----@param extra_only boolean? Return table will not have the card's actual enhancement. 
+---@param extra_only? boolean Return table will not have the card's actual enhancement. 
 ---@return table<string, true> enhancements
 --- Returns table of enhancements the provided `card` has. 
 function SMODS.get_enhancements(card, extra_only) end
@@ -224,7 +259,7 @@ function SMODS.in_scoring(card, scoring_hand) end
 
 ---@nodiscard
 ---@param path string Path to the file (excluding `mod.path`)
----@param id string? Key to Mod ID. Default to `SMODS.current_mod` if not provided. 
+---@param id? string Key to Mod ID. Default to `SMODS.current_mod` if not provided. 
 ---@return function|nil 
 ---@return nil|string err
 --- Loads the file from provided path. 
@@ -236,8 +271,8 @@ function SMODS.load_file(path, id) end
 function inspect(table) end
 
 ---@param table table
----@param indent number?
----@param depth number? Cap depth of 5
+---@param indent? number
+---@param depth? number Cap depth of 5
 ---@return string
 --- Deep inspect a table. 
 function inspectDepth(table, indent, depth) end
@@ -253,7 +288,7 @@ function SMODS.SAVE_UNLOCKS() end
 ---@param ref_table table
 ---@param ref_value string
 ---@param loc_txt table|string
----@param key string? Key to the value within `loc_txt`. 
+---@param key? string Key to the value within `loc_txt`. 
 --- Injects `loc_txt` into `G.localization`. 
 function SMODS.process_loc_text(ref_table, ref_value, loc_txt, key) end
 
@@ -297,7 +332,7 @@ function SMODS.change_base(card, suit, rank) end
 function SMODS.modify_rank(card, amount) end
 
 ---@param key string
----@param count_debuffed true?
+---@param count_debuffed? true
 ---@return Card[]|table[]
 --- Returns all cards matching provided `key`. 
 function SMODS.find_card(key, count_debuffed) end
@@ -351,7 +386,7 @@ function SMODS.create_mod_badges(obj, badges) end
 function SMODS.create_loc_dump() end
 
 ---@param t table
----@param indent string?
+---@param indent? string
 ---@return string
 --- Serializes an input table in valid Lua syntax
 --- Keys must be of type number or string
@@ -368,8 +403,8 @@ function serialize_strings(s) end
 --- Return a shallow copy of table `t`.
 function SMODS.shallow_copy(t) end
 
----@param t false|table?
----@param defaults false|table?
+---@param t? false|table
+---@param defaults? false|table
 ---@return false|table?
 --- Starting with `t`, insert any key-value pairs from `defaults` that don't already
 --- exist in `t` into `t`. Modifies `t`.
@@ -408,8 +443,8 @@ function SMODS.find_mod(id) end
 
 ---@param tbl table
 ---@param val any
----@param mode ("index"|"i")|("value"|"v")? Sets if the value is compared with the indexes or values of the table. 
----@param immediate  boolean?
+---@param mode? ("index"|"i")|("value"|"v") Sets if the value is compared with the indexes or values of the table. 
+---@param immediate? boolean
 ---Seatch for val anywhere deep in tbl. Return a table of finds, or the first found if args.immediate is provided.
 function SMODS.deepfind(tbl, val, mode, immediate) end
 
@@ -487,16 +522,19 @@ function sendMessageToConsole(level, logger, message) end
 
 ---@param val number
 ---@return string
---- Returns a signed `val`. 
+--- Returns a signed `val` by
+--- prefixing with "+" if positive
 function SMODS.signed(val) end
 
 ---@param val number
 ---@return string
---- Returns a signed `val` with "$". 
+--- Returns string representing "$"`val`.
+--- If `val` is negative, correctly adds "-" before "$".
 function SMODS.signed_dollars(val) end
 
 ---@param base number
 ---@param perma number
----@return number|0 # Returns 0 
---- Returns result of multiplying `base` and `perma`. 
+---@return number
+--- Returns result of multiplying `base` and `perma + 1`.
+--- Reproduces weird vanilla behavior of using 0 for no/negative x_mult.
 function SMODS.multiplicative_stacking(base, perma) end

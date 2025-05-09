@@ -188,7 +188,9 @@ if cry_muse then
 	})
 
 	delay(0.8)
- 	if not G.GAME.modifiers.cry_beta then
+ 	if card.playing_card then
+		draw_card(G.play, G.hand, 1, 'up', true, card, nil, true)
+ 	elseif not G.GAME.modifiers.cry_beta then
 		if to_big(#G.consumeables.cards) < to_big(G.consumeables.config.card_limit) then
 			draw_card(G.play, G.consumeables, 1, 'up', true, card, nil, true)
 		else card:start_dissolve()
@@ -211,7 +213,7 @@ if not G.GAME.modifiers.cry_beta then -- function code + fallback
 					nil,
 					nil,
 					nil,
-					G.GAME.cry_function_cards[2],
+					G.GAME.cry_function_cards[2].config.center_key,
 					"cry_cryfunction"
 				)
 				new_card:add_to_deck()
@@ -232,7 +234,7 @@ if not G.GAME.modifiers.cry_beta then -- function code + fallback
 					nil,
 					nil,
 					nil,
-					G.GAME.cry_function_cards[3],
+					G.GAME.cry_function_cards[3].config.center_key,
 					"cry_cryfunction"
 				)
 				new_card:add_to_deck()
@@ -272,7 +274,7 @@ if not G.GAME.modifiers.cry_beta then -- function code + fallback
 					nil,
 					nil,
 					nil,
-					G.GAME.cry_function_cards[2],
+					G.GAME.cry_function_cards[2].config.center_key,
 					"cry_cryfunction"
 				)
 				new_card:add_to_deck()
@@ -293,7 +295,7 @@ if not G.GAME.modifiers.cry_beta then -- function code + fallback
 					nil,
 					nil,
 					nil,
-					G.GAME.cry_function_cards[3],
+					G.GAME.cry_function_cards[3].config.center_key,
 					"cry_cryfunction"
 				)
 				new_card:add_to_deck()

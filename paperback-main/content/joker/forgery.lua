@@ -4,7 +4,7 @@ SMODS.Joker {
   config = {
     extra = {
       copying = nil,
-      max_multiplier = 1.5,
+      max_multiplier = 2.5,
       multiplier = 1
     }
   },
@@ -12,7 +12,7 @@ SMODS.Joker {
   atlas = 'jokers_atlas',
   cost = 2,
   unlocked = true,
-  discovered = true,
+  discovered = false,
   blueprint_compat = true,
   eternal_compat = true,
   perishable_compat = true,

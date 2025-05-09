@@ -149,4 +149,4 @@ SMODS.Voucher:take_ownership('observatory', {
             }
         end
     end,
-}, false)
+}, true)

@@ -11,7 +11,7 @@ SMODS.Joker {
   atlas = "jokers_atlas",
   cost = 6,
   unlocked = true,
-  discovered = true,
+  discovered = false,
   blueprint_compat = true,
   eternal_compat = true,
   perishable_compat = true,
@@ -53,5 +53,14 @@ SMODS.Joker {
         chips = card.ability.extra.chips
       }
     end
+  end,
+
+  joker_display_def = function(JokerDisplay)
+    return {
+      text = {
+        { text = '+',                       colour = G.C.CHIPS },
+        { ref_table = 'card.ability.extra', ref_value = 'chips', colour = G.C.CHIPS },
+      },
+    }
   end
 }

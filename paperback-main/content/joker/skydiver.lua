@@ -4,7 +4,6 @@ SMODS.Joker {
     extra = {
       x_mult = 3,
       lowest_rank = 'Ace',
-      lowest_id = 14,
     }
   },
   rarity = 2,
@@ -12,7 +11,7 @@ SMODS.Joker {
   atlas = 'jokers_atlas',
   cost = 6,
   unlocked = true,
-  discovered = true,
+  discovered = false,
   blueprint_compat = true,
   eternal_compat = true,
   soul_pos = nil,
@@ -43,8 +42,8 @@ SMODS.Joker {
 
         -- If there is a scored card with a rank that has a higher rank than the lowest
         -- recorded by this joker, do not trigger the effect
-        for k, v in ipairs(context.scoring_hand) do
-          if not SMODS.has_no_rank(v) and PB_UTIL.compare_ranks(v:get_id(), card.ability.extra.lowest_id) then
+        for _, v in ipairs(context.scoring_hand) do
+          if not SMODS.has_no_rank(v) and PB_UTIL.compare_ranks(v:get_id(), card.ability.extra.lowest_rank) then
             active = false
             break
           end
@@ -59,12 +58,12 @@ SMODS.Joker {
       end
 
       if context.after and context.main_eval and not context.blueprint then
-        local last_lowest = PB_UTIL.get_rank_from_id(card.ability.extra.lowest_id)
+        local last_lowest = card.ability.extra.lowest_rank
 
         if context.scoring_hand then
           for _, v in pairs(context.scoring_hand) do
             if not SMODS.has_no_rank(v) then
-              local other_rank = PB_UTIL.get_rank_from_id(v:get_id())
+              local other_rank = v.base.value
 
               -- If the lowest rank is higher than or equal to the new rank, that means we have a new low
               if PB_UTIL.compare_ranks(last_lowest, other_rank, true) then
@@ -73,11 +72,9 @@ SMODS.Joker {
             end
           end
 
-          local updated = card.ability.extra.lowest_id ~= last_lowest.id
-
-          if updated then
-            card.ability.extra.lowest_rank = last_lowest.key
-            card.ability.extra.lowest_id = last_lowest.id
+          -- If the rank was updated
+          if card.ability.extra.lowest_rank ~= last_lowest then
+            card.ability.extra.lowest_rank = last_lowest
 
             return {
               message = localize(card.ability.extra.lowest_rank, 'ranks'),
@@ -101,5 +98,4 @@ SMODS.Joker {
 function PB_UTIL.reset_skydiver(card)
   local highest_rank = PB_UTIL.get_sorted_ranks()[1]
   card.ability.extra.lowest_rank = highest_rank.key
-  card.ability.extra.lowest_id = highest_rank.id
 end

@@ -12,15 +12,13 @@ if PB_UTIL.config.suits_enabled then
     atlas = 'jokers_atlas',
     cost = 6,
     unlocked = true,
-    discovered = true,
+    discovered = false,
     blueprint_compat = true,
     eternal_compat = true,
     perishable_compat = false,
-    soul_pos = nil,
-
-    in_pool = function(self, args)
-      return PB_UTIL.spectrum_played() or PB_UTIL.has_modded_suit_in_deck()
-    end,
+    paperback = {
+      requires_spectrum_or_suit = true
+    },
 
     loc_vars = function(self, info_queue, card)
       return {
@@ -80,7 +78,7 @@ else
     atlas = 'jokers_atlas',
     cost = 6,
     unlocked = true,
-    discovered = true,
+    discovered = false,
     blueprint_compat = true,
     eternal_compat = true,
     perishable_compat = false,

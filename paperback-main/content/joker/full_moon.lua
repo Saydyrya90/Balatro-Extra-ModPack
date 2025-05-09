@@ -2,7 +2,7 @@ SMODS.Joker {
   key = 'full_moon',
   config = {
     extra = {
-      odds = 2
+      odds = 3
     }
   },
   rarity = 2,
@@ -10,7 +10,7 @@ SMODS.Joker {
   atlas = 'jokers_atlas',
   cost = 7,
   unlocked = true,
-  discovered = true,
+  discovered = false,
   blueprint_compat = true,
   eternal_compat = true,
 

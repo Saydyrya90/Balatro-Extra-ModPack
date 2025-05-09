@@ -2,7 +2,7 @@ SMODS.Tag {
   key = 'divination',
   atlas = 'tags_atlas',
   pos = { x = 2, y = 0 },
-  discovered = true,
+  discovered = false,
   paperback = {
     requires_minor_arcana = true
   },

@@ -1,7 +1,7 @@
 [manifest]
 version = "1.0.0"
 dump_lua = true
-priority = 1 # Go after steammodded
+priority = 1      # Go after steammodded
 
 ## Patch to add Alchemical tab to stats screen
 # G.UIDEF.usage_tabs()
@@ -25,7 +25,6 @@ payload = '''
 '''
 
 
-
 ## Patch to prevent oiled cards from flipping face down
 ## Patch stolen from Bunco
 # Card:flip()
@@ -40,8 +39,6 @@ if (self.area == G.hand or self.area == G.jokers or self.area == G.consumeables)
     return
 end
 '''
-
-
 
 
 ## Patch for classic Philo stone
@@ -62,10 +59,6 @@ if G.deck.config.ra_philo_stone_classic and G.deck.config.ra_philo_stone_classic
     }
 end
 '''
-
-
-
-
 
 
 ## Patches to add philo stone to score calculation
@@ -128,9 +121,6 @@ G.deck.config.ra_philo_stone = 0
 '''
 
 
-
-
-
 ## Card Unlocks
 
 ## Patch for Alchemical Tycoon unlock
@@ -162,8 +152,6 @@ if self == G.consumeables then check_for_unlock({ type = 'ReduxArcanum_modify_ca
 '''
 
 
-
-
 ## Debuffed consumables
 
 ## Patch to prevent debuffed consumables from being used
@@ -178,9 +166,6 @@ times = 1
 payload = '''
     if self.debuff then return false end
 '''
-
-
-
 
 
 ## Vanilla functionality causes booster tags created mid-blind by salt to be very funky
@@ -221,6 +206,22 @@ match_indent = true
 
 
 
+## Stops the bg colour of the "small blind" "big blind" heading on the top left turning to the pack colour
+## (This can lead to white text on white bg which isn't great)
+# ease_colour_()
+[[patches]]
+[patches.pattern]
+target = 'functions/common_events.lua'
+pattern = '''function ease_colour(*'''
+position = 'after'
+payload = '''
+    if G.GAME.ReduxArcanum_salt_in_use then 
+        G.GAME.ReduxArcanum_salt_in_use = false
+    return end
+'''
+match_indent = true
+
+
 
 
 
@@ -239,17 +240,17 @@ payload = '''
 if v == 'polychrome_alchemical' then v = 'polychrome' end
 '''
 
-# generate_card_ui()
-[[patches]]
-[patches.pattern]
-target = 'functions/common_events.lua'
-pattern = '''v = (v == 'holographic' and 'holo' or v)'''
-position = 'after'
-match_indent = true
-times = 1
-payload = '''
-if v == 'polychrome_alchemical' then info_queue[#info_queue+1] = {key = 'e_polychrome_alchemical', set = 'Edition', config = {extra = 1.5}} end
-'''
+# # generate_card_ui()
+# [[patches]]
+# [patches.pattern]
+# target = 'functions/common_events.lua'
+# pattern = '''v = (v == 'holographic' and 'holo' or v)'''
+# position = 'after'
+# match_indent = true
+# times = 1
+# payload = '''
+# if v == 'polychrome_alchemical' then info_queue[#info_queue+1] = {key = 'e_polychrome_alchemical', set = 'Edition', config = {extra = 1.5}} end
+# '''
 
 [[patches]]
 [patches.pattern]
@@ -261,6 +262,36 @@ elseif self.edition.type == 'polychrome' and (self.ability.set == 'Alchemical') 
     badges[#badges + 1] = 'polychrome_alchemical'"""
 match_indent = true
 
+# Card:add_to_deck()
+# Makes polychrome alchemical discover polychrome alchemicals in the collection instead of regular polychrome
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = "discover_card(G.P_CENTERS['e_'..(self.edition.type)])"
+position = 'at'
+match_indent = true
+payload = '''
+if self.ability.set == 'Alchemical' then
+    discover_card(G.P_CENTERS['e_'..(self.edition.type)..'_alchemical'])
+else
+    discover_card(G.P_CENTERS['e_'..(self.edition.type)])
+end
+'''
+
+# Remove polychrome alchemical from debug
+
+# G.FUNCS.use_card()
+[[patches]]
+[patches.pattern]
+target = "engine/controller.lua"
+pattern = '''if found_index > #G.P_CENTER_POOLS.Edition then found_index = found_index - #G.P_CENTER_POOLS.Edition end'''
+position = "before"
+payload = '''
+if G.P_CENTER_POOLS.Edition[found_index] and G.P_CENTER_POOLS.Edition[found_index].key == "e_polychrome_alchemical" then
+  found_index = found_index + 1
+end
+'''
+match_indent = true
 
 
 ## Patches to cause selected alchemical cards in boosters to be added to the Consumable area instead of used
@@ -321,9 +352,6 @@ if G.booster_pack and not G.booster_pack.alignment.offset.py and ((card.ability.
 match_indent = true
 
 
-
-
-
 ## Let's alchemical cards be selected from booster packs (rather than used)
 
 # G.UIDEF.card_focus_ui()
@@ -365,4 +393,20 @@ if (card.ability.set == "Alchemical" or card.ability.name == "c_ReduxArcanum_phi
         }
     }
 end
+'''
+
+
+# For the mid-blind booster achievement
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''if self.ability.set == "Booster" then'''
+position = 'after'
+match_indent = true
+payload = '''
+
+    if G.GAME.blind and G.GAME.blind:get_type() ~= nil then
+        check_for_unlock({type = 'ReduxArcanum_midblind_pack'})
+    end
+
 '''

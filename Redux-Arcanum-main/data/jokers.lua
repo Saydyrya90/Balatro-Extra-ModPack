@@ -132,7 +132,7 @@ SMODS.Joker { -- Mutated Joker
     --     }
     -- },
     loc_vars = function(self, info_queue, card)
-        local alchemical_tally = 1
+        local alchemical_tally = 0
         for k, v in pairs(G.GAME.consumeable_usage) do
             if v.set == 'Alchemical' then alchemical_tally = alchemical_tally + 1 end
         end
@@ -152,26 +152,46 @@ SMODS.Joker { -- Mutated Joker
     config = {
         extra = {
             chips = 10,
-            total_chips = 10
+            total_chips = 0
         }
     },
     atlas = "arcanum_joker_atlas",
     pos = { x = 1, y = 2 },
 
+    set_sprites = function(self, card, front)
+        if self.discovered or card.bypass_discovery_center then
+            local alchemical_tally = 0
+            for k, v in pairs(G.GAME.consumeable_usage) do
+                if v.set == 'Alchemical' then alchemical_tally = alchemical_tally + 1 end
+            end
+
+            if alchemical_tally >= 24 then
+                local center = card.children.center
+                center:set_sprite_pos({ x = 2, y = 2 })
+            end
+        end
+    end,
+
     add_to_deck = function(self, card, context)
-        local alchemical_tally = 1
+        local alchemical_tally = 0
         for k, v in pairs(G.GAME.consumeable_usage) do
             if v.set == 'Alchemical' then alchemical_tally = alchemical_tally + 1 end
         end
 
         local expected_total_chips = alchemical_tally * card.ability.extra.chips
+        
+        if expected_total_chips == 24 * card.ability.extra.chips then
+            check_for_unlock({type = 'ReduxArcanum_mutated_joker_max'})
+            local center = card.children.center
+            center:set_sprite_pos({ x = 2, y = 2 })
+        end
 
         card.ability.extra.total_chips = expected_total_chips
     end,
 
     calculate = function(self, card, context)
         if context.using_consumeable and context.consumeable.ability.set == 'Alchemical' and not context.blueprint then
-            local alchemical_tally = 1
+            local alchemical_tally = 0
             for k, v in pairs(G.GAME.consumeable_usage) do
                 if v.set == 'Alchemical' then alchemical_tally = alchemical_tally + 1 end
             end
@@ -179,6 +199,17 @@ SMODS.Joker { -- Mutated Joker
             local expected_total_chips = alchemical_tally * card.ability.extra.chips
 
             if card.ability.extra.total_chips ~= expected_total_chips then
+                if expected_total_chips == 24 * card.ability.extra.chips then
+                    check_for_unlock({type = 'ReduxArcanum_mutated_joker_max'})
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'immediate',
+                        func = function()
+                            local center = card.children.center
+                            center:set_sprite_pos({ x = 2, y = 2 })
+                            return true
+                        end
+                    }))
+                end
                 card.ability.extra.total_chips = expected_total_chips
 
                 return {
@@ -220,7 +251,7 @@ SMODS.Joker { -- Essence of Comedy
     unlocked = true,
     discovered = false,
     blueprint_compat = true,
-    perishable_compat = true,
+    perishable_compat = false,
     eternal_compat = true,
     rarity = 2,
     cost = 6,
@@ -343,8 +374,8 @@ SMODS.Joker { -- Breaking Bozo
         if context.using_consumeable and context.consumeable.ability.set == 'Alchemical' then
             local choice = math.random(1, 3)
             if choice == 1 then
-                for i=1, 2 do --draw cards from deckL
-                    draw_card(G.deck,G.hand, i*100/2,'up', true)
+                for i = 1, 2 do --draw cards from deckL
+                    draw_card(G.deck, G.hand, i * 100 / 2, 'up', true)
                 end
                 return {
                     message = localize('p_alchemy_plus_card'),
@@ -440,21 +471,33 @@ chain_reaction = { -- Chain Reaction
                 end
                 if (not ReduxArcanumMod.config.new_content) or ((#G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit) or (context.consumeable.edition and context.consumeable.edition.negative)) then
                     G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
+                    local _card
                     G.E_MANAGER:add_event(Event({
                         func = function()
-                            local _card = copy_card(context.consumeable, nil, nil, nil)
+                            _card = copy_card(context.consumeable, nil, nil, nil)
                             if not ReduxArcanumMod.config.new_content then
                                 _card:set_edition({ negative = true }, true)
                             end
                             _card:set_ability(context.consumeable.config.center) -- To handle polychrome
                             _card:add_to_deck()
-                            G.consumeables:emplace(_card)
+                            G.play:emplace(_card)
                             G.GAME.consumeable_buffer = 0
                             return true
                         end
                     }))
                     return {
-                        message = localize('k_copied_ex')
+                        message = localize('k_copied_ex'),
+                        func = function ()
+                            -- delay(0.5)
+                            G.E_MANAGER:add_event(Event({
+                                func = function()
+                                    G.play:remove_card(_card)
+                                    G.consumeables:emplace(_card)
+                                    return true
+                                end
+                            }))
+                            delay(0.15)
+                        end
                     }
                 end
                 return

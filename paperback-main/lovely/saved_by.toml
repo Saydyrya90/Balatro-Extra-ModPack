@@ -1,0 +1,34 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "config.saved and "
+position = "before"
+match_indent = true
+payload = '''
+config.saved and G.GAME and G.GAME.paperback and G.GAME.paperback.saved_by and
+{n=G.UIT.C, config={padding = 0.05, align = 'cm'}, nodes={
+    {n=G.UIT.R, config={align = 'cm'}, nodes={
+        {n=G.UIT.O, config={
+          object = DynaText({string = {' '..localize{
+            type = 'variable',
+            key = 'paperback_saved',
+            vars = { localize {
+              type = 'name_text',
+              set = 'Joker',
+              key = G.GAME.paperback.saved_by
+            }}
+          }..' '},
+          colours = {G.C.FILTER},
+          shadow = true,
+          pop_in = 0,
+          scale = 0.5*scale,
+          silent = true
+        })}}
+    }}
+}} or
+'''

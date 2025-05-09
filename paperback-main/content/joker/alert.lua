@@ -11,7 +11,7 @@ SMODS.Joker {
   atlas = 'jokers_atlas',
   cost = 4,
   unlocked = true,
-  discovered = true,
+  discovered = false,
   blueprint_compat = false,
   eternal_compat = false,
   soul_pos = { x = 4, y = 7 },
@@ -70,5 +70,54 @@ SMODS.Joker {
         end
       end
     end
-  end
+  end,
+
+  joker_display_def = function(JokerDisplay)
+    return {
+      extra = {
+        {
+          ref_table = "card.joker_display_values",
+          ref_value = "active"
+        }
+      },
+      reminder_text = {
+        {
+          text = "("
+        },
+        {
+          ref_table = "card.ability.extra",
+          ref_value = "current",
+        },
+        {
+          text = "/",
+        },
+        {
+          ref_table = "card.ability.extra",
+          ref_value = "max",
+        },
+        {
+          text = ")"
+        }
+      },
+      reminder_text_config = {
+        colour = G.C.UI.TEXT_INACTIVE,
+        scale = 0.35
+      },
+
+      calc_function = function(card)
+        local hand = next(G.play.cards) and G.play.cards or G.hand.highlighted
+        local text, _, scoring_hand = JokerDisplay.evaluate_hand(hand)
+
+        card.joker_display_values.active = (#scoring_hand == 1 and scoring_hand[1]:is_face()) and localize('k_active') or
+            localize('paperback_inactive')
+      end,
+
+      style_function = function(card, text, reminder_text, extra)
+        if text and text.children[1] then
+          text.children[1].config.colour = card.joker_display_values.active == localize('k_active') and G.C.GREEN or
+              G.C.UI.TEXT_INACTIVE
+        end
+      end,
+    }
+  end,
 }

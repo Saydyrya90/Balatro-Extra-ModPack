@@ -2,7 +2,7 @@ SMODS.Joker {
   key = "ddakji",
   config = {
     extra = {
-      odds = 3
+      odds = 4
     }
   },
   rarity = 3,
@@ -10,7 +10,7 @@ SMODS.Joker {
   atlas = 'jokers_atlas',
   cost = 8,
   unlocked = true,
-  discovered = true,
+  discovered = false,
   blueprint_compat = true,
   eternal_compat = true,
 
@@ -59,6 +59,26 @@ SMODS.Joker {
         v.ability.paperback_flipped = nil
       end
     end
+  end,
+
+  joker_display_def = function(JokerDisplay)
+    return {
+      extra = {
+        {
+          { text = '(' },
+          { ref_table = 'card.joker_display_values', ref_value = 'odds' },
+          { text = ')' },
+        },
+      },
+      extra_config = {
+        colour = G.C.GREEN,
+        scale = 0.3,
+      },
+
+      calc_function = function(card)
+        card.joker_display_values.odds = localize { type = 'variable', key = 'jdis_odds', vars = { (G.GAME and G.GAME.probabilities.normal or 1), card.ability.extra.odds } }
+      end,
+    }
   end
 }
 

@@ -845,57 +845,70 @@ function Reverie.create_card_for_cine_shop(area)
     local spectral_available = (Reverie.find_used_cine("Eerie Inn") or not is_forcing_card_set) and
         not crazy_pack_available
     local tag_available = Reverie.find_used_cine("Tag or Die") and not crazy_pack_available
-    local oddity_available, alchemical_available, colour_available = nil, nil, nil
+    local oddity_available = has_oddity and (not is_forcing_card_set and not crazy_pack_available)
+    local alchemical_available = has_alchemical and ((Reverie.find_used_cine_or("Fool Metal Alchemist") or not is_forcing_card_set) and not crazy_pack_available)
+    local colour_available = has_colour and (Reverie.find_used_cine("Every Hue") and not crazy_pack_available)
 
-    local playing_card_rate = Reverie.find_used_cine("Poker Face") and G.GAME.joker_rate or G.GAME.playing_card_rate or 0
-    local spectral_rate = Reverie.find_used_cine("Eerie Inn") and G.GAME.joker_rate or G.GAME.spectral_rate or 0
-    local oddity_rate, alchemical_rate, colour_rate = nil, nil, nil
-    local total_rate = (joker_available and G.GAME.joker_rate or 0)
-        + (planet_or_tarot_available and (G.GAME.tarot_rate + G.GAME.planet_rate) or 0)
+    local joker_rate = G.GAME.joker_rate
+    local tarot_rate = G.GAME.tarot_rate
+    local planet_rate = G.GAME.planet_rate
+
+    local playing_card_rate = Reverie.find_used_cine("Poker Face") and joker_rate or G.GAME.playing_card_rate or 0
+    local spectral_rate = Reverie.find_used_cine("Eerie Inn") and joker_rate or G.GAME.spectral_rate or 0
+
+    -- modded rates
+    local oddity_rate = has_oddity and ((G.GAME.oddity_rate or 0) > 0 and G.GAME.oddity_rate or G.GAME.cached_oddity_rate) or 0
+    local alchemical_rate = has_alchemical and (Reverie.find_used_cine_or("Fool Metal Alchemist") and joker_rate or G.GAME.alchemical_rate or G.GAME.cached_alchemical_rate) or 0
+    local colour_rate = has_colour and (Reverie.find_used_cine("Every Hue") and joker_rate) or 0
+
+    local total_rate = (joker_available and joker_rate or 0)
+        + (planet_or_tarot_available and (tarot_rate + planet_rate) or 0)
         + (playing_available and playing_card_rate or 0)
         + (spectral_available and spectral_rate or 0)
-        + (tag_available and G.GAME.joker_rate or 0)
-        + (crazy_pack_available and G.GAME.joker_rate or 0)
+        + (tag_available and joker_rate or 0)
+        + (crazy_pack_available and joker_rate or 0)
+        + (oddity_available and oddity_rate or 0)
+        + (alchemical_available and alchemical_rate or 0)
+        + (colour_available and colour_rate or 0)
+
+    if total_rate <= 0 then
+        joker_rate = 20
+        tarot_rate = 4
+        planet_rate = 4
+
+        playing_card_rate = Reverie.find_used_cine("Poker Face") and joker_rate or G.GAME.playing_card_rate or 0
+        spectral_rate = Reverie.find_used_cine("Eerie Inn") and joker_rate or G.GAME.spectral_rate or 0
+        alchemical_rate = has_alchemical and (Reverie.find_used_cine_or("Fool Metal Alchemist") and joker_rate or G.GAME.alchemical_rate or G.GAME.cached_alchemical_rate) or 0
+        colour_rate = has_colour and (Reverie.find_used_cine("Every Hue") and joker_rate) or 0
+        total_rate = (joker_available and joker_rate or 0)
+                   + (planet_or_tarot_available and (tarot_rate + planet_rate) or 0)
+                   + (playing_available and playing_card_rate or 0)
+                   + (spectral_available and spectral_rate or 0)
+                   + (tag_available and joker_rate or 0)
+                   + (crazy_pack_available and joker_rate or 0)
+                   + (oddity_available and oddity_rate or 0)
+                   + (alchemical_available and alchemical_rate or 0)
+                   + (colour_available and colour_rate or 0)
+    end
+
     local candidates = {
-        { type = "Joker",  val = joker_available and G.GAME.joker_rate or 0,            available = joker_available },
-        { type = "Tarot",  val = planet_or_tarot_available and G.GAME.tarot_rate or 0,  available = planet_or_tarot_available },
-        { type = "Planet", val = planet_or_tarot_available and G.GAME.planet_rate or 0, available = planet_or_tarot_available },
-        {
-            type = (G.GAME.used_vouchers["v_illusion"] and pseudorandom(pseudoseed("illusion")) > 0.6) and "Enhanced" or
-                "Base",
-            val = playing_available and playing_card_rate or 0,
-            available = playing_available
-        },
-        { type = "Spectral", val = spectral_available and spectral_rate or 0,       available = spectral_available },
-        { type = "Tag",      val = tag_available and G.GAME.joker_rate or 0,        available = tag_available },
-        { type = "Crazy",    val = crazy_pack_available and G.GAME.joker_rate or 0, available = crazy_pack_available },
+            { type = "Joker",  val = joker_available and joker_rate or 0,            available = joker_available },
+            { type = "Tarot",  val = planet_or_tarot_available and tarot_rate or 0,  available = planet_or_tarot_available },
+            { type = "Planet", val = planet_or_tarot_available and planet_rate or 0, available = planet_or_tarot_available },
+            {
+                type = (G.GAME.used_vouchers["v_illusion"] and pseudorandom(pseudoseed("illusion")) > 0.6) and "Enhanced" or
+                    "Base",
+                val = playing_available and playing_card_rate or 0,
+                available = playing_available
+            },
+            { type = "Spectral", val = spectral_available and spectral_rate or 0,       available = spectral_available },
+            { type = "Tag",      val = tag_available and joker_rate or 0,               available = tag_available },
+            { type = "Crazy",    val = crazy_pack_available and joker_rate or 0,        available = crazy_pack_available },
+            -- Modded candidates
+            { type = "Oddity", val = oddity_available and oddity_rate or 0,             available = oddity_available },
+            { type = "Alchemical", val = alchemical_available and alchemical_rate or 0, available = alchemical_available },
+            { type = "Colour", val = colour_available and colour_rate or 0,             available = colour_available }
     }
-
-    if has_oddity then
-        oddity_rate = (G.GAME.oddity_rate or 0) > 0 and G.GAME.oddity_rate or G.GAME.cached_oddity_rate or 0
-        oddity_available = not is_forcing_card_set and not crazy_pack_available
-        total_rate = total_rate + (oddity_available and oddity_rate or 0)
-        table.insert(candidates,
-            { type = "Oddity", val = oddity_available and oddity_rate or 0, available = oddity_available })
-    end
-
-    if has_alchemical then
-        alchemical_rate = Reverie.find_used_cine_or("Fool Metal Alchemist") and G.GAME.joker_rate or
-            G.GAME.alchemical_rate or G.GAME.cached_alchemical_rate or 0
-        alchemical_available = (Reverie.find_used_cine_or("Fool Metal Alchemist") or not is_forcing_card_set) and
-            not crazy_pack_available
-        total_rate = total_rate + (alchemical_available and alchemical_rate or 0)
-        table.insert(candidates,
-            { type = "Alchemical", val = alchemical_available and alchemical_rate or 0, available = alchemical_available })
-    end
-
-    if has_colour then
-        colour_rate = Reverie.find_used_cine("Every Hue") and G.GAME.joker_rate or 0
-        colour_available = Reverie.find_used_cine("Every Hue") and not crazy_pack_available
-        total_rate = total_rate + (colour_available and colour_rate or 0)
-        table.insert(candidates,
-            { type = "Colour", val = colour_available and colour_rate or 0, available = colour_available })
-    end
 
     local polled_rate = pseudorandom(pseudoseed("cdt" .. G.GAME.round_resets.ante)) * total_rate
     local check_rate = 0
@@ -1770,7 +1783,7 @@ function Card:calculate_joker(context)
             or (self.config.center.reward == "c_dvrprv_eerie_inn" and context.any_card_destroyed)
             or (self.config.center.reward == "c_dvrprv_adrifting" and context.debuff_or_flipped_played)
             or (self.config.center.reward == "c_dvrprv_morsel" and context.joker_added and Reverie.is_food_joker(context.card.config.center_key))
-            or (self.config.center.reward == "c_dvrprv_alchemist" and context.using_consumeable and context.consumeable.ability.set == "Alchemical")
+            or (self.config.center.reward == "c_dvrprv_alchemist" and context.using_consumeable and context.consumeable.ability.set == "Alchemical" and G.STATE ~= G.STATES.SMODS_BOOSTER_OPENED)
             or (self.config.center.reward == "c_dvrprv_very_hue" and context.using_consumeable and context.consumeable.ability.set == "Colour")
             or (self.config.center.reward == "c_dvrprv_radioactive" and context.joker_added and context.card.config.center.rarity == 5)
             or (self.config.center.reward == "c_dvrprv_jovial_m" and context.selling_card and context.card.config.center.key == "j_jolly") then

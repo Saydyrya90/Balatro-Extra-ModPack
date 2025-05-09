@@ -271,11 +271,11 @@ SMODS.Consumable { -- Quicksilver
         }))
     end,
 
-    end_blind = function(self, card)
+    end_blind = function()
         -- sendDebugMessage("Resetting quicksilver", "ReduxArcanumDebugLogger")
-        G.hand:change_size(-card.ability.extra)
         if G.deck.config.quicksilver then
-            G.deck.config.quicksilver = G.deck.config.quicksilver - card.ability.extra
+            G.hand:change_size(-G.deck.config.quicksilver)
+            G.deck.config.quicksilver = 0
         end
         return true
     end,
@@ -335,6 +335,7 @@ salt = { -- Salt
                         while _tag_name == 'UNAVAILABLE' or
                             _tag_name == "tag_double" or
                             _tag_name == "tag_orbital" or
+                            _tag_name == "tag_ortalab_constellation" or
                             _tag_name == "tag_bunc_arcade" -- Bunco compat for now, otherwise draws entire deck
                         do
                             it = it + 1
@@ -356,7 +357,10 @@ salt = { -- Salt
                         for i = 1, #G.GAME.tags do
                             if G.GAME.tags[i].key == "tag_boss" then
                             else
-                                if G.GAME.tags[i]:apply_to_run({ type = 'new_blind_choice' }) then break end
+                                if G.GAME.tags[i]:apply_to_run({ type = 'new_blind_choice' }) then
+                                    G.GAME.ReduxArcanum_salt_in_use = true
+                                    break
+                                end
                             end
                         end
                         return true
@@ -482,7 +486,7 @@ bismuth = { -- Bismuth
 
     can_use = function(self, card)
         if alchemical_can_use(self, card) then
-            if #G.hand.highlighted <= card.ability.extra and #G.hand.highlighted >= 1 then return true else return false end
+            return #G.hand.highlighted <= card.ability.extra and #G.hand.highlighted >= 1
         else
             return false
         end
@@ -507,7 +511,7 @@ bismuth = { -- Bismuth
         }))
     end,
 
-    end_blind = function(self, card)
+    end_blind = function()
         if G.deck.config.ra_bismuth then
             for _, bismuthed_card in ipairs(G.deck.config.ra_bismuth) do
                 for k, card in ipairs(G.playing_cards) do
@@ -535,7 +539,13 @@ if ReduxArcanumMod.config.new_content then
         return { vars = vars }
         -- return { vars = { (extra == 1 and "rightmost") or (ret.vars[1] .. " rightmost"), (extra == 1 and "joker") or "jokers" } }
     end
-    bismuth.can_use = alchemical_can_use
+    bismuth.can_use = function(self, card)
+        if alchemical_can_use(self, card) then
+            return #G.jokers.cards > 0
+        else
+            return false
+        end
+    end
     bismuth.use = function(self, used_card)
         G.deck.config.ra_bismuth = G.deck.config.ra_bismuth or {}
         G.E_MANAGER:add_event(Event({
@@ -559,7 +569,7 @@ if ReduxArcanumMod.config.new_content then
             end
         }))
     end
-    bismuth.end_blind = function(self, card)
+    bismuth.end_blind = function()
         if G.deck.config.ra_bismuth then
             play_sound('tarot1')
             for _, bismuthed_joker in ipairs(G.deck.config.ra_bismuth) do
@@ -614,7 +624,7 @@ SMODS.Consumable { -- Cobalt
             delay = 0.1,
             func = function()
                 local text, disp_text = G.FUNCS.get_poker_hand_info(G.hand.highlighted)
-                table.insert(G.deck.config.cobalt, text)
+                G.deck.config.cobalt[text] = (G.deck.config.cobalt[text] or 0) + card.ability.extra
                 update_hand_text({ sound = 'button', volume = 0.7, pitch = 0.8, delay = 0.3 },
                     {
                         handname = localize(text, 'poker_hands'),
@@ -632,8 +642,8 @@ SMODS.Consumable { -- Cobalt
         }))
     end,
 
-    end_blind = function(self, card)
-        for _, text in ipairs(G.deck.config.cobalt) do
+    end_blind = function(self)
+        for text, value in ipairs(G.deck.config.cobalt) do
             G.E_MANAGER:add_event(Event({
                 trigger = 'after',
                 delay = 0.1,
@@ -646,7 +656,7 @@ SMODS.Consumable { -- Cobalt
                                 .GAME.hands[text].mult,
                             level = G.GAME.hands[text].level
                         })
-                    level_up_hand(nil, text, nil, -card.ability.extra)
+                    level_up_hand(nil, text, nil, -value)
                     update_hand_text({ sound = 'button', volume = 0.7, pitch = 1.1, delay = 0 },
                         { mult = 0, chips = 0, handname = '', level = '' })
                     return true
@@ -737,6 +747,14 @@ SMODS.Consumable { -- Antimony
     cost = 3,
     pos = { x = 5, y = 1 },
 
+    can_use = function(self, card)
+        if alchemical_can_use(self, card) then
+            return #G.jokers.cards > 0
+        else
+            return false
+        end
+    end,
+
     use = function(self, card)
         G.jokers.config.antimony = G.jokers.config.antimony or {}
         G.E_MANAGER:add_event(Event({
@@ -766,7 +784,7 @@ SMODS.Consumable { -- Antimony
         }))
     end,
 
-    end_blind = function(self, card)
+    end_blind = function()
         for _, poly_id in ipairs(G.jokers.config.antimony) do
             for k, joker in ipairs(G.jokers.cards) do
                 if joker.unique_val == poly_id then
@@ -844,6 +862,7 @@ SMODS.Consumable { -- Soap
             draw_card(G.hand, G.deck, 100, 'up', false, card)
         end
 
+        local count = #G.hand.highlighted
         G.E_MANAGER:add_event(Event({
             trigger = 'after',
             delay = 0.1,
@@ -851,7 +870,7 @@ SMODS.Consumable { -- Soap
                 for k, _card in ipairs(G.hand.highlighted) do
                     return_to_deck(_card)
                 end
-                G.FUNCS.draw_from_deck_to_hand(card.ability.extra)
+                G.FUNCS.draw_from_deck_to_hand(count)
                 return true
             end
         }))
@@ -910,7 +929,7 @@ manganese = { -- Manganese
         }))
     end,
 
-    end_blind = function(self, card)
+    end_blind = function()
         if G.deck.config.ra_manganese then
             for _, manganesed_card in ipairs(G.deck.config.ra_manganese) do
                 for k, card in ipairs(G.playing_cards) do
@@ -976,13 +995,12 @@ wax = { -- Wax
                     _card:start_materialize(nil, _first_dissolve)
                     table.insert(G.deck.config.ra_wax, { card_id = _card.unique_val })
                 end
-                playing_card_joker_effects(new_cards)
                 return true
             end
         }))
     end,
 
-    end_blind = function(self, card)
+    end_blind = function()
         if G.deck.config.ra_wax then
             local _first_dissolve = false
             for _, waxed_card in ipairs(G.deck.config.ra_wax) do
@@ -1058,7 +1076,7 @@ borax = { -- Borax
         }))
     end,
 
-    end_blind = function(self, card)
+    end_blind = function()
         if G.deck.config.ra_borax then
             local _first_dissolve = false
             for _, boraxed_card in ipairs(G.deck.config.ra_borax) do
@@ -1132,7 +1150,7 @@ glass = { -- Glass
         }))
     end,
 
-    end_blind = function(self, card)
+    end_blind = function()
         if G.deck.config.ra_glass then
             for _, glassed_card in ipairs(G.deck.config.ra_glass) do
                 for k, card in ipairs(G.playing_cards) do
@@ -1254,7 +1272,7 @@ gold = { -- Gold
         }))
     end,
 
-    end_blind = function(self, card)
+    end_blind = function()
         if G.deck.config.ra_gold then
             for _, golded_card in ipairs(G.deck.config.ra_gold) do
                 for k, card in ipairs(G.playing_cards) do
@@ -1302,7 +1320,7 @@ if ReduxArcanumMod.config.new_content then
             end
         }))
     end
-    gold.end_blind = function(self, card)
+    gold.end_blind = function()
         if G.deck.config.ra_gold then
             for _, golded_card in ipairs(G.deck.config.ra_gold) do
                 for k, card in ipairs(G.playing_cards) do
@@ -1370,7 +1388,7 @@ silver = { -- Silver
         }))
     end,
 
-    end_blind = function(self, card)
+    end_blind = function()
         if G.deck.config.ra_silver then
             for _, silvered_card in ipairs(G.deck.config.ra_silver) do
                 for k, card in ipairs(G.playing_cards) do
@@ -1433,7 +1451,7 @@ SMODS.Consumable { -- Oil
         }))
     end,
 
-    end_blind = function(self, card)
+    end_blind = function()
         -- sendDebugMessage("Resetting Oil", "ReduxArcanumDebugLogger")
         for k, card in ipairs(G.playing_cards) do
             if card.ability and card.ability.ra_oil then
@@ -1537,7 +1555,7 @@ acid = { -- Acid
         }))
     end,
 
-    end_blind = function(self, card)
+    end_blind = function()
         if G.deck.config.ra_acid then
             for _, acided_card in ipairs(G.deck.config.ra_acid) do
                 G.playing_card = (G.playing_card and G.playing_card + 1) or 1
@@ -1546,7 +1564,7 @@ acid = { -- Acid
                 G.deck.config.card_limit = G.deck.config.card_limit + 1
                 table.insert(G.playing_cards, _card)
                 if not ReduxArcanumMod.config.new_content then
-                    playing_card_joker_effects({ true })
+                    SMODS.calculate_context({ card_added = true, card = _card })
                 end
             end
             G.deck.config.ra_acid = {}
@@ -1646,20 +1664,25 @@ SMODS.Consumable { -- Uranium
             trigger = 'after',
             delay = 0.1,
             func = function()
+                local eligible_cards = {}
+                for _, v in ipairs(G.hand.cards) do
+                    if v.config.center == G.P_CENTERS.c_base and v ~= G.hand.highlighted[1] and not (v.edition) and not (v.seal) then
+                        table.insert(eligible_cards, v)
+                    end
+                end
                 for i = 1, used_card.ability.extra do
                     G.E_MANAGER:add_event(Event({
                         trigger = 'after',
                         delay = 0.5,
                         func = function()
-                            local eligible_cards = {}
-                            for _, v in ipairs(G.hand.cards) do
-                                if v.config.center == G.P_CENTERS.c_base and not (v.edition) and not (v.seal) then
-                                    table.insert(eligible_cards, v)
-                                end
-                            end
-
                             if #eligible_cards > 0 then
                                 local conv_card = pseudorandom_element(eligible_cards, pseudoseed(used_card.ability.name))
+                                for j, v in ipairs(eligible_cards) do
+                                    if v == conv_card then
+                                        table.remove(eligible_cards, j)
+                                        break
+                                    end
+                                end
 
                                 conv_card:juice_up(1, 0.5)
 
@@ -1704,7 +1727,7 @@ SMODS.Consumable { -- Uranium
         }))
     end,
 
-    end_blind = function(self, card)
+    end_blind = function()
         if G.deck.config.ra_uranium then
             for _, uranium_card in ipairs(G.deck.config.ra_uranium) do
                 for k, card in ipairs(G.playing_cards) do

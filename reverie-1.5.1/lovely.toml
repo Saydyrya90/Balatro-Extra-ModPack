@@ -410,3 +410,16 @@ else
     G.GAME.orbital_choices[G.GAME.round_resets.ante][self.ability.blind_type] = pseudorandom_element(_poker_hands, pseudoseed('orbital'))
 end
 '''
+
+# # Card:align_h_popup()
+# # Cine cards in the cine quests cardarea will display their description below the card to prevent screen clipping.
+# [[patches]]
+# [patches.regex]
+# target = "card.lua"
+# pattern = '''(?<pre>function Card:align_h_popup\(\)\n(?<indent>[\t ]*)((.|\n)*?))(?<post>return \{)'''
+# position = "at"
+# payload = '''
+# $pre
+#     popup_direction = (self.area == G.cine_quests and 'lc') or popup_direction
+#     $post
+# '''

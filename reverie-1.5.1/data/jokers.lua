@@ -26,6 +26,7 @@ Reverie.jokers = {
         rarity = 1,
         cost = 4,
         blueprint_compat = true,
+        perishable_compat = false,
         loc_vars = function(self, info_queue, center)
             return { vars = { center.ability.extra.chips, center.ability.extra.chip_mod } }
         end,

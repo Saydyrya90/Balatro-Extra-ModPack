@@ -573,6 +573,20 @@ return {
         }
     },
     misc = {
+        achievement_names = {
+            ach_ReduxArcanum_alchemy_completionist = "Alchemical Completionist",
+            ach_ReduxArcanum_alchemy_gold_stake = "Master Alchemist",
+            ach_ReduxArcanum_mutated_joker_max = "Beyond Recognition",
+            ach_ReduxArcanum_salt_booster_tag = "Not a Bug",
+            ach_ReduxArcanum_all_alchemicals = "How Did we Get Here?",
+        },
+        achievement_descriptions = {
+            ach_ReduxArcanum_alchemy_completionist = {"Discover every card", "in Redux Arcanum"},
+            ach_ReduxArcanum_alchemy_gold_stake =  {"Beat Gold Stake with the", "Redux Arcanum installed"},
+            ach_ReduxArcanum_mutated_joker_max = {"Own a Mutated Joker", "worth +240 Chips"},
+            ach_ReduxArcanum_salt_booster_tag = {"Open a booster pack", "during a blind"},
+            ach_ReduxArcanum_all_alchemicals = {"Use every alchemical card", "in a single blind"}
+        },
         dictionary = {
             k_ReduxArcanum_alchemy_pack = "Alchemy Pack",
             k_ReduxArcanum_alchemical = "Alchemical",

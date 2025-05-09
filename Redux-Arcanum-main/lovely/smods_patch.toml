@@ -1,0 +1,57 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 1
+
+# Card:set_sprites() override
+# Alchemical Polychrome in collection 1/3
+# Manual check to give proper undiscovered sprite to undiscovered alchemical polychrome
+[[patches]]
+[patches.pattern]
+target = '=[SMODS _ "src/overrides.lua"]'
+pattern = "elseif not self.params.bypass_discovery_center and *"
+position = 'before'
+match_indent = true
+payload = '''
+elseif not self.params.bypass_discovery_center and _center.set == "Edition" and not _center.discovered and _center.atlas == "ReduxArcanum_arcanum_alchemical" then
+    local atlas = G.ASSET_ATLAS[SMODS.UndiscoveredSprites["Alchemical"].atlas]
+    local pos = {x = 0, y = 0}
+    self.children.center = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, atlas, pos)
+'''
+
+
+# center DrawStep
+# Alchemical Polychrome in collection 2/3
+# Manual check to give proper undiscovered overlay sprite to undiscovered alchemical polychrome
+[[patches]]
+[patches.pattern]
+target = '=[SMODS _ "src/card_draw.lua"]'
+pattern = '''local shared_sprite = (self.ability.set == 'Edition' or self.ability.set == 'Joker') and G.shared_undiscovered_joker or G.shared_undiscovered_tarot'''
+position = 'after'
+match_indent = true
+payload = '''
+
+-- sendDebugMessage(tprint(self), "Redux")
+if self.ability.set == 'Edition' and self.label == "e_polychrome_alchemical" then
+    shared_sprite = G.shared_undiscovered_tarot
+end
+
+'''
+
+# Card:set_edition() override
+# Alchemical Polychrome in collection 3/3
+# Discover alchemical polychrome specifically instead of polychrome regular
+# Copy of one in lovely.toml specifically for the overridden SMOD method
+[[patches]]
+[patches.pattern]
+target = '=[SMODS _ "src/overrides.lua"]'
+pattern = "discover_card(G.P_CENTERS['e_' .. (self.edition.type)])"
+position = 'at'
+match_indent = true
+payload = '''
+if self.ability.set == 'alchemical' then
+    discover_card(G.P_CENTERS['e_' .. (self.edition.type) .. '_alchemical'])
+else
+    discover_card(G.P_CENTERS['e_' .. (self.edition.type)])
+end
+'''

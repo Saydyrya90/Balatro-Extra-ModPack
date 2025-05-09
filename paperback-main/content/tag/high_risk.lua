@@ -2,10 +2,14 @@ SMODS.Tag {
   key = 'high_risk',
   atlas = 'tags_atlas',
   pos = { x = 3, y = 0 },
-  discovered = true,
+  discovered = false,
   config = {
     money = 25
   },
+
+  in_pool = function(self, args)
+    return false
+  end,
 
   loc_vars = function(self, info_queue, tag)
     return {

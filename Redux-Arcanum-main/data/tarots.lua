@@ -60,8 +60,8 @@ SMODS.Consumable {
 function hue_to_rgb(hue) 
     local r, g, b = 0, 0, 0;
   
-    local saturation = 0.1;
-    local lightness = 0.75;
+    local saturation = 0.9;
+    local lightness = 0.7;
   
     if hue < 60 then 
       r = 1; 
@@ -131,7 +131,7 @@ philosopher_stone = {
 
     use = function(self, card)
         G.deck.config.played_alchemicals = G.deck.config.played_alchemicals or {}
-        table.insert(G.deck.config.played_alchemicals, {self, card})
+        table.insert(G.deck.config.played_alchemicals, self.key)
         G.deck.config.ra_philo_stone = G.deck.config.ra_philo_stone or 0
         G.deck.config.ra_philo_stone_classic = G.deck.config.ra_philo_stone_classic or 0
         if ReduxArcanumMod.config.new_content then
@@ -143,31 +143,33 @@ philosopher_stone = {
         -- G.GAME.blind:change_colour(G.C.RAINBOW_EDITION)
         -- ease_background_colour{new_colour = G.C.RAINBOW_EDITION, contrast = 1}
 
-        -- if not G.C.RAINBOW_EDITION then
-        --     G.C.RAINBOW_EDITION = {0,0,0,1}
-        --     G.C.RAINBOW_EDITION_HUE = 0
-        -- end
+        if not G.C.RAINBOW_EDITION then
+            G.C.RAINBOW_EDITION = {0,0,0,1}
+            G.C.RAINBOW_EDITION_HUE = 0
+        end
         -- G.ARGS.spin.real = G.ARGS.spin.real * 2
 
         -- This triggers once blind is finished
         -- There is a "condition" trigger I found, but it doesn't seem to do anything special. Simply returning false has the same effect
         G.E_MANAGER:add_event(Event({
             blocking = false,
+            trigger = 'after',
             func = function()
                 if G.deck.config.ra_philo_stone > 0 or G.deck.config.ra_philo_stone_classic > 0 then
-                    ease_background_colour{new_colour = G.C.ORANGE, special_colour = G.C.BLUE, tertiary_colour = darken(G.C.BLACK, 0.4), contrast = 3}
-
-                    -- G.C.RAINBOW_EDITION_HUE = (G.C.RAINBOW_EDITION_HUE + 0.25) % 360
-                    -- local r, g, b = hue_to_rgb(G.C.RAINBOW_EDITION_HUE)
+                    -- ease_background_colour{new_colour = G.C.ORANGE, special_colour = G.C.BLUE, tertiary_colour = darken(G.C.BLACK, 0.4), contrast = 3}
+                    G.C.RAINBOW_EDITION_HUE = (G.C.RAINBOW_EDITION_HUE + 0.25) % 360
+                    local hue1 = (math.floor((G.C.RAINBOW_EDITION_HUE + 0.25) / 60) * 60) % 360
+                    local hue2 = (hue1 + 180) % 360
+                    local r, g, b = hue_to_rgb(hue1)
                   
-                    -- G.C.RAINBOW_EDITION[1] = r
-                    -- G.C.RAINBOW_EDITION[3] = g
-                    -- G.C.RAINBOW_EDITION[2] = b
+                    G.C.RAINBOW_EDITION[1] = r
+                    G.C.RAINBOW_EDITION[3] = g
+                    G.C.RAINBOW_EDITION[2] = b
 
-                    -- local r2, g2, b2 = hue_to_rgb(G.C.RAINBOW_EDITION_HUE + 90)
+                    local r2, g2, b2 = hue_to_rgb(hue2)
 
-                    -- -- G.GAME.blind:change_colour(G.C.RAINBOW_EDITION)
-                    -- ease_background_colour{new_colour = G.C.RAINBOW_EDITION, special_colour = {r2, b2, g2, 1}, tertiary_colour = darken(G.C.BLACK, 0.4), contrast = 1}
+                    -- G.GAME.blind:change_colour(G.C.RAINBOW_EDITION)
+                    ease_background_colour{new_colour = G.C.RAINBOW_EDITION, special_colour = {r2, b2, g2, 1}, tertiary_colour = darken(G.C.BLACK, 0.4), contrast = 3}
 
                     return false
                 else

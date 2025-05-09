@@ -70,7 +70,7 @@ function alchemical_use(func)
     return function(self, card)
         -- Setup end-of-round cleanup for temp effects
         G.deck.config.played_alchemicals = G.deck.config.played_alchemicals or {}
-        table.insert(G.deck.config.played_alchemicals, {self, card})
+        table.insert(G.deck.config.played_alchemicals, self.key)
 
         -- For Breaking Bozo unlock
         check_for_unlock({ type = 'used_alchemical' })
@@ -109,10 +109,10 @@ end
 -- Usually for cards that affect cards in deck, like Acid or Bismuth
 function ra_reset_played_alchemicals()
     if G.deck.config.played_alchemicals then
-        for _, alchemical in ipairs(G.deck.config.played_alchemicals) do
-            -- sendDebugMessage(alchemical[1].key, "ReduxArcanumDebugLogger")
-            if alchemical[1].end_blind then
-                alchemical[1].end_blind(alchemical[1], alchemical[2])
+        for _, key in ipairs(G.deck.config.played_alchemicals) do
+            local card = G.P_CENTERS[key]
+            if card.end_blind then
+                card.end_blind()
             end
         end
         G.deck.config.played_alchemicals = {}

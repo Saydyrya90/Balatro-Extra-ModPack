@@ -522,6 +522,12 @@ function Reverie.create_special_joker(area)
 end
 
 function Reverie.create_poker_face_card(area)
+    area = area or {
+        T = {
+            x = G.ROOM.T.x + 9 + G.hand.T.x,
+            y = G.hand.T.y
+        }
+    }
     local target = pseudorandom_element(G.deck.cards, pseudoseed("pokerface"))
     local c = Card(area.T.x + area.T.w / 2, area.T.y, G.CARD_W, G.CARD_H, G.P_CARDS.empty, G.P_CENTERS.c_base)
 
@@ -1062,11 +1068,11 @@ function CardArea:emplace(card, location, stay_flipped)
 
         if Reverie.find_used_cine("Every Hue") and card.ability.set == "Colour" then
             local rounds = G.P_CENTERS.c_dvrprv_every_hue.config.extra.rounds
-            card.ability.extra = math.floor(rounds / card.ability.upgrade_rounds)
-            card.ability.partial_rounds_held = rounds % card.ability.upgrade_rounds
+            card.ability.val = math.floor(rounds / card.ability.upgrade_rounds)
+            card.ability.partial_rounds = rounds % card.ability.upgrade_rounds
 
-            if card.ability.name == "Yellow" and card.ability.extra > 0 then
-                card.ability.extra_value = card.ability.extra_value + (8 * card.ability.extra)
+            if card.ability.name == "Yellow" and card.ability.val > 0 then
+                card.ability.extra_value = card.ability.extra_value + (card.ability.value_per * card.ability.val)
                 card:set_cost()
             end
         end
@@ -1076,7 +1082,7 @@ function CardArea:emplace(card, location, stay_flipped)
     
             if center and type(center.config.extra) == "table" and center.config.extra.set_price then
                 card.cost = center.config.extra.set_price
-                card.sell_cost = math.floor(center.config.extra.set_price / 2)
+                card.sell_cost = math.max(1, math.floor(card.cost / 2)) + (card.ability.extra_value or 0)
             end
             if center and type(center.config.extra) == "table" and center.config.extra.discount then
                 card.cost = math.max(1, math.floor(card.cost * (100 - center.config.extra.discount) / 100))

@@ -187,7 +187,7 @@ local universe = {
 	loc_vars = function(self, info_queue, center)
 		return {
 			vars = {
-				localize("cry_UltPair"),
+				localize("cry_WholeDeck"),
 				G.GAME.hands["cry_WholeDeck"].level,
 				G.GAME.hands["cry_WholeDeck"].l_mult,
 				G.GAME.hands["cry_WholeDeck"].l_chips,

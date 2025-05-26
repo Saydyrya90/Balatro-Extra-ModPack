@@ -7,7 +7,7 @@ priority = 11 # Go after Bunco
 [[patches]]
 [patches.regex]
 target = 'card.lua'
-pattern = "(?<code>add_tag\\(Tag\\('tag_bunc_x?(?:(?:chips)|(?:mult))'\\)\\)\n(?<indent>[ |\t]*?)play_sound\\('generic1'\\))"
+pattern = "(?<code>add_tag\\(Tag\\('tag_bunc_xmult'\\)\\)\n(?<indent>[ |\t]*?)play_sound\\('generic1'\\))"
 position = 'at'
 # line_prepend = "$indent"
 payload = '''

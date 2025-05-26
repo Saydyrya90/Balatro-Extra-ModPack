@@ -1,5 +1,6 @@
 SDM_0s_Stuff_Mod = SMODS.current_mod
 SDM_0s_Stuff_Config = SDM_0s_Stuff_Mod.config
+SDM_0s_Stuff_Funcs = {}
 
 SDM_0s_Stuff_Mod.modded_jokers = {}
 SDM_0s_Stuff_Mod.modded_consumables = {}
@@ -149,6 +150,9 @@ if SDM_0s_Stuff_Config.sdm_jokers then
     --end
     if JokerDisplay then
         SMODS.load_file("extra/jokerdisplay_definitions.lua")()
+    end
+    if Partner_API then
+        SMODS.load_file("extra/partners.lua")()
     end
 end
 

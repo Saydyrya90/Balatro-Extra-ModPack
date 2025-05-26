@@ -421,7 +421,7 @@ return {
                 text = {
                     'Choose {C:attention}#1#{} of up to',
                     "{C:attention}#2#{C:alchemical} Alchemical{} cards to",
-                    "add to your consumeables"
+                    "add to your consumables"
                 }
             },
             p_ReduxArcanum_alchemy_jumbo = {
@@ -429,7 +429,7 @@ return {
                 text = {
                     'Choose {C:attention}#1#{} of up to',
                     "{C:attention}#2#{C:alchemical} Alchemical{} cards to",
-                    "add to your consumeables"
+                    "add to your consumables"
                 }
             },
             p_ReduxArcanum_alchemy_mega = {
@@ -437,7 +437,7 @@ return {
                 text = {
                     'Choose {C:attention}#1#{} of up to',
                     "{C:attention}#2#{C:alchemical} Alchemical{} cards to",
-                    "add to your consumeables"
+                    "add to your consumables"
                 }
             },
 

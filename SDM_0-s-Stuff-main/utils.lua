@@ -12,7 +12,7 @@ function sdm_debug(elem)
 end
 
 --- Get a value's index in a table
-function index_elem(table, value)
+function SDM_0s_Stuff_Funcs.index_elem(table, value)
     for k, v in ipairs(table) do
         if v == value then
             return k
@@ -22,7 +22,7 @@ function index_elem(table, value)
 end
 
 -- Faster way to decrease food/bakery consumables remaining counter
-function decrease_remaining_food(card)
+function SDM_0s_Stuff_Funcs.decrease_remaining_food(card)
     if card.ability.extra.remaining - 1 <= 0 then
         local is_bakery = card.ability.set == "Bakery"
         G.E_MANAGER:add_event(Event({
@@ -64,8 +64,14 @@ function decrease_remaining_food(card)
     end
 end
 
+function SDM_0s_Stuff_Funcs.proba_check(odds, seed)
+    local _odds = odds or 1
+    local _seed = (seed and pseudoseed(seed)) or pseudoseed('default')
+    return pseudorandom(_seed) < G.GAME.probabilities.normal/_odds
+end
+
 --- Get the most and best played poker hand
-function get_most_played_better_hand()
+function SDM_0s_Stuff_Funcs.get_most_played_better_hand()
     local hand = "High Card"
     local played_more_than = 0
     local order = 999
@@ -82,7 +88,7 @@ function get_most_played_better_hand()
 end
 
 --- Counts how many Carcinization there is
-function get_crab_count()
+function SDM_0s_Stuff_Funcs.get_crab_count()
     local crab_count = 0
     if G.jokers and G.jokers.cards then
         if #G.jokers.cards > 0 then
@@ -97,7 +103,7 @@ function get_crab_count()
 end
 
 --- Get the sum of (almost) all existing numbers (capped at 1e300)
-function sum_incremental(n)
+function SDM_0s_Stuff_Funcs.sum_incremental(n)
     if G.jokers then
         local sum_inc = ((G.GAME.current_round.discards_left + G.GAME.current_round.hands_left + #G.jokers.cards + G.jokers.config.card_limit + G.GAME.round
         + G.GAME.round_resets.blind_ante + G.hand.config.card_limit + #G.deck.cards + #G.playing_cards + G.consumeables.config.card_limit +
@@ -111,7 +117,7 @@ function sum_incremental(n)
 end
 
 -- Initialization of the random "Reach the Stars" condition values
-function rts_init()
+function SDM_0s_Stuff_Funcs.rts_init()
     local valid_nums = {}
     for i = 1, math.min(G.hand and G.hand.config.card_limit or 8, G.hand and G.hand.config.highlighted_limit or 5) do
         valid_nums[#valid_nums+1] = i
@@ -124,28 +130,134 @@ function rts_init()
 end
 
 -- Faster way to write non-BP/retrigger check
-function no_bp_retrigger(context)
+function SDM_0s_Stuff_Funcs.no_bp_retrigger(context)
     if not context then return false end
     return not (context.blueprint or context.retrigger_joker or context.retrigger_joker_check)
 end
 
 -- Overrides
 
---- "Crooked Joker" failsafe
-local atd = Card.add_to_deck
-function Card:add_to_deck2(debuff)
-    self.not_crooked = true
-    return atd(self, debuff)
-end
-
 local gfcr = G.FUNCS.can_reroll
 function G.FUNCS.can_reroll(e)
-	if G.GAME.modifiers.sdm_no_reroll then
+	if G.GAME.modifiers.sdm_no_reroll or (G.shop_jokers and G.shop_jokers.config.card_limit == 0) then  -- Roguelike Deck and Crooked Partner + Joker combo
 		e.config.colour = G.C.UI.BACKGROUND_INACTIVE
 		e.config.button = nil
 	else
 		return gfcr(e)
 	end
+end
+
+local gfcfbs = G.FUNCS.check_for_buy_space
+G.FUNCS.check_for_buy_space = function(card)
+  if card.ability.name == "Wedding Cake" and card.ability.extra and card.ability.extra.amount > 0 then
+    return true
+  end
+  return gfcfbs(card)
+end
+
+local gfcsc = G.FUNCS.can_select_card
+G.FUNCS.can_select_card = function(e)
+  if e.config.ref_table.ability.name == "Wedding Cake" and e.config.ref_table.ability.extra and e.config.ref_table.ability.extra.amount > 0 then
+    e.config.colour = G.C.GREEN
+    e.config.button = 'use_card'
+  else
+    gfcsc(e)
+  end
+end
+
+local cj = Card.calculate_joker
+function Card:calculate_joker(context)
+    if context.setting_blind and not self.getting_sliced and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
+        if self.ability and self.ability.sdm_is_ditto then
+            G.E_MANAGER:add_event(Event({
+                func = function()
+                    self:juice_up(0.3, 0.5)
+                    self:set_ability(G.P_CENTERS["j_sdm_ditto_joker"], true)
+                    self.ability.sdm_is_ditto = nil
+                    return true
+                end
+            }))
+            local valid_jokers = {}
+            if G.jokers and G.jokers.cards and #G.jokers.cards > 1 then
+                for i = 1, #G.jokers.cards do
+                    if not G.jokers.cards[i].debuff and G.jokers.cards[i] ~= self and G.jokers.cards[i].config.center.key ~= "j_sdm_ditto_joker" then
+                        valid_jokers[#valid_jokers+1] = G.jokers.cards[i]
+                    end
+                end
+            end
+            if #valid_jokers > 0 then
+                local old_card = self
+                local chosen_joker = pseudorandom_element(valid_jokers, pseudoseed('ditto'))
+                delay(1)
+                G.E_MANAGER:add_event(Event({
+                    func = function()
+                        self:set_ability(G.P_CENTERS[chosen_joker.config.center.key], true)
+                        self:set_cost()
+                        for k, v in pairs(chosen_joker.ability) do
+                            if type(v) == 'table' then
+                                self.ability[k] = copy_table(v)
+                            elseif not SMODS.Stickers[k] then
+                                self.ability[k] = v
+                            end
+                        end
+                        self.ability.fusion = nil -- FusionJokers compat to remove fuse button
+                        self.ability.sdm_is_ditto = true
+                        return true
+                    end
+                }))
+                card_eval_status_text(old_card, 'extra', nil, nil, nil, {
+                    message = localize('k_ditto_ex'),
+                    colour = HEX('f06bf2'),
+                })
+            end
+        end
+    end
+    return cj(self, context)
+end
+
+local cpnr = Card.calculate_partner
+function Card:calculate_partner(context)
+    if context.partner_end_of_round and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
+        if (G.GAME and G.GAME.blind.boss) and self.ability and self.ability.sdm_is_partner_ditto and self.ability.sdm_partner_ditto_ante then
+            self.ability.sdm_partner_ditto_ante = self.ability.sdm_partner_ditto_ante + 1
+            card_eval_status_text(self, 'extra', nil, nil, nil, {
+                        message = {self.ability.sdm_partner_ditto_ante .. "/2"},
+                        colour = G.C.FILTER
+            })
+            if self.ability.sdm_partner_ditto_ante >= 2 then
+                G.E_MANAGER:add_event(Event({
+                    func = function()
+                        self:juice_up(0.3, 0.5)
+                        self:set_ability(G.P_CENTERS["pnr_sdm_ditto_joker"], true)
+                        self.ability.sdm_is_ditto = nil
+                        return true
+                    end
+                }))
+                local unlocked_partners = {}
+                for _, v in pairs(G.P_CENTER_POOLS["Partner"]) do
+                    if v.key ~= 'pnr_sdm_ditto_joker' and v.key ~= self.config.center.key and v:is_unlocked() then
+                        unlocked_partners[#unlocked_partners+1] = v
+                    end
+                end
+                if unlocked_partners[1] then
+                    local old_card = self
+                    local chosen_partner = pseudorandom_element(unlocked_partners, pseudoseed('dtp'))
+                    G.E_MANAGER:add_event(Event({
+                        func = function()
+                            self:set_ability(G.P_CENTERS[chosen_partner.key])
+                            self.ability.sdm_is_partner_ditto = true
+                            self.ability.sdm_partner_ditto_ante = 2
+                        return true
+                    end}))
+                    card_eval_status_text(old_card, 'extra', nil, nil, nil, {
+                        message = localize('k_ditto_ex'),
+                        colour = HEX('f06bf2'),
+                    })
+                end
+            end
+        end
+    end
+    return cpnr(self, context)
 end
 
 --- Talisman compat

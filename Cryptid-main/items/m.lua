@@ -1706,7 +1706,7 @@ local megg = {
 	},
 	object_type = "Joker",
 	name = "cry-megg",
-	key = "Megg",
+	key = "megg",
 	pools = { ["M"] = true },
 	blueprint_compat = false,
 	eternal_compat = false,

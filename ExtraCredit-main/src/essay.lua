@@ -1,4 +1,5 @@
 local mod = SMODS.current_mod
+SMODS.Atlas({key = "modicon", path = "modicon.png", px = 31, py = 32, atlas_table = "ASSET_ATLAS"}):register()
 SMODS.Atlas({key = "ECjokers", path = "ECjokers.png", px = 71, py = 95, atlas_table = "ASSET_ATLAS"}):register()
 SMODS.Atlas({key = "ECother", path = "ECother.png", px = 71, py = 95, atlas_table = "ASSET_ATLAS"}):register()
 
@@ -216,7 +217,7 @@ local ed = ease_dollars
 function ease_dollars(mod, x)
     ed(mod, x)
     for i = 1, #G.jokers.cards do
-        local effects = G.jokers.cards[i]:calculate_joker({ EC_ease_dollars = to_big(mod) })
+	eval_card(G.jokers.cards[i], { EC_ease_dollars = to_big(mod)})
     end
 end
 
@@ -1654,7 +1655,8 @@ SMODS.Joker{ --Tuxedo
     atlas = 'ECjokers',
 
     loc_vars = function(self, info_queue, card)
-        return {vars = {localize(G.GAME.current_round.tuxedo_card.suit, 'suits_singular'), colours = {G.C.SUITS[G.GAME.current_round.tuxedo_card.suit]}}}
+        local current_suit = G.GAME.current_round.tuxedo_card and G.GAME.current_round.tuxedo_card.suit or "Spades"
+        return {vars = {localize(current_suit, 'suits_singular'), colours = {G.C.SUITS[current_suit]}}}
     end,
 
     calculate = function(self, card, context)
@@ -1709,7 +1711,8 @@ SMODS.Joker{ --Farmer
     atlas = 'ECjokers',
 
     loc_vars = function(self, info_queue, card)
-        return {vars = {card.ability.extra.dollars, localize(G.GAME.current_round.farmer_card.suit, 'suits_singular'), colours = {G.C.SUITS[G.GAME.current_round.farmer_card.suit]}}}
+        local current_suit = G.GAME.current_round.farmer_card and G.GAME.current_round.farmer_card.suit or "Spades"
+        return {vars = {card.ability.extra.dollars, localize(current_suit, 'suits_singular'), colours = {G.C.SUITS[current_suit]}}}
     end,
 
     calculate = function(self, card, context)
@@ -2046,7 +2049,8 @@ SMODS.Joker{ --Go Fish
     atlas = 'ECjokers',
 
     loc_vars = function(self, info_queue, card)
-        return {vars = {G.GAME.current_round.fish_rank.rank}}
+        local current_rank = G.GAME.current_round.fish_rank and G.GAME.current_round.fish_rank.rank or "Ace"
+        return {vars = {current_rank}}
     end,
 
     calculate = function(self, card, context)
@@ -2810,7 +2814,7 @@ SMODS.Joker{ --Passport
 
     calculate = function(self, card, context)
         if card.ability.extra.stamps > 0 and context.discard and G.GAME.current_round.discards_left == 2 and not context.blueprint then
-            local eval =  function() return G.GAME.current_round.discards_left > 0 end
+            local eval =  function() return G.GAME.current_round.discards_left > 0 and card.ability.extra.stamps > 0 end
             juice_card_until(card, eval, true)
         end
 
@@ -3025,3 +3029,57 @@ SMODS.Back{ --Echo Deck
     end
   end
 }
+
+
+-- Resets
+
+local function reset_tuxedo_card()
+	local tuxedo_suits = {}
+    G.GAME.current_round.tuxedo_card = G.GAME.current_round.tuxedo_card or {}
+	for k, suit in pairs(SMODS.Suits) do
+		if
+			k ~= G.GAME.current_round.tuxedo_card.suit
+			and (type(suit.in_pool) ~= "function" or suit:in_pool({ rank = "" }))
+		then
+			tuxedo_suits[#tuxedo_suits + 1] = k
+		end
+	end
+	local tuxedo_card = pseudorandom_element(tuxedo_suits, pseudoseed("tux" .. G.GAME.round_resets.ante))
+	G.GAME.current_round.tuxedo_card.suit = tuxedo_card
+end
+
+local function reset_farmer_card()
+	local farmer_suits = {}
+    G.GAME.current_round.farmer_card = G.GAME.current_round.farmer_card or {}
+	for k, suit in pairs(SMODS.Suits) do
+		if
+			k ~= G.GAME.current_round.farmer_card.suit
+			and (type(suit.in_pool) ~= "function" or suit:in_pool({ rank = "" }))
+		then
+			farmer_suits[#farmer_suits + 1] = k
+		end
+	end
+	local farmer_card = pseudorandom_element(farmer_suits, pseudoseed("farm" .. G.GAME.round_resets.ante))
+	G.GAME.current_round.farmer_card.suit = farmer_card
+end
+
+local function reset_fish_rank()
+	local valid_fish_ranks = {}
+    G.GAME.current_round.fish_rank = G.GAME.current_round.fish_rank or {}
+	for k, rank in pairs(SMODS.Ranks) do
+		if
+			k ~= G.GAME.current_round.fish_rank.rank
+			and (type(rank.in_pool) ~= "function" or rank:in_pool({ suit = "" }))
+		then
+			valid_fish_ranks[#valid_fish_ranks + 1] = k
+		end
+	end
+	local fish_pick = pseudorandom_element(valid_fish_ranks, pseudoseed("fish" .. G.GAME.round_resets.ante))
+	G.GAME.current_round.fish_rank.rank = fish_pick
+end
+
+mod.reset_game_globals = function(run_start)
+	reset_tuxedo_card()
+	reset_farmer_card()
+	reset_fish_rank()
+end

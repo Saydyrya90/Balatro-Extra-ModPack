@@ -1883,7 +1883,7 @@ return {
 					"{C:attention}#2#{} time#<s>2#,",
 					"each played card gives",
 					"{X:mult,C:white} X#1# {} Mult when scored",
-					"{C:inactive}(Max {}{C:attention}#3#{}{C:inactive} repetitions)",
+					"{C:inactive}(Max {}{C:attention}#3#{}{C:inactive} retriggers)",
 				},
 			},
 			j_cry_jawbreaker = {
@@ -2105,7 +2105,7 @@ return {
 					"{C:attention}first discard{} of each round",
 				},
 			},
-			j_cry_Megg = {
+			j_cry_megg = {
 				name = "Megg",
 				text = {
 					"Sell this card to create",

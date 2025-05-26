@@ -52,7 +52,7 @@ SMODS.Achievement {
 
 SMODS.Achievement {
     key = "all_alchemicals",
-    hidden_name = true,
+    hidden_name = false,
     hidden_text = true,
     unlock_condition = function (self, args)
         if args.type == "used_alchemical" and #G.deck.config.played_alchemicals >= 24 then

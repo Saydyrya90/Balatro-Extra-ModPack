@@ -20,8 +20,8 @@ SMODS.Joker{
         return {vars = {card.ability.extra.Xmult, card.ability.extra.mult, card.ability.extra.chips, card.ability.extra.remaining}}
     end,
     calculate = function(self, card, context)
-        if context.end_of_round and context.main_eval and no_bp_retrigger(context) then
-            decrease_remaining_food(card)
+        if context.end_of_round and context.main_eval and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
+            SDM_0s_Stuff_Funcs.decrease_remaining_food(card)
         elseif context.joker_main then
             return {
                 chips = card.ability.extra.chips,
@@ -52,11 +52,11 @@ SMODS.Joker{
     cost = 5,
     config = {extra = {chips = 0, chip_mod = 10}},
     loc_vars = function(self, info_queue, card)
-        return {vars = {card.ability.extra.chips, card.ability.extra.chip_mod, localize(get_most_played_better_hand() or "High Card", "poker_hands")}}
+        return {vars = {card.ability.extra.chips, card.ability.extra.chip_mod, localize(SDM_0s_Stuff_Funcs.get_most_played_better_hand() or "High Card", "poker_hands")}}
     end,
     calculate = function(self, card, context)
-        if context.cardarea == G.jokers and context.before and no_bp_retrigger(context) then
-            if context.scoring_name == get_most_played_better_hand() then
+        if context.cardarea == G.jokers and context.before and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
+            if context.scoring_name == SDM_0s_Stuff_Funcs.get_most_played_better_hand() then
                 card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.chip_mod
                 return {
                     message = localize('k_upgrade_ex'),
@@ -284,21 +284,19 @@ SMODS.Joker{
     rarity = 1,
     pos = {x = 0, y = 1},
     cost = 5,
-    config = {extra = 3},
-    loc_vars = function(self, info_queue, card)
-        return {vars = {G.GAME.probabilities.normal, card.ability.extra}}
-    end,
     calculate = function(self, card, context)
-        if context.reroll_shop and no_bp_retrigger(context) and pseudorandom(pseudoseed('wdrstr')) < G.GAME.probabilities.normal/card.ability.extra then
-            local level_up_hands = {}
-            for k, v in pairs(G.GAME.hands) do
-                if v.visible then level_up_hands[#level_up_hands+1] = k end
+        if context.reroll_shop and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
+            local visible_hands = {}
+            for _, k in ipairs(G.handlist) do
+                local v = G.GAME.hands[k]
+                if v.visible then
+                    table.insert(visible_hands, k)
+                end
             end
-            local selected_hand = pseudorandom_element(level_up_hands, pseudoseed('wandering'))
-            return {
-                level_up = true,
-                level_up_hand = selected_hand
-            }
+            if visible_hands[1] then
+                local selected_hand = pseudorandom_element(visible_hands, pseudoseed('wandering'))
+                SMODS.smart_level_up_hand(card, selected_hand)
+            end
         end
     end,
     atlas = "sdm_jokers"
@@ -323,7 +321,7 @@ SMODS.Joker{
         return {vars = {card.ability.extra.rounds, card.ability.extra.remaining}}
     end,
     calculate = function(self, card, context)
-        if context.end_of_round and context.main_eval and no_bp_retrigger(context) then
+        if context.end_of_round and context.main_eval and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
             if card.ability.extra.rounds < card.ability.extra.remaining then
                 card.ability.extra.rounds = math.min(card.ability.extra.rounds + 1, card.ability.extra.remaining)
                 if card.ability.extra.rounds <= card.ability.extra.remaining then
@@ -335,7 +333,7 @@ SMODS.Joker{
                 end
             end
         end
-        if context.selling_self and card.ability.extra.rounds >= card.ability.extra.remaining and no_bp_retrigger(context) then
+        if context.selling_self and card.ability.extra.rounds >= card.ability.extra.remaining and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
             if not card.getting_sliced and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
                 G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
                 G.E_MANAGER:add_event(Event({
@@ -368,7 +366,7 @@ SMODS.Joker{
     cost = 8,
     config = {extra = {no_faces = true}},
     calculate = function(self, card, context)
-        if context.cardarea == G.jokers and context.after and no_bp_retrigger(context) then
+        if context.cardarea == G.jokers and context.after and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
             card.ability.extra.no_faces = true
             for i = 1, #context.full_hand do
                 if context.full_hand[i]:is_face() then
@@ -404,7 +402,7 @@ SMODS.Joker{
         return {vars = {xmlt, card.ability.extra.Xmult_mod, card.ability.extra.dollars, card.ability.extra.dollars_mod}}
     end,
     calculate = function(self, card, context)
-        if context.setting_blind and not card.getting_sliced and no_bp_retrigger(context) then
+        if context.setting_blind and not card.getting_sliced and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
             if to_big(G.GAME.dollars) - card.ability.extra.dollars >= to_big(G.GAME.bankrupt_at) then
                 card_eval_status_text(card, 'extra', nil, nil, nil, {
                     message = "-"  .. localize('$') .. card.ability.extra.dollars,
@@ -507,8 +505,8 @@ SMODS.Joker{
         return {vars = {''..(G.GAME and G.GAME.probabilities.normal or 1), card.ability.extra}}
     end,
     calculate = function(self, card, context)
-        if context.selling_card and no_bp_retrigger(context) then
-            if context.card.ability.set == 'Joker' and pseudorandom(pseudoseed('zmbjkr')) < G.GAME.probabilities.normal/card.ability.extra then
+        if context.selling_card and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
+            if context.card.ability.set == 'Joker' and SDM_0s_Stuff_Funcs.proba_check(card.ability.extra, 'zmbjkr') then
                 if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit or
                 context.card.ability.set ~= 'Joker' and #G.consumeables.cards + G.GAME.consumeable_buffer <= G.consumeables.config.card_limit then
                     G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
@@ -613,15 +611,22 @@ SMODS.Joker{
     end,
     calculate = function(self, card, context)
         if (context.cards_destroyed and (context.glass_shattered and #context.glass_shattered > 0))
-        or (context.remove_playing_cards and (context.removed and #context.removed > 0)) and no_bp_retrigger(context) then
+        or (context.remove_playing_cards and (context.removed and #context.removed > 0)) and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
             local my_pos = nil
             for i = 1, #G.jokers.cards do
                 if G.jokers.cards[i] == card then my_pos = i; break end
             end
-            if my_pos and G.jokers.cards[my_pos-1] then
+            local jokers = {}
+            if my_pos then
+                if G.jokers.cards[my_pos-1] then jokers[#jokers+1] = G.jokers.cards[my_pos-1] end
+                if G.jokers.cards[my_pos+1] then jokers[#jokers+1] = G.jokers.cards[my_pos+1] end
+            end
+            if jokers[1] then
                 G.E_MANAGER:add_event(Event({
                     func = (function()
-                        G.jokers.cards[my_pos-1]:set_edition("e_negative")
+                        for i = 1, #jokers do
+                            jokers[i]:set_edition("e_negative")
+                        end
                         card:juice_up(0.3, 0.4)
                         card:start_dissolve({G.C.DARK_EDITION}, nil, 1.6)
                         return true
@@ -654,13 +659,13 @@ SMODS.Joker{
     }}
     end,
     set_ability = function(self, card, initial, delay_sprites)
-        local num_card1, num_card2 = rts_init()
+        local num_card1, num_card2 = SDM_0s_Stuff_Funcs.rts_init()
         card.ability.extra.num_card1 = num_card1
         card.ability.extra.num_card2 = num_card2
     end,
     calculate = function(self, card, context)
         if context.cardarea == G.jokers and context.final_scoring_step and not (context.before or context.after) and context.scoring_hand then
-            if no_bp_retrigger(context) then
+            if SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
                 if #context.scoring_hand == card.ability.extra.num_card1 and not card.ability.extra.c1_scored then
                     card.ability.extra.c1_scored = true
                     card_eval_status_text(card, 'extra', nil, nil, nil, {
@@ -693,8 +698,8 @@ SMODS.Joker{
                         message = localize('k_plus_planet'),
                         colour = G.C.SECONDARY_SET.Planet,
                     })
-                    if no_bp_retrigger(context) then
-                        local num_card1, num_card2 = rts_init()
+                    if SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
+                        local num_card1, num_card2 = SDM_0s_Stuff_Funcs.rts_init()
                         card.ability.extra.num_card1 = num_card1
                         card.ability.extra.num_card2 = num_card2
                         return {
@@ -728,8 +733,8 @@ SMODS.Joker{
         end
     end,
     calculate = function(self, card, context)
-        if context.sdm_adding_card and context.card and no_bp_retrigger(context) then
-            if context.card ~= card and context.card.ability.set == 'Joker' and not context.card.not_crooked then
+        if context.card_added and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
+            if context.card ~= card and context.card.ability.set == 'Joker' and not (context.card.ability and context.card.ability.not_crooked) then
                 local do_dupe = pseudorandom(pseudoseed('crkj'), 0, 1)
                 if do_dupe == 1 then
                     if #G.jokers.cards + G.GAME.joker_buffer < G.jokers.config.card_limit - 1 then
@@ -740,8 +745,9 @@ SMODS.Joker{
                         })
                         G.E_MANAGER:add_event(Event({
                             func = function()
+                                context.card.ability.not_crooked = true
                                 local new_card = copy_card(context.card, nil, nil, nil, nil)
-                                new_card:add_to_deck2()
+                                new_card:add_to_deck()
                                 G.jokers:emplace(new_card)
                                 new_card:start_materialize()
                                 G.GAME.joker_buffer = 0
@@ -783,7 +789,7 @@ SMODS.Joker{
         return {vars = {card.ability.extra.Xmult, card.ability.extra.Xmult_mod}}
     end,
     calculate = function(self, card, context)
-        if context.pre_discard and no_bp_retrigger(context) then
+        if context.pre_discard and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
             local eval = evaluate_poker_hand(G.hand.highlighted)
             if eval["Full House"] and eval["Full House"][1] then
                 card.ability.extra.Xmult = card.ability.extra.Xmult + card.ability.extra.Xmult_mod
@@ -851,7 +857,7 @@ SMODS.Joker{
         return {vars = {card.ability.extra.money, card.ability.extra.blind_req}}
     end,
     calculate = function(self, card, context)
-        if context.setting_blind and not card.getting_sliced and no_bp_retrigger(context) then
+        if context.setting_blind and not card.getting_sliced and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
             G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.1,func = function()
                 G.GAME.blind.chips = math.floor(G.GAME.blind.chips * card.ability.extra.blind_req)
                 G.GAME.blind.chip_text = number_format(G.GAME.blind.chips)
@@ -921,7 +927,7 @@ SMODS.Joker{
         return {vars = {card.ability.extra.hands, card.ability.extra.hand_mod}}
     end,
     calculate = function(self, card, context)
-        if context.end_of_round and context.main_eval and no_bp_retrigger then
+        if context.end_of_round and context.main_eval and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
             card.ability.extra.hands = card.ability.extra.hands - card.ability.extra.hand_mod
             if card.ability.extra.hands > 0 then
                 card_eval_status_text(card, 'extra', nil, nil, nil, {
@@ -1038,11 +1044,11 @@ SMODS.Joker{
     config = {extra = {chips = 0, chip_mod = 2}},
     loc_vars = function(self, info_queue, card)
         info_queue[#info_queue+1] = {key = "chaos_exceptions", set = "Other"}
-        local chs = sum_incremental(card.ability.extra.chip_mod)
+        local chs = SDM_0s_Stuff_Funcs.sum_incremental(card.ability.extra.chip_mod)
         return {vars = {card.ability.extra.chip_mod, chs}}
     end,
     calculate = function(self, card, context)
-        local chs = sum_incremental(card.ability.extra.chip_mod)
+        local chs = SDM_0s_Stuff_Funcs.sum_incremental(card.ability.extra.chip_mod)
         if context.joker_main and chs ~= 0 then
             return {
                 chips = chs
@@ -1096,7 +1102,7 @@ SMODS.Joker{
         info_queue[#info_queue+1] = G.P_CENTERS.m_bonus
     end,
     calculate = function(self, card, context)
-        if context.cardarea == G.jokers and context.before and context.scoring_hand and no_bp_retrigger(context) then
+        if context.cardarea == G.jokers and context.before and context.scoring_hand and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
             local triggered = false
             for i = 1, #context.scoring_hand do
                 if (context.scoring_hand[i]:get_id() == 9 or
@@ -1168,36 +1174,24 @@ SMODS.Joker{
     rarity = 1,
     pos = {x = 3, y = 5},
     cost = 5,
-    config = {extra = 1},
-    loc_vars = function(self, info_queue, card)
-        return {vars = {card.ability.extra}}
-    end,
     calculate = function(self, card, context)
-        if context.first_hand_drawn and no_bp_retrigger(context) then
+        if context.first_hand_drawn and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
             local eval = function() return G.GAME.current_round.hands_played == 0 and G.GAME.current_round.discards_used == 0 end
             juice_card_until(card, eval, true)
         end
         if context.cardarea == G.jokers and context.before and (G.GAME.current_round.discards_used == 0 and G.GAME.current_round.hands_played == 0) then
             G.E_MANAGER:add_event(Event({
                 func = function()
-                    ease_hands_played(card.ability.extra)
-                    if card.ability.extra <= 1 then
-                        card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_hand', vars = {card.ability.extra}}, colour = G.C.BLUE})
-                    else
-                        card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_hands', vars = {card.ability.extra}}, colour = G.C.BLUE})
-                    end
+                    ease_hands_played(1)
+                    card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_hand', vars = {1}}, colour = G.C.BLUE})
                     return true
                 end}))
             return
         elseif context.pre_discard and (G.GAME.current_round.discards_used == 0 and G.GAME.current_round.hands_played == 0) then
             G.E_MANAGER:add_event(Event({
                 func = function()
-                    ease_discard(card.ability.extra)
-                    if card.ability.extra <= 1 then
-                        card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_discard', vars = {card.ability.extra}}, colour = G.C.RED})
-                    else
-                        card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_discards', vars = {card.ability.extra}}, colour = G.C.RED})
-                    end
+                    ease_discard(1)
+                    card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_discard', vars = {1}}, colour = G.C.RED})
                     return true
                 end}))
             return
@@ -1252,20 +1246,22 @@ SMODS.Joker{
     blueprint_compat = true,
     pos = {x = 5, y = 5},
     cost = 5,
-    config = {extra = 15},
+    config = {extra = 20},
     loc_vars = function(self, info_queue, card)
         return {vars = {card.ability.extra, localize(card.ability.jack_poker_hand1, 'poker_hands'), localize(card.ability.jack_poker_hand2, 'poker_hands')}}
     end,
     set_ability = function(self, card, initial, delay_sprites)
         local _poker_hands = {}
-        for k, v in pairs(G.GAME.hands) do
-            if v.visible then _poker_hands[k] = true end
+        for _, k in ipairs(G.handlist) do
+            local v = G.GAME.hands[k]
+            if v.visible then
+                table.insert(_poker_hands, k)
+            end
         end
-        _, card.ability.jack_poker_hand1 = pseudorandom_element(_poker_hands, pseudoseed('jack1'))
-        _poker_hands[card.ability.jack_poker_hand1] = nil
-        _, card.ability.jack_poker_hand2 = pseudorandom_element(_poker_hands, pseudoseed('jack2'))
-
-
+        local idx
+        card.ability.jack_poker_hand1, idx = pseudorandom_element(_poker_hands, pseudoseed('jack1'))
+        table.remove(_poker_hands, idx)
+        card.ability.jack_poker_hand2 = pseudorandom_element(_poker_hands, pseudoseed('jack2'))
     end,
     calculate = function(self, card, context)
         if context.joker_main and context.scoring_hand then
@@ -1282,7 +1278,7 @@ SMODS.Joker{
                 }
             end
         end
-        if context.end_of_round and context.main_eval and no_bp_retrigger(context) then
+        if context.end_of_round and context.main_eval and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
             local _poker_hands = {}
             for k, v in pairs(G.GAME.hands) do
                 if v.visible then _poker_hands[k] = true end
@@ -1317,9 +1313,16 @@ SMODS.Joker{
         return {vars = {card.ability.extra.mult}}
     end,
     calculate = function(self, card, context)
-        if context.cardarea == G.jokers and context.before and context.scoring_hand and context.scoring_name and no_bp_retrigger(context) then
+        if context.cardarea == G.jokers and context.before and context.full_hand and context.scoring_name and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
             if string.match(string.lower(context.scoring_name), "%f[%w]kind%f[%W]$") then
-                card.ability.extra.mult = card.ability.extra.mult + (next(SMODS.find_card("j_sdm_magic_hands")) and math.min(G.hand.config.highlighted_limit, #context.scoring_hand + 1) or #context.scoring_hand)
+                local _, _, _, scoring_hand = G.FUNCS.get_poker_hand_info(context.full_hand)
+                local scored_rank_cards = 0
+                for _, v in ipairs(scoring_hand) do
+                    if not SMODS.has_no_rank(v) then
+                        scored_rank_cards = scored_rank_cards + 1
+                    end
+                end
+                card.ability.extra.mult = card.ability.extra.mult + (next(SMODS.find_card("j_sdm_magic_hands")) and math.min(G.hand.config.highlighted_limit, scored_rank_cards + 1) or scored_rank_cards)
                 return {
                     message = localize{type='variable',key='a_mult',vars={card.ability.extra.mult}}
                 }
@@ -1377,10 +1380,10 @@ SMODS.Joker{
     cost = 8,
     config = {extra = 2},
     loc_vars = function(self, info_queue, card)
-        return {vars = {G.GAME.probabilities.normal, card.ability.extra}}
+        return {vars = {''..(G.GAME and G.GAME.probabilities.normal or 1), card.ability.extra}}
     end,
     calculate = function(self, card, context)
-        if context.using_consumeable and pseudorandom('horoscopy') < G.GAME.probabilities.normal/card.ability.extra then
+        if context.using_consumeable and SDM_0s_Stuff_Funcs.proba_check(card.ability.extra, 'horoscopy') then
             G.E_MANAGER:add_event(Event({
                 func = (function()
                 if context.consumeable.ability.set == 'Planet' and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
@@ -1416,11 +1419,11 @@ SMODS.Joker{
     cost = 8,
     config = {extra = 3},
     loc_vars = function(self, info_queue, card)
-        return {vars = {G.GAME.probabilities.normal, card.ability.extra}}
+        return {vars = {''..(G.GAME and G.GAME.probabilities.normal or 1), card.ability.extra}}
     end,
     calculate = function(self, card, context)
         if context.first_hand_drawn then
-            if pseudorandom('roulette') < G.GAME.probabilities.normal/card.ability.extra then
+            if SDM_0s_Stuff_Funcs.proba_check(card.ability.extra, 'roulette') then
                 G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
                     local valid_cards = {}
                     for i = 1, #G.hand.cards do
@@ -1477,13 +1480,13 @@ SMODS.Joker{
     blueprint_compat = true,
     pos = {x = 0, y = 6},
     cost = 7,
-    config = {extra = {mult_mod = 4}},
+    config = {extra = {mult_mod = 5}},
     loc_vars = function(self, info_queue, card)
-        local mlt = card.ability.extra.mult_mod * get_crab_count()
+        local mlt = card.ability.extra.mult_mod * SDM_0s_Stuff_Funcs.get_crab_count()
         return {vars = {card.ability.extra.mult_mod, mlt}}
     end,
     calculate = function(self, card, context)
-        if context.setting_blind and not card.getting_sliced and no_bp_retrigger(context) then
+        if context.setting_blind and not card.getting_sliced and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
             local my_pos = nil
             for i = 1, #G.jokers.cards do
                 if G.jokers.cards[i] == card then my_pos = i; break end
@@ -1502,7 +1505,7 @@ SMODS.Joker{
             end
         end
         if context.joker_main then
-            local mlt = card.ability.extra.mult_mod * get_crab_count()
+            local mlt = card.ability.extra.mult_mod * SDM_0s_Stuff_Funcs.get_crab_count()
             if mlt ~= 0 then
                 return {
                     mult = mlt
@@ -1585,7 +1588,7 @@ SMODS.Joker{
                 }
             end
         end
-        if context.after and no_bp_retrigger(context) then
+        if context.after and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
             card.ability.extra.low = not card.ability.extra.low
             local curr_xmult = (card.ability.extra.low and card.ability.extra.low_xmult) or card.ability.extra.high_xmult
             card_eval_status_text(card, 'extra', nil, nil, nil, {
@@ -1609,7 +1612,7 @@ SMODS.Joker{
     pos = {x = 4, y = 6},
     cost = 7,
     calculate = function(self, card, context)
-        if context.setting_blind and not card.getting_sliced and no_bp_retrigger(context) then
+        if context.setting_blind and not card.getting_sliced and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
             local valid_jokers = {}
             if G.jokers and G.jokers.cards and #G.jokers.cards > 1 then
                 for i = 1, #G.jokers.cards do
@@ -1628,7 +1631,7 @@ SMODS.Joker{
                         for k, v in pairs(chosen_joker.ability) do
                             if type(v) == 'table' then
                                 card.ability[k] = copy_table(v)
-                            else
+                            elseif not SMODS.Stickers[k] then
                                 card.ability[k] = v
                             end
                         end
@@ -1719,7 +1722,6 @@ SMODS.Joker{
     key = "archibald",
     name = "Archibald",
     rarity = 4,
-    blueprint_compat = true,
     config = {extra = {can_copy = true}},
     pos = {x = 0, y = 3},
     cost = 20,
@@ -1730,7 +1732,7 @@ SMODS.Joker{
         return {vars = {(card.ability.extra.can_copy and localize("k_sdm_active")) or "", (not card.ability.extra.can_copy and localize("k_sdm_inactive")) or ""}}
     end,
     calculate = function(self, card, context)
-        if context.ending_shop then
+        if context.ending_shop and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
             if card.ability.extra.can_copy and #G.jokers.cards > 0 then
                 local valid_cards = {}
                 for i = 1, #G.jokers.cards do
@@ -1747,7 +1749,7 @@ SMODS.Joker{
                             new_card:start_materialize()
                             new_card:add_to_deck()
                             G.jokers:emplace(new_card)
-                            if no_bp_retrigger(context) then
+                            if SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
                                 card.ability.extra.can_copy = false
                             end
                             return true
@@ -1760,7 +1762,7 @@ SMODS.Joker{
                 end
             end
         end
-        if context.end_of_round and context.main_eval and no_bp_retrigger(context)
+        if context.end_of_round and context.main_eval and SDM_0s_Stuff_Funcs.no_bp_retrigger(context)
         and G.GAME.blind.boss and not card.ability.extra.can_copy then
             card.ability.extra.can_copy = true
             card_eval_status_text(card, 'extra', nil, nil, nil, {
@@ -1789,7 +1791,7 @@ SMODS.Joker{
         return {vars = {card.ability.extra.jkr_slots}}
     end,
     calculate = function(self, card, context)
-        if context.cards_destroyed and no_bp_retrigger(context) then
+        if context.cards_destroyed and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
             if #context.glass_shattered > 0 then
                 for _, v in ipairs(context.glass_shattered) do
                     if v:get_id() == 2 then
@@ -1801,7 +1803,7 @@ SMODS.Joker{
                     end
                 end
             end
-        elseif context.remove_playing_cards and no_bp_retrigger(context) then
+        elseif context.remove_playing_cards and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
             if #context.removed > 0 then
                 for _, v in ipairs(context.removed) do
                     if v:get_id() == 2 then
@@ -1839,7 +1841,7 @@ SMODS.Joker{
         end
     end,
     calculate = function(self, card, context)
-        if context.destroy_card and context.cardarea == "unscored" and context.scoring_hand and no_bp_retrigger(context) then
+        if context.destroy_card and context.cardarea == "unscored" and context.scoring_hand and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
             if #context.scoring_hand == 1 and context.scoring_hand[1]:get_id() == 11 then
                 card.ability.extra.dollars = card.ability.extra.dollars + card.ability.extra.dollar_mod
                 card.ability.skelton_triggered = true
@@ -1848,7 +1850,7 @@ SMODS.Joker{
                 }
             end
 		end
-        if context.after and card.ability.skelton_triggered and no_bp_retrigger(context) then
+        if context.after and card.ability.skelton_triggered and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
             card.ability.skelton_triggered = nil
             return {
                 message = localize('k_upgrade_ex'),
@@ -1877,7 +1879,7 @@ SMODS.Joker{
         return {vars = {card.ability.extra.Xmult_mod, card.ability.extra.Xmult}}
     end,
     calculate = function(self, card, context)
-        if context.end_of_round and not card.getting_sliced and (context.individual or context.repetition) and no_bp_retrigger(context) then
+        if context.end_of_round and not card.getting_sliced and (context.individual or context.repetition) and SDM_0s_Stuff_Funcs.no_bp_retrigger(context) then
             if G.consumeables and #G.consumeables.cards > 0 then
                 local destructable_consus = {}
                 for i = 1, #G.consumeables.cards do

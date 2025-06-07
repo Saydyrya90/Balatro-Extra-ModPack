@@ -274,6 +274,50 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
     end
 
     -------------------------------------------------------------------------------------------------
+    ----- API CODE GameObject.Font
+    -------------------------------------------------------------------------------------------------
+    
+    SMODS.Fonts = {}
+    SMODS.Font = SMODS.GameObject:extend {
+        obj_table = SMODS.Fonts,
+        set = 'Fonts',
+        obj_buffer = {},
+        disable_mipmap = false,
+        required_params = {
+            'key',
+            'path',
+        },
+        render_scale = 200,
+        TEXT_HEIGHT_SCALE = 0.83,
+        TEXT_OFFSET = {x = 0, y = 0},
+        FONTSCALE = 0.1,
+        squish = 1,
+        DESCSCALE = 1,
+        register = function(self)
+            if self.registered then
+                sendWarnMessage(('Detected duplicate register call on object %s'):format(self.key), self.set)
+                return
+            end
+            self.name = self.key
+            SMODS.Font.super.register(self)
+        end,
+        inject = function(self)
+            local file_path = self.path
+            if file_path == 'DEFAULT' then return end
+
+            self.full_path = (self.mod and self.mod.path or SMODS.path) ..
+                'assets/fonts/' .. file_path
+            local file_data = assert(NFS.newFileData(self.full_path),
+                ('Failed to collect file data for Font %s'):format(self.key))
+            self.FONT = assert(love.graphics.newFont(file_data, self.render_scale or G.TILESIZE),
+                ('Failed to initialize font data for Font %s'):format(self.key))
+            
+        end,
+        process_loc_text = function() end,
+    }
+
+
+    -------------------------------------------------------------------------------------------------
     ----- API CODE GameObject.Language
     -------------------------------------------------------------------------------------------------
 
@@ -294,7 +338,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
                 local data = assert(NFS.newFileData(self.mod.path .. 'assets/fonts/' .. self.font.file), ('Failed to collect file data for font of language %s'):format(self.key))
                 self.font.FONT = love.graphics.newFont(data, self.font.render_scale)
             elseif type(self.font) ~= 'table' then
-                self.font = G.FONTS[type(self.font) == 'number' and self.font or 1] or G.FONTS[1]
+                self.font = SMODS.Fonts[self.font] or G.FONTS[type(self.font) == 'number' and self.font or 1] or G.FONTS[1]
             end
             G.LANGUAGES[self.key] = self
             if self.key == (G.SETTINGS.real_language or G.SETTINGS.language) then G.LANG = self end
@@ -2456,6 +2500,37 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
         end
     }
 
+    -- weird hook to artificially initialize G.collab_credits early
+    local ps_ref = Game.prep_stage
+    function Game:prep_stage(new_stage, new_state, new_game_obj)
+        ps_ref(self, new_stage, new_state, new_game_obj)
+        if not G.collab_credits then
+            local visited = {}
+            local function recursive_search(t)
+                if visited[t] then return false end
+                visited[t] = true
+                if type(t) == "table" and t.label == "Collabs" and type(t.tab_definition_function) == "function" then
+                    t.tab_definition_function()
+                    return true
+                end
+                for _, v in ipairs(t) do
+                    if type(v) == "table" and recursive_search(v) then
+                        return true
+                    end
+                end
+                for k, v in pairs(t) do
+                    if type(v) == "table" and recursive_search(v) then
+                        return true
+                    end
+                end
+                return false
+            end
+            G.FUNCS.show_credits()
+            local result = recursive_search(G.OVERLAY_MENU)
+            G.FUNCS:exit_overlay_menu()
+        end
+    end
+
     for suitName, options in pairs(G.COLLABS.options) do
         SMODS.DeckSkin{
             key = options[1]..'_'..suitName,
@@ -2499,6 +2574,21 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
                         hc_default = true,
                     },
                 },
+                generate_ds_card_ui = function(card, deckskin, palette, info_queue, desc_nodes, specific_vars, full_UI_table)
+                    for k, v in pairs(G.collab_credits) do
+                        if v.artist and deckskin.key == v.art and (card.base.value == "Jack" or card.base.value == "Queen" or card.base.value == "King") then
+                            localize{type = 'other', key = 'artist', nodes = desc_nodes, vars = {}}
+                            localize{type = 'other', key = 'artist_credit', nodes = desc_nodes, vars = { v.artist }}
+                        end
+                    end
+                end,
+                has_ds_card_ui = function(card, deckskin, palette)
+                    for k, v in pairs(G.collab_credits) do
+                        if v.artist and deckskin.key == v.art and (card.base.value == "Jack" or card.base.value == "Queen" or card.base.value == "King") then
+                            return true
+                        end
+                    end
+                end
             }
         end
     end
@@ -2586,7 +2676,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
     }
     SMODS.PokerHandPart {
         key = '_straight',
-        func = function(hand) return get_straight(hand, next(SMODS.find_card('j_four_fingers')) and 4 or 5, not not next(SMODS.find_card('j_shortcut'))) end
+        func = function(hand) return get_straight(hand, SMODS.four_fingers(), SMODS.shortcut(), SMODS.wrap_around_straight()) end
     }
     SMODS.PokerHandPart {
         key = '_flush',
@@ -3038,6 +3128,7 @@ Set `prefix_config.key = false` on your object instead.]]):format(obj.key), obj.
     SMODS.Enhancement:take_ownership('glass', {
         calculate = function(self, card, context)
             if context.destroy_card and context.cardarea == G.play and context.destroy_card == card and pseudorandom('glass') < G.GAME.probabilities.normal/card.ability.extra then
+                card.glass_trigger = true
                 return { remove = true }
             end
         end,

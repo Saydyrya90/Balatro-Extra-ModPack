@@ -34,7 +34,15 @@ match_indent = true
 payload = '''
 function eval_card(card, context)
     context = context or {}
-    if not card:can_calculate(context.ignore_debuff) then return {}, {} end
+    if not card:can_calculate(context.ignore_debuff, context.remove_playing_cards) then
+        if card.ability.rental then 
+            local ret = {}
+            ret[SMODS.Stickers.rental] = card:calculate_sticker(context, 'rental')
+            return ret, {}
+        end
+        return {}, {}
+    end
+    if context.other_card and context.other_card.can_calculate and not context.other_card:can_calculate(context.ignore_debuff) then return {}, {} end
     local ret = {}
 '''
 
@@ -130,7 +138,7 @@ if context.cardarea == G.hand then
     end
 
     local jokers = card:calculate_joker(context)
-    if jokers then 
+    if jokers then
         ret.jokers = jokers
     end
 '''
@@ -583,45 +591,6 @@ SMODS.calculate_context({full_hand = G.play.cards, scoring_hand = scoring_hand, 
 -- TARGET: effects before deck final_scoring_step
 '''
 
-# context.destroying_card
-[[patches]]
-[patches.pattern]
-target = "functions/state_events.lua"
-pattern = '''
-for j = 1, #G.jokers.cards do
-    destroyed = G.jokers.cards[j]:calculate_joker({destroying_card = scoring_hand[i], full_hand = G.play.cards})
-    if destroyed then break end
-end
-
-if scoring_hand[i].ability.name == 'Glass Card' and not scoring_hand[i].debuff and pseudorandom('glass') < G.GAME.probabilities.normal/scoring_hand[i].ability.extra then
-    destroyed = true
-end'''
-match_indent = true
-position = "at"
-payload = '''
--- context.destroying_card calculations
-for j = 1, #G.jokers.cards do
-    local eval, post = eval_card(G.jokers.cards[j], {destroying_card = scoring_hand[i], full_hand = G.play.cards})
-    SMODS.trigger_effects({eval, post}, scoring_hand[i])
-    if eval.jokers then destroyed = true end
-
-end
-
-if SMODS.has_enhancement(scoring_hand[i], 'm_glass') and scoring_hand[i]:can_calculate() and pseudorandom('glass') < G.GAME.probabilities.normal/(scoring_hand[i].ability.name == 'Glass Card' and scoring_hand[i].ability.extra or G.P_CENTERS.m_glass.config.extra) then
-    destroyed = true
-end
-
-local eval, post = eval_card(scoring_hand[i], {destroying_card = scoring_hand[i], full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, cardarea = G.play})
-local self_destroy = false
-for key, effect in pairs(eval) do
-    self_destroy = SMODS.calculate_effect(effect, scoring_hand[i])
-end
-SMODS.trigger_effects({post}, scoring_hand[i])
-if self_destroy then destroyed = true end
-
--- TARGET: card destroyed when played
-'''
-
 # context.remove_playing_cards
 [[patches]]
 [patches.regex]
@@ -986,6 +955,25 @@ G.E_MANAGER:add_event(Event({
 }))
 '''
 
+# context.hand_space
+[[patches]]
+[patches.pattern]
+target = 'functions/state_events.lua'
+match_indent = true
+position = 'after'
+pattern = '''
+if G.GAME.blind.name == 'The Serpent' and
+    not G.GAME.blind.disabled and
+    (G.GAME.current_round.hands_played > 0 or
+    G.GAME.current_round.discards_used > 0) then
+        hand_space = math.min(#G.deck.cards, 3)
+end
+'''
+payload = '''
+local flags = SMODS.calculate_context({drawing_cards = true, amount = hand_space})
+hand_space = math.min(#G.deck.cards, flags.cards_to_draw or hand_space)
+'''
+
 # Used to identify first hand of round
 # new_round
 [[patches]]
@@ -1055,7 +1043,7 @@ position = 'at'
 match_indent = true
 payload = '''
 G.E_MANAGER:add_event(Event({func = function()
-    local eval, post = eval_card(c1, {buying_card = true, card = c1})
+    local eval, post = eval_card(c1, {buying_card = true, buying_self = true, card = c1}) -- buying_card left for back compat, buying_self recommended to use
     SMODS.trigger_effects({eval, post}, c1)
     return true
     end}))
@@ -1152,12 +1140,11 @@ target = 'functions/button_callbacks.lua'
 match_indent = true
 position = 'before'
 pattern = '''
-if G.GAME.current_round.reroll_cost > 0 then 
+if G.GAME.current_round.reroll_cost > 0 then
 '''
 payload = '''
 local reroll_cost = G.GAME.current_round.reroll_cost
 '''
-
 
 
 # Fix purple seal calc
@@ -1271,6 +1258,17 @@ payload = '''percent = (i-0.999)/(#G.hand.cards-0.998) + (j-1)*0.1'''
 target = 'functions/common_events.lua'
 match_indent = true
 position = 'after'
+pattern = 'local volume = 1'
+payload = '''
+local trigger = 'before'
+local blocking = nil
+local blockable = nil
+'''
+[[patches]]
+[patches.pattern]
+target = 'functions/common_events.lua'
+match_indent = true
+position = 'after'
 pattern = '''
 volume = extra.edition and 0.3 or sound == 'multhit2' and 0.7 or 1
 '''
@@ -1278,6 +1276,9 @@ payload = '''
 sound = extra.sound or sound
 percent = extra.pitch or percent
 volume = extra.volume or volume
+trigger = extra.trigger or 'before'
+blocking = extra.blocking
+blockable = extra.blockable
 '''
 
 # Voucher cardarea
@@ -1426,7 +1427,7 @@ for i=1, #G.play.cards do
         end
     end
     local effects = {}
-    SMODS.calculate_context({modify_scoring_hand = true, other_card =  G.play.cards[i], full_hand = G.play.cards, scoring_hand = scoring_hand}, effects)
+    SMODS.calculate_context({modify_scoring_hand = true, other_card =  G.play.cards[i], full_hand = G.play.cards, scoring_hand = scoring_hand, in_scoring = true}, effects)
     local flags = SMODS.trigger_effects(effects, G.play.cards[i])
     if flags.add_to_hand then splashed = true end
 	if flags.remove_from_hand then unsplashed = true end

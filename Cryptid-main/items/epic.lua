@@ -1098,36 +1098,28 @@ local oldcandy = {
 	loc_vars = function(self, info_queue, center)
 		return {
 			vars = {
-				number_format(
-					math.min(
-						center.ability.immutable.max_hand_size_mod,
-						math.max(1, math.floor(center.ability.extra.hand_size))
-					)
+				math.min(
+					center.ability.immutable.max_hand_size_mod,
+					math.max(1, math.floor(center.ability.extra.hand_size))
 				),
 			},
 		}
 	end,
 	rarity = "cry_epic",
 	cost = 9,
+	blueprint_compat = true,
 	eternal_compat = false,
 	demicoloncompat = true,
 	atlas = "atlasepic",
 	calculate = function(self, card, context)
-		if (context.selling_self and not context.blueprint) or context.forcetrigger then
+		if context.selling_self or context.forcetrigger then
 			G.hand:change_size(
-				lenient_bignum(
-					math.min(
-						card.ability.immutable.max_hand_size_mod,
-						math.max(1, math.floor(card.ability.extra.hand_size))
-					)
+				math.min(
+					card.ability.immutable.max_hand_size_mod,
+					math.max(1, math.floor(card.ability.extra.hand_size))
 				)
 			)
 			return nil, true
-		end
-	end,
-	add_to_deck = function(self, card, from_debuff)
-		if card.ability.extra.hand_size > card.ability.immutable.max_hand_size_mod then
-			card.ability.extra.hand_size = card.ability.immutable.max_hand_size_mod
 		end
 	end,
 	cry_credits = {

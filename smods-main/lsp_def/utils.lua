@@ -69,6 +69,8 @@
 ---@field to_area? CardArea|table CardArea the card is being drawn to. 
 ---@field from_area? CardArea|table CardArea the card is being drawn from. 
 ---@field modify_hand? true Check if `true` for modifying the chips and mult of the played hand. 
+---@field drawing_cards? true `true` when cards are being drawn
+---@field amount? integer Amount of cards about to be drawn from deck to hand. Check for modifying amount of cards drawn.
 
 --- Util Functions
 
@@ -490,6 +492,14 @@ function SMODS.change_booster_limit(mod) end
 --- Modifies the current amount of free shop rerolls by `mod`. 
 function SMODS.change_free_rerolls(mod) end
 
+---@param mod number
+--- Modifies the amount of cards you are allowed to play by `mod`. 
+function SMODS.change_play_limit(mod) end
+
+---@param mod number
+--- Modifies the amount of cards you are allowed to discard by `mod`. 
+function SMODS.change_discard_limit(mod) end
+
 ---@param message string
 ---@param logger? string
 --- Prints to the console at "DEBUG" level
@@ -561,3 +571,11 @@ function SMODS.localize_box(lines, args) end
 ---@return table multi_boxes
 --- Returns all description boxes within `multi_box`.
 function SMODS.get_multi_boxes(multi_box) end
+
+---@param cards Card|Card[]
+--- Destroys the cards passed to the function, handling calculation events that need to happen
+function SMODS.destroy_cards(cards) end
+---@param hand_space number
+--- Used to draw cards to hand outside of the normal card draw
+--- Allows context.drawing_cards to function
+function SMODS.draw_cards(hand_space) end

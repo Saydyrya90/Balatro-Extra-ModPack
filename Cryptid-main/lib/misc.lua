@@ -516,7 +516,32 @@ function set_profile_progress()
 end
 
 Cryptid.big_num_blacklist = {
-	-- empty for now add more later
+	["j_cry_fractal"] = true,
+	["j_cry_wonka_bar"] = true,
+	["j_cry_oldcandy"] = true,
+
+	["c_magician"] = true,
+	["c_empress"] = true,
+	["c_heirophant"] = true,
+	["c_lovers"] = true,
+	["c_chariot"] = true,
+	["c_justice"] = true,
+	["c_strength"] = true,
+	["c_hanged_man"] = true,
+	["c_death"] = true,
+	["c_devil"] = true,
+	["c_tower"] = true,
+	["c_star"] = true,
+	["c_moon"] = true,
+	["c_sun"] = true,
+	["c_world"] = true,
+	["c_cry_eclipse"] = true,
+	["c_cry_seraph"] = true,
+	["c_cry_instability"] = true,
+
+	["v_cry_stickyhand"] = true,
+	["v_cry_grapplinghook"] = true,
+	["v_cry_hyperspacetether"] = true,
 
 	-- Add your Jokers here if you *don't* want to have it's numbers go into BigNum
 	-- FORMAT: <Joker Key ("j_cry_oil_lamp")> = true,
@@ -792,4 +817,13 @@ function Cryptid.cry_rankname_to_id(rankname)
 		end
 	end
 	return nil
+end
+
+function Cryptid.reset_to_none()
+	update_hand_text({ delay = 0 }, {
+		mult = Cryptid.ascend(G.GAME.hands["cry_None"].mult),
+		chips = Cryptid.ascend(G.GAME.hands["cry_None"].chips),
+		level = G.GAME.hands["cry_None"].level,
+		handname = localize("cry_None", "poker_hands"),
+	})
 end

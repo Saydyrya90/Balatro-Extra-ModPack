@@ -887,7 +887,7 @@ local stella_mortis = {
 	atlas = "atlasexotic",
 	soul_pos = { x = 5, y = 5, extra = { x = 4, y = 5 } },
 	calculate = function(self, card, context)
-		if context.ending_shop or context.forcetrigger then
+		if (context.ending_shop and not context.blueprint) or context.forcetrigger then
 			local destructable_planet = {}
 			local quota = 1
 			for i = 1, #G.consumeables.cards do
@@ -1269,7 +1269,7 @@ local energia = {
 	key = "energia",
 	pos = { x = 6, y = 3 },
 	soul_pos = { x = 8, y = 3, extra = { x = 7, y = 3 } },
-	blueprint_compat = false,
+	blueprint_compat = true,
 	perishable_compat = false,
 	demicoloncompat = true,
 	order = 514,

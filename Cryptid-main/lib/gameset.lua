@@ -595,6 +595,11 @@ function Card:set_ability(center, y, z)
 	if not center then
 		return
 	end
+	-- Addition by IcyEthics to make compatible with strings used on set_ability. Copied directly from the smods set_ability implementation
+	if type(center) == "string" then
+		assert(G.P_CENTERS[center], ('Could not find center "%s"'):format(center))
+		center = G.P_CENTERS[center]
+	end
 	if not center.config then
 		center.config = {} --crashproofing
 	end
@@ -1117,10 +1122,24 @@ function Cryptid.update_obj_registry(m, force_enable)
 				if en == true then
 					if v.cry_disabled then
 						v:enable()
+						if v.key == "set_cry_poker_hand_stuff" then
+							G.PROFILES[G.SETTINGS.profile].cry_none = Cryptid.safe_get(
+								G.PROFILES,
+								G.SETTINGS.profile,
+								"cry_none2"
+							) or nil
+							G.PROFILES[G.SETTINGS.profile].cry_none2 = nil
+						end
 					end
 				else
 					if not v.cry_disabled then
 						v:_disable(en)
+						if v.key == "set_cry_poker_hand_stuff" and G.PROFILES[G.SETTINGS.profile].cry_none then
+							--Remove the none flag if poker hands are disabled because leaving it on can leave to softlocks
+							G.PROFILES[G.SETTINGS.profile].cry_none2 =
+								Cryptid.safe_get(G.PROFILES, G.SETTINGS.profile, "cry_none")
+							G.PROFILES[G.SETTINGS.profile].cry_none = nil
+						end
 					end
 				end
 			end

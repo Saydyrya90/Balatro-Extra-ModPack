@@ -14,23 +14,6 @@ SMODS.DrawStep({
 						self.params.viewed_back
 					) == "table" and self.params.viewed_back or (self.params.viewed_back and G.GAME.viewed_back or G.GAME.selected_back))
 				or Back(G.P_CENTERS["b_red"])
-			if currentBack.effect.config.cry_force_edition and not currentBack.effect.config.cry_antimatter then
-				if currentBack.effect.config.cry_force_edition_shader then
-					self.children.back:draw_shader(
-						currentBack.effect.config.cry_force_edition_shader,
-						nil,
-						self.ARGS.send_to_shader,
-						true
-					)
-				else
-					self.children.back:draw_shader(
-						currentBack.effect.config.cry_force_edition,
-						nil,
-						self.ARGS.send_to_shader,
-						true
-					)
-				end
-			end
 			if
 				currentBack.effect.config.cry_force_seal
 				and not currentBack.effect.config.hide_seal
@@ -245,6 +228,22 @@ SMODS.DrawStep({
 })
 SMODS.draw_ignore_keys.floating_sprite2 = true
 
+-- CCD Drawstep
+local interceptorSprite = nil
+SMODS.DrawStep({
+	key = "ccd_interceptor",
+	order = -5,
+	func = function(self)
+		local card_type = self.ability.set or "None"
+		if card_type ~= "Default" and card_type ~= "Enhanced" and self.playing_card then
+			interceptorSprite = interceptorSprite
+				or Sprite(0, 0, G.CARD_W, G.CARD_H, G.ASSET_ATLAS["cry_clarifier"], { x = 0, y = 0 })
+			interceptorSprite.role.draw_major = self
+			interceptorSprite:draw_shader("dissolve", nil, nil, nil, self.children.center)
+		end
+	end,
+})
+
 -- Make hover UI collidable - so we can detect collision and display tooltips
 local m = Card.move
 function Card:move(dt)
@@ -295,7 +294,7 @@ end
 -- Unfortunately this doesn't play nicely with gameset UI
 local cainit = CardArea.init
 function CardArea:init(X, Y, W, H, config)
-	if config.collection then
+	if config and config.collection then
 		config.highlight_limit = config.card_limit
 	end
 	return cainit(self, X, Y, W, H, config)
@@ -409,6 +408,61 @@ function G.UIDEF.use_and_sell_buttons(card)
 	end
 	if card.config and card.config.center and card.config.center.key == "c_cry_potion" then
 		table.remove(abc.nodes[1].nodes, 1)
+	end
+	-- i love buttercup
+	if
+		card.area
+		and card.area.config.type == "joker"
+		and card.config
+		and card.config.center
+		and card.ability.name == "cry-Buttercup"
+	then
+		local use = {
+			n = G.UIT.C,
+			config = { align = "cr" },
+			nodes = {
+				{
+					n = G.UIT.C,
+					config = {
+						ref_table = card,
+						align = "cr",
+						maxw = 1.25,
+						padding = 0.1,
+						r = 0.05,
+						hover = true,
+						shadow = true,
+						colour = G.C.UI.BACKGROUND_INACTIVE,
+						one_press = true,
+						button = "store",
+						func = "can_store_card",
+					},
+					nodes = {
+						{ n = G.UIT.B, config = { w = 0.1, h = 0.3 } },
+						{
+							n = G.UIT.T,
+							config = {
+								text = localize("b_store"),
+								colour = G.C.UI.TEXT_LIGHT,
+								scale = 0.3,
+								shadow = true,
+							},
+						},
+					},
+				},
+			},
+		}
+		local m = abc.nodes[1]
+		if not card.added_to_deck then
+			use.nodes[1].nodes = { use.nodes[1].nodes[2] }
+			if card.ability.consumeable then
+				m = abc
+			end
+		end
+		m.nodes = m.nodes or {}
+		table.insert(m.nodes, { n = G.UIT.R, config = { align = "cl" }, nodes = {
+			use,
+		} })
+		return abc
 	end
 	return abc
 end

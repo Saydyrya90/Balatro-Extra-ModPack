@@ -79,6 +79,7 @@ local eclipse = {
 
 		return { vars = { card and card.ability.max_highlighted or self.config.max_highlighted } }
 	end,
+	demicoloncompat = true,
 }
 -- Light (Enhancement)
 -- When triggered with 5 other cards, gain 0.2 Xmult
@@ -169,6 +170,7 @@ local seraph = {
 
 		return { vars = { card and card.ability.max_highlighted or self.config.max_highlighted } }
 	end,
+	demicoloncompat = true,
 }
 -- Abstract (Enhancement)
 -- Has its own rank/suit
@@ -300,6 +302,7 @@ local instability = {
 
 		return { vars = { card and card.ability.max_highlighted or self.config.max_highlighted } }
 	end,
+	demicoloncompat = true,
 }
 
 -- Blessing
@@ -335,11 +338,12 @@ local blessing = {
 	can_bulk_use = true,
 	use = function(self, card, area, copier)
 		local used_consumable = copier or card
+		local forceuse = G.cry_force_use
 		G.E_MANAGER:add_event(Event({
 			trigger = "after",
 			delay = 0.4,
 			func = function()
-				if G.consumeables.config.card_limit > #G.consumeables.cards then
+				if G.consumeables.config.card_limit > #G.consumeables.cards or forceuse then
 					play_sound("timpani")
 					local forced_key = Cryptid.random_consumable("blessing", nil, "c_cry_blessing")
 					local _card = create_card(
@@ -360,6 +364,10 @@ local blessing = {
 			end,
 		}))
 		delay(0.6)
+	end,
+	demicoloncompat = true,
+	force_use = function(self, card, area)
+		self:use(card, area)
 	end,
 }
 
@@ -742,8 +750,8 @@ local mosaic = {
 	get_weight = function(self)
 		return G.GAME.edition_rate * self.weight
 	end,
-	loc_vars = function(self, info_queue)
-		return { vars = { self.config.x_chips } }
+	loc_vars = function(self, info_queue, card)
+		return { vars = { card and card.edition and card.edition.x_chips or self.config.x_chips } }
 	end,
 	calculate = function(self, card, context)
 		if
@@ -756,7 +764,7 @@ local mosaic = {
 				and context.cardarea == G.play
 			)
 		then
-			return { x_chips = self.config.x_chips } -- updated value
+			return { x_chips = card and card.edition and card.edition.x_chips or self.config.x_chips } -- updated value
 		end
 		if context.joker_main then
 			card.config.trigger = true -- context.edition triggers twice, this makes it only trigger once (only for jonklers)
@@ -808,12 +816,9 @@ local oversat = {
 	-- Note: Duping playing cards resets the base chips for some reason
 	on_apply = function(card)
 		if not card.ability.cry_oversat then
-			Cryptid.with_deck_effects(card, function(card)
-				Cryptid.misprintize(card, {
-					min = 2,
-					max = 2,
-				}, nil, true)
-			end)
+			Cryptid.manipulate(card, {
+				value = 2,
+			}, nil, true)
 			if card.config.center.apply_oversat then
 				card.config.center:apply_oversat(card, function(val)
 					return Cryptid.misprintize_val(val, {
@@ -826,10 +831,8 @@ local oversat = {
 		card.ability.cry_oversat = true
 	end,
 	on_remove = function(card)
-		Cryptid.with_deck_effects(card, function(card)
-			Cryptid.misprintize(card, { min = 1, max = 1 }, true)
-			Cryptid.misprintize(card) -- Correct me if i'm wrong but this is for misprint deck. or atleast it is after this patch
-		end)
+		Cryptid.manipulate(card, { value = 1 / 2 })
+		Cryptid.manipulate(card) -- Correct me if i'm wrong but this is for misprint deck. or atleast it is after this patch
 		card.ability.cry_oversat = nil
 	end,
 	init = function(self)
@@ -933,17 +936,17 @@ local glitched = {
 	-- Note: Duping playing cards resets the base chips for some reason
 	on_apply = function(card)
 		if not card.ability.cry_glitched then
-			Cryptid.with_deck_effects(card, function(card)
-				Cryptid.misprintize(card, {
-					min = 0.1,
-					max = 10,
-				}, nil, true)
-			end)
+			Cryptid.manipulate(card, {
+				min = 0.1,
+				max = 10,
+			})
+
 			if card.config.center.apply_glitched then
 				card.config.center:apply_glitched(card, function(val)
-					return Cryptid.misprintize_val(val, {
+					return Cryptid.manipulate_value(val, {
 						min = 0.1 * (G.GAME.modifiers.cry_misprint_min or 1),
 						max = 10 * (G.GAME.modifiers.cry_misprint_max or 1),
+						type = "X",
 					}, Cryptid.is_card_big(card))
 				end)
 			end
@@ -951,10 +954,8 @@ local glitched = {
 		card.ability.cry_glitched = true
 	end,
 	on_remove = function(card)
-		Cryptid.with_deck_effects(card, function(card)
-			Cryptid.misprintize(card, { min = 1, max = 1 }, true)
-			Cryptid.misprintize(card) -- Correct me if i'm wrong but this is for misprint deck. or atleast it is after this patch
-		end)
+		Cryptid.manipulate(card, { min = 1, max = 1, dont_stack = true })
+		Cryptid.manipulate(card) -- Correct me if i'm wrong but this is for misprint deck. or atleast it is after this patch
 		card.ability.cry_glitched = nil
 	end,
 	init = function(self)
@@ -1146,6 +1147,10 @@ local astral = {
 		code = {
 			"Math",
 		},
+		art = {
+			"lord.ruby",
+			"Oiiman",
+		},
 	},
 	object_type = "Edition",
 	dependencies = {
@@ -1168,8 +1173,8 @@ local astral = {
 		return G.GAME.edition_rate * self.weight
 	end,
 	config = { e_mult = 1.1, trigger = nil },
-	loc_vars = function(self, info_queue)
-		return { vars = { self.config.e_mult } }
+	loc_vars = function(self, info_queue, card)
+		return { vars = { card and card.edition and card.edition.e_mult or self.config.e_mult } }
 	end,
 	calculate = function(self, card, context)
 		if
@@ -1182,7 +1187,7 @@ local astral = {
 				and context.cardarea == G.play
 			)
 		then
-			return { e_mult = self.config.e_mult } -- updated value
+			return { e_mult = card and card.edition and card.edition.e_mult or self.config.e_mult } -- updated value
 		end
 		if context.joker_main then
 			card.config.trigger = true -- context.edition triggers twice, this makes it only trigger once (only for jonklers)
@@ -1248,10 +1253,16 @@ local blurred = {
 			)
 		then
 			local extra_retrigger = pseudorandom("cry_blurred")
-				<= G.GAME.probabilities.normal / self.config.retrigger_chance
+				<= G.GAME.probabilities.normal
+					/ (card and card.edition and card.edition.retrigger_chance or self.config.retrigger_chance)
 			return {
 				message = localize("cry_again_q"),
-				repetitions = self.config.retriggers + (extra_retrigger and self.config.extra_retriggers or 0),
+				repetitions = (card and card.edition and card.edition.retriggers or self.config.retriggers)
+					+ (
+						extra_retrigger and card and card.edition and card.edition.extra_retriggers
+						or self.config.extra_retriggers
+						or 0
+					),
 				card = card,
 			}
 		end
@@ -1320,9 +1331,13 @@ local noisy = {
 				and context.cardarea == G.play
 			)
 		then
+			local min_mult = card and card.edition and card.edition.min_mult or self.config.min_mult
+			local max_mult = card and card.edition and card.edition.max_mult or self.config.max_mult
+			local min_chips = card and card.edition and card.edition.min_chips or self.config.min_chips
+			local max_chips = card and card.edition and card.edition.max_chips or self.config.max_chips
 			return {
-				mult = pseudorandom("cry_noisy_mult", self.config.min_mult, self.config.max_mult),
-				chips = pseudorandom("cry_noisy_chips", self.config.min_chips, self.config.max_chips),
+				mult = pseudorandom("cry_noisy_mult", min_mult, max_mult),
+				chips = pseudorandom("cry_noisy_chips", min_chips, max_chips),
 			} -- updated value
 		end
 		if context.joker_main then
@@ -1553,8 +1568,8 @@ local noisy = {
 		end
 
 		AurinkoAddons.cry_noisy = function(card, hand, instant, amount)
-			local modc = pseudorandom("cry_noisy_chips_aurinko", noisy_stats.min.chips, noisy_stats.max.chips)
-			local modm = pseudorandom("cry_noisy_mult_aurinko", noisy_stats.min.mult, noisy_stats.max.mult)
+			local modc = pseudorandom("cry_noisy_chips_aurinko", noisy_stats.min.chips, noisy_stats.max.chips) * amount
+			local modm = pseudorandom("cry_noisy_mult_aurinko", noisy_stats.min.mult, noisy_stats.max.mult) * amount
 			G.GAME.hands[hand].chips = math.max(G.GAME.hands[hand].chips + modc, 1)
 			G.GAME.hands[hand].mult = math.max(G.GAME.hands[hand].mult + modm, 1)
 			if not instant then
@@ -1672,8 +1687,8 @@ local jollyedition = {
 	shader = "m",
 	disable_base_shader = true,
 	disable_shadow = true,
-	loc_vars = function(self, info_queue)
-		return { vars = { self.config.mult } }
+	loc_vars = function(self, info_queue, card)
+		return { vars = { card and card.edition and card.edition.mult or self.config.mult } }
 	end,
 	calculate = function(self, card, context)
 		if
@@ -1686,7 +1701,7 @@ local jollyedition = {
 				and context.cardarea == G.play
 			)
 		then
-			return { mult = self.config.mult } -- updated value
+			return { card and card.edition and card.edition.mult or self.config.mult } -- updated value
 		end
 		if context.joker_main then
 			card.config.trigger = true -- context.edition triggers twice, this makes it only trigger once (only for jonklers)
@@ -1809,18 +1824,18 @@ local glass_edition = {
 	weight = 7,
 	extra_cost = 2,
 	config = { x_mult = 3, shatter_chance = 8, trigger = nil },
-	loc_vars = function(self, info_queue)
+	loc_vars = function(self, info_queue, card)
 		return {
 			vars = {
-				(self.config.shatter_chance - 1),
-				self.config.shatter_chance,
-				self.config.x_mult,
+				((card and card.edition and card.edition.shatter_chance or self.config.shatter_chance) - 1),
+				(card and card.edition and card.edition.shatter_chance or self.config.shatter_chance),
+				card and card.edition and card.edition.x_mult or self.config.x_mult,
 			},
 		}
 	end,
 	calculate = function(self, card, context)
 		if context.edition and context.cardarea == G.jokers and card.config.trigger then
-			return { x_mult = self.config.x_mult }
+			return { x_mult = card and card.edition and card.edition.x_mult or self.config.x_mult }
 		end
 
 		if
@@ -1938,8 +1953,8 @@ local gold_edition = {
 	extra_cost = 4,
 	in_shop = true,
 	config = { dollars = 2, active = true },
-	loc_vars = function(self, info_queue)
-		return { vars = { self.config.dollars } }
+	loc_vars = function(self, info_queue, card)
+		return { vars = { card and card.edition and card.edition.dollars or self.config.dollars } }
 	end,
 	sound = {
 		sound = "cry_e_golden",
@@ -1965,7 +1980,7 @@ local gold_edition = {
 				and context.consumeable == card
 			)
 		then
-			return { p_dollars = self.config.dollars } -- updated value
+			return { p_dollars = card and card.edition and card.edition.dollars or self.config.dollars } -- updated value
 		end
 	end,
 }
@@ -2115,6 +2130,9 @@ local double_sided = {
 		end
 		function Card:flip_side()
 			local card = self
+			if not card.ability.immutable then
+				card.ability.immutable = {}
+			end
 			if card.ability.immutable.other_side then
 				if type(card.ability.immutable.other_side) == "string" then
 					if next(find_joker("cry-Flip Side")) then
@@ -2153,6 +2171,9 @@ local double_sided = {
 							and card.ability.immutable.other_side.seal
 						or nil
 					card:set_ability(G.P_CENTERS[card.ability.immutable.other_side], true, true)
+					if not card.ability.immutable then
+						card.ability.immutable = {}
+					end
 					card.ability.immutable.other_side = curr_abil
 					card.ability.immutable.other_side.key = key
 					card.ability.immutable.other_side.seal = G.P_SEALS[seal] and seal or nil
@@ -2201,6 +2222,9 @@ local double_sided = {
 					card:set_ability(card.ability.immutable.other_side.key, true, true)
 					if card.ability.immutable.other_side then
 						card.ability = copy_table(card.ability.immutable.other_side)
+					end
+					if not card.ability.immutable then
+						card.ability.immutable = {}
 					end
 					card.ability.immutable.other_side = curr_abil
 					card.ability.immutable.other_side.key = key
@@ -2425,72 +2449,6 @@ G.FUNCS.merge_ds = function(e)
 	end
 end
 
-local meld = {
-	object_type = "Consumable",
-	dependencies = {
-		items = {
-			"set_cry_misc",
-			"e_cry_double_sided",
-		},
-	},
-	set = "Tarot",
-	name = "cry-Meld",
-	key = "meld",
-	order = 3,
-	pos = { x = 4, y = 4 },
-	config = { extra = 4 },
-	cost = 4,
-	atlas = "atlasnotjokers",
-	can_use = function(self, card)
-		if
-			#G.jokers.highlighted
-				+ #G.hand.highlighted
-				- (G.hand.highlighted[1] and G.hand.highlighted[1] == self and 1 or 0)
-			== 1
-		then
-			if
-				#G.jokers.highlighted == 1
-				and (Card.no(G.jokers.highlighted[1], "dbl") or G.jokers.highlighted[1].edition)
-			then
-				return false
-			end
-			if #G.hand.highlighted == 1 and G.hand.highlighted[1].edition then
-				return false
-			end
-			return true
-		end
-	end,
-	cry_credits = {
-		art = {
-			"Linus Goof Balls",
-		},
-		code = {
-			"Math",
-		},
-		jolly = {
-			"Jolly Open Winner",
-			"Axolotolus",
-		},
-	},
-	loc_vars = function(self, info_queue)
-		info_queue[#info_queue + 1] = G.P_CENTERS.e_cry_double_sided
-	end,
-	use = function(self, card, area, copier)
-		if #G.jokers.highlighted == 1 then
-			G.jokers.highlighted[1]:remove_from_deck(true)
-			G.jokers.highlighted[1]:set_edition({ cry_double_sided = true })
-			G.jokers.highlighted[1]:add_to_deck(true)
-			G.jokers:remove_from_highlighted(G.jokers.highlighted[1])
-		else
-			G.hand.highlighted[1]:set_edition({ cry_double_sided = true })
-			G.hand:remove_from_highlighted(G.hand.highlighted[1])
-		end
-	end,
-	in_pool = function()
-		return G.GAME.used_vouchers.v_cry_double_slit
-	end,
-}
-
 -- Absolute
 -- Can't be sold, destroyed, Absolute can't be removed
 local absolute = {
@@ -2559,7 +2517,6 @@ local miscitems = {
 	blessing,
 	azure_seal,
 	double_sided,
-	meld,
 	abstract,
 	instability,
 	absolute,

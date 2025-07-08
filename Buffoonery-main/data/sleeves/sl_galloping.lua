@@ -7,7 +7,9 @@ CardSleeves.Sleeve {
         x = 1,
         y = 0,
     },
-    config = {},
+    config = {
+		jokers = {j_buf_blackstallion, j_buf_whitepony}
+	},
 	loc_vars = function(self)
 		local key
 		local vars = {}
@@ -16,7 +18,7 @@ CardSleeves.Sleeve {
         else
 			key = self.key
 		end
-		return {key = key, vars = vars}
+		return {key = key, vars = {localize{type = 'name_text', key = 'j_buf_blackstallion', set = 'Joker'}, localize{type = 'name_text', key = 'j_buf_whitepony', set = 'Joker'}}}
     end,
     apply = function(self)
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.8, func = function()

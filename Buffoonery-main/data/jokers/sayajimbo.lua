@@ -2,10 +2,7 @@ SMODS.Joker { -- 5k, 50k, 100k
     key = "sayajimbo",
     name = "Sayajimbo",
     atlas = 'sayatlas',
-    pos = {
-        x = 0,
-        y = 0,
-    },
+    pos = { x = 0, y = 0 },
     rarity = 2,
     cost = 6,
     unlocked = true,
@@ -14,7 +11,10 @@ SMODS.Joker { -- 5k, 50k, 100k
     perishable_compat = true,
     blueprint_compat = true,
     config = {
-        extra = { chips = 40, mult = 20, xmult = 3, emult = 1.30, curr = 0, need = 1, score = 5000, level = 0},
+        extra = {
+		    chips = 40, mult = 20, xmult = 3, emult = 1.30, curr = 0, need = 1, score = 5000, level = 0,
+		    pos_override = { x = 0, y = 0 } -- default like normal pos
+		},
     },
     loc_txt = {set = 'Joker', key = 'j_buf_sayajimbo'},
     loc_vars = function(self, info_queue, card)
@@ -34,8 +34,14 @@ SMODS.Joker { -- 5k, 50k, 100k
 			}
 		end
     end,
-	add_to_deck = function(self, card, context)
-		card.config.center.pos.x = 0 -- reset sprite when added to deck
+	-------- THANKS, FLOWIRE! --------
+	load = function(self, card, card_table, other_card)
+		G.E_MANAGER:add_event(Event({
+			func = function()
+				card.children.center:set_sprite_pos(card.ability.extra.pos_override)
+				return true
+			end
+		}))
 	end,
     calculate = function(self, card, context)
         if context.joker_main then
@@ -66,7 +72,8 @@ SMODS.Joker { -- 5k, 50k, 100k
 						G.E_MANAGER:add_event(Event({
 							func = function()
 							card:juice_up(1, 0.5)
-							card.config.center.pos.x = card.ability.extra.level
+							card.ability.extra.pos_override.x = card.ability.extra.level
+							card.children.center:set_sprite_pos(card.ability.extra.pos_override)
 						return true end}))
 						SMODS.calculate_effect({message = localize('k_upgrade_ex'), colour = G.C.FILTER}, card)
 						return true

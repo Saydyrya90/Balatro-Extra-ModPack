@@ -2,10 +2,7 @@ SMODS.Joker {
     key = "roulette",
     name = "Russian Roulette",
     atlas = 'rouletteatlas',
-    pos = {
-        x = 0,
-        y = 0,
-    },
+    pos = { x = 0, y = 0 },
     rarity = 2,
     cost = 6,
     unlocked = true,
@@ -14,7 +11,10 @@ SMODS.Joker {
     perishable_compat = true,
     blueprint_compat = false,
     config = {
-        extra = {money = 15, odds = 6} 
+        extra = {
+			money = 15, odds = 6,
+		    pos_override = { x = 0, y = 0 } -- default like normal pos
+		} 
     },
     loc_txt = {set = 'Joker', key = 'j_buf_roulette'},
 	loc_vars = function(self, info_queue, card)
@@ -22,7 +22,17 @@ SMODS.Joker {
 			vars = { G.GAME.probabilities.normal or 1, card.ability.extra.odds, card.ability.extra.money}
 		}
 	end,
-
+	-------- THANKS, FLOWIRE! --------
+	load = function(self, card, card_table, other_card)
+		G.E_MANAGER:add_event(Event({
+			func = function()
+				-- Is this neccessary? No!
+				-- Did I do it anyways? Yeah...
+				card.children.center:set_sprite_pos(card.ability.extra.pos_override)
+				return true
+			end
+		}))
+	end,
     calculate = function(self, card, context)
 		if context.setting_blind and not context.blueprint then
 			should_jiggle = false
@@ -30,14 +40,16 @@ SMODS.Joker {
 				card:juice_up(0.8, 0.5)
 				SMODS.calculate_effect({message = localize('buf_ydead'), colour = G.C.RED}, card)
 				play_sound('buf_roul2', 0.96+math.random()*0.08, 0.7)
-				card.config.center.pos.x = 1
+				card.ability.extra.pos_override.x = 1
+				card.children.center:set_sprite_pos(card.ability.extra.pos_override)
 				card.ability.extra.odds = math.max(card.ability.extra.odds - 1, 1)
 				G.E_MANAGER:add_event(  -- Thanks WilsontheWolf for the help! (and code!)
 					Event({
 						trigger = "after",
 						delay = 0.2,
 						func = function()
-							card.config.center.pos.x = 0
+							card.ability.extra.pos_override.x = 0
+							card.children.center:set_sprite_pos(card.ability.extra.pos_override)
 							if G.STATE ~= G.STATES.SELECTING_HAND then
 								return false
 							end
@@ -53,15 +65,12 @@ SMODS.Joker {
 				if card.ability.extra.odds == 2 then -- when chance is 1/2, create a Legendary Joker
 					card.ability.extra.odds = math.max(card.ability.extra.odds - 1, 1)
 					play_sound('buf_roul1', 0.96+math.random()*0.08)
-					local jokers_to_create = math.min(1, G.jokers.config.card_limit - (#G.jokers.cards + G.GAME.joker_buffer))
-					G.GAME.joker_buffer = G.GAME.joker_buffer + jokers_to_create
+					G.GAME.joker_buffer = G.GAME.joker_buffer + 1
 					G.E_MANAGER:add_event(Event({
 						func = function() 
-							for i = 1, jokers_to_create do
-								SMODS.add_card({set = 'Joker', rarity = 'Legendary'})
-								SMODS.calculate_effect({message = localize('k_plus_joker'), colour = G.C.BLUE}, card)
-								card:start_dissolve()
-							end
+							card:start_dissolve()
+							_card = SMODS.add_card({set = 'Joker', rarity = 'Legendary'})
+							SMODS.calculate_effect({message = localize('k_plus_joker'), colour = G.C.BLUE}, _card)
 							return true
 						end}))   
 				else

@@ -29,25 +29,137 @@ local pointer = {
 		return true
 	end,
 	use = function(self, card, area, copier)
+		if not card.ability.cry_multiuse or to_big(card.ability.cry_multiuse) <= to_big(1) then
+			G.GAME.CODE_DESTROY_CARD = copy_card(card)
+			G.consumeables:emplace(G.GAME.CODE_DESTROY_CARD)
+		else
+			card.ability.cry_multiuse = card.ability.cry_multiuse + 1
+		end
 		G.GAME.USING_CODE = true
-		G.GAME.USING_POINTER = true
-		G.ENTERED_CARD = ""
-		G.CHOOSE_CARD = UIBox({
-			definition = create_UIBox_pointer(card),
-			config = {
-				align = "cm",
-				offset = { x = 0, y = 10 },
-				major = G.ROOM_ATTACH,
-				bond = "Weak",
-				instance_type = "POPUP",
-			},
-		})
-		G.CHOOSE_CARD.alignment.offset.y = 0
-		G.ROOM.jiggle = G.ROOM.jiggle + 1
-		G.CHOOSE_CARD:align_to_major()
-		check_for_unlock({ cry_used_consumable = "c_cry_pointer" })
+		G.E_MANAGER:add_event(Event({
+			func = function()
+				G.GAME.USING_POINTER = true
+				G.FUNCS.overlay_menu({ definition = create_UIBox_your_collection() })
+				return true
+			end,
+		}))
+		G.GAME.POINTER_SUBMENU = nil
 	end,
 	init = function(self)
+		local ccl = Card.click
+		function Card:click()
+			if G.GAME.USING_POINTER then
+				if not self.debuff then
+					if self.config.center.consumeable then
+						local copy = copy_card(self)
+						copy:add_to_deck()
+						G.consumeables:emplace(copy)
+						G.FUNCS.exit_overlay_menu_code()
+						ccl(self)
+						if G.GAME.CODE_DESTROY_CARD then
+							G.GAME.CODE_DESTROY_CARD:start_dissolve()
+							G.GAME.CODE_DESTROY_CARD = nil
+						end
+					elseif self.config.center.set == "Booster" then
+						G.FUNCS.exit_overlay_menu_code()
+						local card = copy_card(self)
+						card.cost = 0
+						card.from_tag = true
+						G.FUNCS.use_card({ config = { ref_table = card } })
+						card:start_materialize()
+						created = true
+						ccl(self)
+						if G.GAME.CODE_DESTROY_CARD then
+							G.GAME.CODE_DESTROY_CARD:start_dissolve()
+							G.GAME.CODE_DESTROY_CARD = nil
+						end
+					elseif
+						self.config.center.key == "c_base"
+						or self.config.center.set == "Enhanced"
+						or self.edition
+						or G.GAME.POINTER_SUBMENU == "Edition"
+					then
+						--submenu stuff
+						if G.GAME.POINTER_SUBMENU == "Rank" then
+							G.GAME.POINTER_PLAYING.rank = self.base.value
+							G.FUNCS.overlay_menu({
+								definition = create_UIBox_pointer_suit(),
+							})
+						elseif G.GAME.POINTER_SUBMENU == "Suit" then
+							G.GAME.POINTER_PLAYING.suit = self.base.suit
+							G.FUNCS.overlay_menu({
+								definition = create_UIBox_pointer_enhancement(),
+							})
+						elseif G.GAME.POINTER_SUBMENU == "Enhancement" then
+							G.GAME.POINTER_PLAYING.center = self.config.center.key
+							G.FUNCS.overlay_menu({
+								definition = create_UIBox_pointer_edition(),
+							})
+						elseif G.GAME.POINTER_SUBMENU == "Edition" then
+							if self.edition then
+								G.GAME.POINTER_PLAYING.edition = self.edition.key
+							end
+							G.FUNCS.overlay_menu({
+								definition = create_UIBox_pointer_seal(),
+							})
+						elseif G.GAME.POINTER_SUBMENU == "Seal" then
+							G.GAME.POINTER_PLAYING.seal = self.seal
+							local card = SMODS.create_card({
+								key = G.GAME.POINTER_PLAYING.center,
+								rank = G.GAME.POINTER_PLAYING.rank,
+								suit = G.GAME.POINTER_PLAYING.suit,
+							})
+							card:set_ability(G.P_CENTERS[G.GAME.POINTER_PLAYING.center])
+							if G.GAME.POINTER_PLAYING.seal then
+								card:set_seal(G.GAME.POINTER_PLAYING.seal)
+							end
+							if G.GAME.POINTER_PLAYING.edition then
+								card:set_edition(G.GAME.POINTER_PLAYING.edition)
+							end
+							if G.STATE == G.STATES.SELECTING_HAND then
+								G.hand:emplace(card)
+							else
+								G.deck:emplace(card)
+							end
+							table.insert(G.playing_cards, card)
+							G.FUNCS.exit_overlay_menu_code()
+							G.GAME.POINTER_PLAYING = nil
+							if G.GAME.CODE_DESTROY_CARD then
+								G.GAME.CODE_DESTROY_CARD:start_dissolve()
+								G.GAME.CODE_DESTROY_CARD = nil
+							end
+						end
+					else
+						G.ENTERED_CARD = self.config.center.key
+						local ret = G.FUNCS.pointer_apply()
+						G.FUNCS.pointer_cancel()
+						if ret then
+							G.FUNCS.exit_overlay_menu_code()
+							ccl(self)
+							if G.GAME.CODE_DESTROY_CARD then
+								G.GAME.CODE_DESTROY_CARD:start_dissolve()
+								G.GAME.CODE_DESTROY_CARD = nil
+							end
+						else
+							G.GAME.USING_CODE = true
+							G.GAME.USING_POINTER = true
+						end
+					end
+				end
+			else
+				ccl(self)
+			end
+		end
+		local emplace_ref = CardArea.emplace
+		function CardArea:emplace(card, ...)
+			if G.GAME.USING_POINTER then
+				if Cryptid.pointergetblist(card.config.center.key)[1] then
+					card.debuff = true
+				end
+			end
+			return emplace_ref(self, card, ...)
+		end
+
 		function create_UIBox_pointer(card)
 			G.E_MANAGER:add_event(Event({
 				blockable = false,
@@ -135,7 +247,9 @@ local pointer = {
 			return t
 		end
 		G.FUNCS.pointer_cancel = function()
-			G.CHOOSE_CARD:remove()
+			if G.CHOOSE_CARD then
+				G.CHOOSE_CARD:remove()
+			end
 			G.GAME.USING_CODE = false
 			G.GAME.USING_POINTER = false
 			G.DEBUG_POINTER = false
@@ -163,7 +277,7 @@ local pointer = {
 			local entered_card = G.ENTERED_CARD
 			local valid_check = {}
 			G.PREVIOUS_ENTERED_CARD = G.ENTERED_CARD
-			current_card = Cryptid.pointergetalias(apply_lower(entered_card)) or nil
+			current_card = Cryptid.pointergetalias(entered_card) or nil
 			valid_check = Cryptid.pointergetblist(current_card)
 			if not valid_check[3] then
 				current_card = nil
@@ -250,26 +364,38 @@ local pointer = {
 					created = true
 				end
 				if created then
-					G.CHOOSE_CARD:remove()
+					if G.CHOOSE_CARD then
+						G.CHOOSE_CARD:remove()
+					end
 					G.GAME.USING_CODE = false
 					G.GAME.USING_POINTER = false
 					G.DEBUG_POINTER = false
-					return
+					return true
 				end
 			end
 
 			for i, v in pairs(G.P_TAGS) do -- TAGS
-				if Cryptid.pointergetalias(i) and not Cryptid.pointergetblist(i) then
+				local blacklist = Cryptid.pointergetblist(i)
+				-- gonna be real w/ you idk why pointergetblist is a table now so im just gonna check if everything in it is falsey
+				local can_spawn = true
+				for _, val in pairs(blacklist) do
+					can_spawn = can_spawn and not val
+				end
+
+				if Cryptid.pointergetalias(i) and can_spawn then
 					if v.name and apply_lower(entered_card) == apply_lower(v.name) then
 						current_card = i
+						break --no clue why this wasn't done before, you can't create 2 tags with one pointer
 					end
 					if apply_lower(entered_card) == apply_lower(i) then
 						current_card = i
+						break
 					end
 					if
 						apply_lower(entered_card) == apply_lower(localize({ type = "name_text", set = v.set, key = i }))
 					then
 						current_card = i
+						break
 					end
 				end
 			end
@@ -2569,12 +2695,37 @@ return {
 	name = "Pointer://",
 	items = pointeritems,
 	init = function()
-		print("[CRYPTID] Inserting Pointer Aliases")
-		local alify = Cryptid.pointeraliasify
-		Cryptid.pointerblistifytype("rarity", "cry_exotic", nil)
-		for key, aliasesTable in pairs(aliases) do
-			for _, alias in pairs(aliasesTable) do
-				alify(key, alias, nil)
+		function Cryptid.inject_pointer_aliases()
+			--print("[CRYPTID] Inserting Pointer Aliases")
+			local alify = Cryptid.pointeraliasify
+			Cryptid.pointerblistifytype("rarity", "cry_exotic", nil)
+			for key, aliasesTable in pairs(aliases) do
+				for _, alias in pairs(aliasesTable) do
+					alify(key, alias, nil)
+				end
+				alify(key, key, nil)
+			end
+			for _, group in pairs(G.localization.descriptions) do
+				if
+					_ ~= "Back"
+					and _ ~= "Content Set"
+					and _ ~= "Edition"
+					and _ ~= "Enhanced"
+					and _ ~= "Stake"
+					and _ ~= "Other"
+				then
+					for key, card in pairs(group) do
+						if G.P_CENTERS[key] then
+							alify(key, type(card.name) == "table" and card.name[1] or card.name, nil)
+							if G.P_CENTERS[key].name then
+								alify(key, G.P_CENTERS[key].name, nil)
+							end
+							if G.P_CENTERS[key].original_key then
+								alify(key, G.P_CENTERS[key].original_key, nil)
+							end
+						end
+					end
+				end
 			end
 		end
 	end,

@@ -17,6 +17,21 @@ end
 '''
 match_indent = true
 
+#Prevent Laidback from being added in packs with only 1 space left (Thanks, Flowire!)
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "G.FUNCS.can_select_card = function(e)"
+position = "after"
+payload = '''
+if e.config.ref_table.ability.set == 'Joker' and e.config.ref_table.ability.name == 'Laidback Joker' and not (#G.jokers.cards < G.jokers.config.card_limit - 1) then
+	e.config.colour = G.C.UI.BACKGROUND_INACTIVE
+    e.config.button = nil
+    return
+end
+'''
+match_indent = true
+
 # Adoring Fan/Bitter Ex-Fan negative cost and Echo of The Abyss no sell gain
 [[patches]]
 [patches.pattern]

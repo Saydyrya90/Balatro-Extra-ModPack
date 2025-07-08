@@ -7,7 +7,9 @@ CardSleeves.Sleeve {
         x = 2,
         y = 0,
     },
-    config = {},
+    config = {
+		jokers = {j_buf_dorkshire, j_buf_dorkshire_g}
+	},
 	loc_vars = function(self)
 		local key
 		local vars = {}
@@ -16,7 +18,7 @@ CardSleeves.Sleeve {
         else
 			key = self.key
 		end
-		return {key = key, vars = vars}
+		return {key = key, vars = {localize{type = 'name_text', key = 'j_buf_dorkshire', set = 'Joker'}, localize{type = 'name_text', key = 'j_buf_dorkshire_g', set = 'Joker'}}}
     end,
     apply = function(self)
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.8, func = function()
@@ -44,7 +46,7 @@ CardSleeves.Sleeve {
 			card:start_materialize()
 			card:set_edition()
             G.GAME.joker_buffer = 0
-			
+			G.GAME.starting_deck_size = #G.playing_cards
         return true end }))
     end,
 }

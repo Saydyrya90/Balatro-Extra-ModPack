@@ -180,4 +180,24 @@ jd["j_hack"] = {
 	end
 }
 
+
+jd["j_raised_fist"].calc_function = function(card)
+            local temp_Mult, temp_Value = 999999, 999999
+            local temp_card = nil
+            local retriggers = 1
+            for i = 1, #G.hand.cards do
+                if not G.hand.cards[i].highlighted and not SMODS.has_no_rank(G.hand.cards[i]) and 
+                    temp_Value >= SMODS.Ranks[G.hand.cards[i].base.value].sort_nominal then
+                    retriggers = JokerDisplay.calculate_card_triggers(G.hand.cards[i], nil, true)
+                    temp_Mult = G.hand.cards[i].base.nominal
+                    temp_Value = SMODS.Ranks[G.hand.cards[i].base.value].sort_nominal
+                    temp_card = G.hand.cards[i]
+                end
+            end
+            if not temp_card or temp_card.debuff or temp_card.facing == 'back' then
+                temp_Mult = 0
+            end
+            card.joker_display_values.mult = (temp_Mult < 999999 and temp_Mult * 2 * retriggers or 0)
+        end
+
 end

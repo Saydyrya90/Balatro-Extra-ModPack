@@ -257,7 +257,7 @@ return {
 			j_buf_maggit_alt = { 
 				name = "Maggit",
 				text = {
-					"{X:dark_edition,C:white}^#1#{} Multi se você tem",
+					"{X:expmult,C:white}^#1#{} Multi se você tem",
 					"um Curinga do {C:dark_edition}Nu Metal{}",
 					"Se não, {C:attention}só uma vez{}, crie um",
 					"quando o {C:attention}Blind{} for escolhido",
@@ -396,15 +396,15 @@ return {
         Back = {
 			b_buf_jstation = {
 				name = "Baralho do JimboStation",
-				text = {"Comece com um",
-						"{C:red}Memory Card{}",
+				text = {"Comece com o Curinga",
+						"{C:red,T:j_buf_memcard}#1#{}",
 						"{C:attention}+1{} tamanho de mão"
 				}
 			},
 			b_buf_galloping = {
 				name = "Baralho Galopeiro",
-				text = {"Comece com um",
-						"{C:buf_spc} Black Stallion{}",
+				text = {"Comece com o Curinga",
+						"{C:buf_spc,T:j_buf_blackstallion}#1#{}",
 				},
 				unlock = {"Alcance a Aposta",
 						  "Nível {C:attention}10"
@@ -412,8 +412,8 @@ return {
 			},
 			b_buf_porcelain = {
 				name = "Baralho de Porcelana",
-				text = {"Comece com um",
-						"{C:red}Chá Dorkshire{}",
+				text = {"Comece com o Curinga",
+						"{C:red,T:j_buf_dorkshire}#1#{}",
 						"e 1 {C:attention}Naipe{} a",
 						"menos no baralho"
 				}
@@ -421,7 +421,7 @@ return {
 			b_buf_sandstone = {
 				name = "Baralho de Arenito",
 				text = {"Vença na {C:attention}Aposta 6{}",
-						"x2 tamanho base do Blind"
+						"{C:red}X2{} tamanho base do Blind"
 				}
 			},
         },
@@ -527,43 +527,43 @@ return {
         Sleeve = {
 			sleeve_buf_jstation = {
 				name = "Capa do JimboStation",
-				text = {"Comece com um",
-						"{C:red}Memory Card{}",
+				text = {"Comece com o Curinga",
+						"{C:red,T:j_buf_memcard}#1#{}",
 						"{C:attention}+1{} tamanho de mão"
 				}
 			},
 			sleeve_buf_jstation_alt = {
 				name = "Capa do JimboStation",
-				text = {"Seu {C:red}Memory Card{}",
-						"é {C:buf_spc}especial{}",
+				text = {"Comece com o Curinga",
+						"{C:buf_spc,T:j_buf_dxmemcard}#2#{}",
 						"{C:attention}+1{} tamanho de mão"
 				}
 			},
 			sleeve_buf_galloping = {
 				name = "Capa Galopeira",
-				text = {"Comece com um",
-						"{C:buf_spc}Black Stallion{}",
+				text = {"Comece com o Curinga",
+						"{C:buf_spc,T:j_buf_blackstallion}#1#{}",
 				}
 			},
 			sleeve_buf_galloping_alt = {
 				name = "Capa Galopeira",
-				text = {"Você começa com um",
-						"{C:green}White Pony{} em vez disso",
-						"{C:blue}-2{} mãos"
+				text = {"Comece com o Curinga",
+						"{C:green,T:j_buf_whitepony}#2#{}",
+						"{C:blue}-2{} mãos cada rodada"
 				}
 			},
 			sleeve_buf_porcelain = {
 				name = "Capa de Porcelana",
-				text = {"Comece com um",
-						"{C:red}Chá Dorkshire{}",
+				text = {"Comece com o Curinga",
+						"{C:red,T:j_buf_dorkshire}#1#{}",
 						"e 1 {C:attention}Naipe{} a",
 						"menos no baralho"
 				}
 			},
 			sleeve_buf_porcelain_alt = {
 				name = "Capa de Porcelana",
-				text = {"Comece com um",
-						"{C:buf_spc}Dorkshire Gold{}",
+				text = {"Comece com o Curinga",
+						"{C:buf_spc,T:j_buf_dorkshire_g}#2#{}",
 						"e 1 {C:attention}Naipe{} a",
 						"menos no baralho"
 				}
@@ -571,13 +571,13 @@ return {
 			sleeve_buf_sandstone = {
 				name = "Capa de Arenito",
 				text = {"Vença na {C:attention}Aposta 6{}",
-						"x2 tamanho base do Blind"
+						"{C:red}X2{} tamanho base do Blind"
 				}
 			},
 			sleeve_buf_sandstone_alt = {
 				name = "Capa de Arenito",
 				text = {"Vença na {C:attention}Aposta 5{}",
-						"x3 tamanho base do Blind"
+						"{C:red}X2.5{} tamanho base do Blind"
 				}
 			},
         },

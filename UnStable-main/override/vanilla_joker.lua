@@ -34,18 +34,15 @@ SMODS.Joker:take_ownership('fibonacci', {
 		if context.individual and context.cardarea == G.play then
 			local nominal = context.other_card.base.nominal
 			
-			if not context.other_card.config.center.no_rank and (unstb_global.fibo[nominal] or context.other_card.base.value == 'Ace') then
+			if not SMODS.has_no_rank(context.other_card) and (unstb_global.fibo[nominal] or context.other_card.base.value == 'Ace') then
 				return {
 				  mult = card.ability.extra.mult,
 				  card = card
 				}
 				
 			else
-				--Failsafe for mod compat
-				--[[return {
-					mult = 0,
-					juice_card = false,
-				}]]
+				--Return empty table to prevent vanilla calculation
+				return {}
 			end
 		end
 		
@@ -69,7 +66,7 @@ end
 --Check for a modulo and remainder of the card's rank - used for both odd and even check
 function unstb_global.modulo_check(card, mod, remainder)
 
-	if card.config.center.no_rank then
+	if SMODS.has_no_rank(card) then
 		return false
 	end
 	
@@ -107,11 +104,8 @@ SMODS.Joker:take_ownership('odd_todd', {
 				}
 				
 			else
-				--Failsafe for mod compat
-				--[[return {
-					chips = 0,
-					juice_card = false,
-				}]]
+				--Return empty table to prevent vanilla calculation
+				return {}
 			end
 		end
 		
@@ -141,11 +135,8 @@ SMODS.Joker:take_ownership('even_steven', {
 				}
 				
 			else
-				--Failsafe for mod compat
-				--[[return {
-					mult = 0,
-					juice_card = false,
-				}]]
+				--Return empty table to prevent vanilla calculation
+				return {}
 			end
 		end
 		
@@ -180,7 +171,7 @@ SMODS.Joker:take_ownership('hack', {
 	
 	calculate = function(self, card, context)
 		if context.cardarea == G.play and context.repetition and not context.repetition_only then
-		  if not context.other_card.config.center.no_rank and unstb_global.hack[context.other_card.base.value] then
+		  if not SMODS.has_no_rank(context.other_card) and unstb_global.hack[context.other_card.base.value] then
 				return {
 				  message = 'Again!',
 				  repetitions = card.ability.extra,
@@ -190,4 +181,41 @@ SMODS.Joker:take_ownership('hack', {
 		end
 	end,
 	
+}, true)
+
+--Raised Fist
+--Original Vanilla Code does not play well with modded ranks because of the hardcoded rank ID
+--This should function identically as the original
+
+SMODS.Joker:take_ownership('raised_fist', {
+	calculate = function(self, card, context)
+		if context.individual and context.cardarea == G.hand and not context.end_of_round then
+			local temp_Mult, temp_Value = 15, 99999
+			local raised_card = nil
+			for i=1, #G.hand.cards do
+				if not SMODS.has_no_rank(G.hand.cards[i]) and temp_Value >= SMODS.Ranks[G.hand.cards[i].base.value].sort_nominal  then 
+					temp_Mult = G.hand.cards[i].base.nominal
+					temp_Value = SMODS.Ranks[G.hand.cards[i].base.value].sort_nominal
+					raised_card = G.hand.cards[i]
+				end
+			end
+			if raised_card == context.other_card then 
+				if context.other_card.debuff then
+					return {
+						message = localize('k_debuffed'),
+						colour = G.C.RED,
+						card = card,
+					}
+				else
+					return {
+						h_mult = 2*temp_Mult,
+						card = card,
+					}
+				end
+			else
+				--Return empty table to prevent vanilla calculation
+				return {}
+			end
+		end
+	end,
 }, true)

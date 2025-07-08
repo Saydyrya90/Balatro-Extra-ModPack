@@ -363,3 +363,16 @@ G.ARGS.LOC_COLOURS.expchips = SMODS.Gradients.buf_expchips
 -- Added Integral
 -- added Palladium and Spinel stakes
 -- added Sandstone Deck/Sleeve
+
+-- RECENT CHANGES (01/06/2025)
+-- Sandstone sleeve now stacks with base Blind score-altering decks such as plasma
+-- Fixed text aesthetic inconsistencies
+-- Fixed Laidback Joker being selectable in a booster pack with less than 2 free spaces
+-- Added info_queue to sleeve and deck descriptions that benefit from it
+-- Fixed Erosion not working with Porcelain Sleeve
+-- Fixed Roulette not adding a joker when slots were full
+---------- TODO -------------- 
+-- Fix Jokergebra breaking retriggers
+-- Fix Porcelain cards making other cards be destroyed
+-- Fix Porcelain retrigger
+-- Fix Stakes

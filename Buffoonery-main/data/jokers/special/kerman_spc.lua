@@ -2,10 +2,7 @@ SMODS.Joker {
     key = "kerman_spc",
     name = "Jebediah Reborn",
     atlas = 'kermanatlas',
-    pos = {
-        x = 0,
-        y = 1,
-    },
+    pos = { x = 0, y = 1 },
     rarity = 'buf_spc',
     cost = 4,
     unlocked = false,
@@ -15,7 +12,10 @@ SMODS.Joker {
     blueprint_compat = true,
 	in_pool = false,
     config = {
-        extra = { mult = 0, gain = 8, supergain = 1.25},
+        extra = {
+		    mult = 0, gain = 8, supergain = 1.25,
+		    pos_override = { x = 0, y = 1 } -- default like normal pos
+		},
     },
 	sprite = {
 		['Default'] = 0,
@@ -41,13 +41,19 @@ SMODS.Joker {
             vars = {card.ability.extra.mult, card.ability.extra.gain, ((card.ability.extra.supergain - 1)*100)}
         }
     end,
-	
+	-------- THANKS, FLOWIRE! --------
+	load = function(self, card, card_table, other_card)
+		G.E_MANAGER:add_event(Event({
+			func = function()
+				card.children.center:set_sprite_pos(card.ability.extra.pos_override)
+				return true
+			end
+		}))
+	end,
 	add_to_deck = function(self, card, context)
-		card.config.center.pos.x = card.config.center.sprite['Default'] -- Set to default sprite when added to deck, just in case
 		card.ability.extra.mult = G.GAME.pool_flags.kermans_mult or 0 -- Uses the mult value Jeb had before
 		G.GAME.pool_flags.kerman_is_krakened = true -- Prevents spawning again if another black hole is used
 	end,
-	
     calculate = function(card, card, context)
         if context.joker_main then
             return {
@@ -62,7 +68,8 @@ SMODS.Joker {
 					G.E_MANAGER:add_event(Event({
 						func = function()
 						card:juice_up(1, 0.5)
-						card.config.center.pos.x = card.config.center.sprite[context.consumeable.ability.name] or card.config.center.sprite['Default']
+						card.ability.extra.pos_override.x = card.config.center.sprite[context.consumeable.ability.name] or card.config.center.sprite['Default']
+						card.children.center:set_sprite_pos(card.ability.extra.pos_override)
 					return true end}))
 					SMODS.calculate_effect({message = localize('k_upgrade_ex'), colour = G.C.MULT}, card)
 					return true
@@ -75,7 +82,8 @@ SMODS.Joker {
 					G.E_MANAGER:add_event(Event({
 						func = function()
 						card:juice_up(1, 0.5)
-						card.config.center.pos.x = card.config.center.sprite['Default']
+						card.ability.extra.pos_override.x = card.config.center.sprite['Default']
+						card.children.center:set_sprite_pos(card.ability.extra.pos_override)
 					return true end}))
 					SMODS.calculate_effect({message = localize('buf_supergrade'), colour = G.C.SECONDARY_SET.Spectral}, card)
 					return true
@@ -84,7 +92,6 @@ SMODS.Joker {
 			end
 		end
     end,
-	
 		-- HIDE JOKER IN COLLECTION (THANKS, EREMEL) --
 	inject = function(self)
 		if not Buffoonery.config.show_spc then

@@ -8,6 +8,7 @@ SMODS.ConsumableType {
 
 SMODS.Bakery = SMODS.Consumable:extend({
     set = "Bakery",
+    config = {center = {config = {choose = 1}}},
     cost = 4,
     can_use = function(self, card, area, copier)
         return false

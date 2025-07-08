@@ -1086,7 +1086,7 @@ return {
 			--Edition Line
 			
 			["j_unstb_graphic_card"] = {
-				["name"] = "Graphic Card",
+				["name"] = "Graphics Card",
 				["text"] = {
 					"Create a {C:attention}Double Tag{}",
 					"at the end of the round",
@@ -1570,7 +1570,7 @@ return {
 				["name"] = "Inductor",
 				["text"] = {
 					"For every played card with the same",
-					"{C:attention}rank{} and suit{C:attention}{} as another played card:",
+					"{C:attention}rank{} and {C:attention}suit{} as another played card:",
 					"{C:green}#1# in #2#{} chance to copy {C:attention}Enhancement{}",
 					"{C:green}#1# in #3#{} chance to copy {C:attention}Edition{}",
 					"{C:green}#1# in #4#{} chance to copy {C:attention}Seal{}",
@@ -1627,7 +1627,8 @@ return {
 					"Mod with a lot of new but vanilla-style mechanics.",
 					"Contains new Jokers, consumables, and other stuff!",
 					" ",
-					"{C:blue}Brazilian Portuguese{} localization by {C:attention}PinkMaggit{}"
+					"{C:blue}Brazilian Portuguese{} localization by {C:attention}PinkMaggit{}",
+					"{C:blue}Simplified Chinese{} localization by {C:attention}Ethylenediamine{}"
 				}
 			}
 		}

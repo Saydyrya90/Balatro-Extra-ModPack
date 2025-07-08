@@ -1839,7 +1839,7 @@ end
 --Function wrapper to check if a card has decimal rank
 
 local function is_decimal(card)
-	return not SMODS.has_no_rank(card) and (SMODS.Ranks[card.base.value].is_decimal or SMODS.Ranks[card.base.value].decimal_compat)
+	return not SMODS.has_no_rank(card) and SMODS.Ranks[card.base.value] and (SMODS.Ranks[card.base.value].is_decimal or SMODS.Ranks[card.base.value].decimal_compat)
 end
 
 --Hook for Poker Hand name
@@ -2040,9 +2040,17 @@ SMODS.Rank {
     card_key = '?',
     pos = { x = 1 },
     nominal = 0,
-    next = { 'unstb_???' },
-	unstb_prev= { 'unstb_???' },
+    next = {},
+	unstb_prev= {},
     shorthand = '?',
+	
+	strength_effect = {
+            ignore = true
+        },
+		
+	decrease_effect = {
+		ignore = true
+	},
 	
 	in_pool = unstb_rankCheck,
 }
@@ -4655,7 +4663,7 @@ SMODS.Consumable{
 	
 		if #G.jokers.cards >= 1 then
 			for i=1, #G.jokers.cards do
-				if G.jokers.cards[i].edition then
+				if G.jokers.cards[i].edition and not unstb_global.siphon_blacklist[G.jokers.cards[i].edition.key] then
 					return true
 				end
 			end
@@ -8201,7 +8209,7 @@ create_joker({
 		return {vars = {card.ability.extra.xmult, card.ability.extra.odds_base * (G.GAME and G.GAME.probabilities.normal  or 1), card.ability.extra.odds_destroy, localize(card.ability.extra.target_hand, 'poker_hands')}}
     end,
 	
-    blueprint = true, eternal = true, perishable = true,
+    blueprint = true, eternal = false, perishable = true,
 	
 	set_ability = function(self,card, initial, delay_sprites)
 	
@@ -9498,11 +9506,11 @@ function unstb_process_english_loc()
 		local jokers = temp_loc.descriptions.Joker or {}
 		for k,v in pairs(jokers) do
 			if not unstb_global.name_joker[k] and not unstb_global.name_card[k] then
-				if v.name and string.match(string.lower(v.name), "joker") then
+				if v.name and type(v.name) == 'string' and string.match(string.lower(v.name), "joker") then
 					unstb_global.name_joker[k] = v.name
 				end
 				
-				if v.name and string.match(string.lower(v.name), "card") then
+				if v.name and type(v.name) == 'string' and string.match(string.lower(v.name), "card") then
 					unstb_global.name_card[k] = v.name
 				end
 			end
@@ -9512,7 +9520,7 @@ function unstb_process_english_loc()
 		local suit = (temp_loc.misc and temp_loc.misc.suits_singular) or {}
 		
 		for k,v in pairs(suit) do
-			if not unstb_global.name_suit[k] and v then
+			if not unstb_global.name_suit[k] and v and type(v) == 'string' then
 				local suit_name = string.lower(v)
 				
 				local vowel = suit_name:gsub("[^aeiou]","")

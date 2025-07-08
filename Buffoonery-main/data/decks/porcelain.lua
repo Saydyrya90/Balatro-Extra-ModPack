@@ -7,7 +7,12 @@ SMODS.Back{
         x = 2,
         y = 0,
     },
-    config = {},
+    config = {
+		jokers = {j_buf_dorkshire}
+	},
+	loc_vars = function(self, info_queue, card)
+		return {vars = {localize{type = 'name_text', key = 'j_buf_dorkshire', set = 'Joker'}}}
+	end,
 
     apply = function(self)
         G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.8, func = function()

@@ -2,10 +2,7 @@ SMODS.Joker {
     key = "tailored",
     name = "Tailored Suit",
     atlas = 'tailoratlas',
-    pos = {
-        x = 0,
-        y = 0,
-    },
+    pos = { x = 0, y = 0 },
     rarity = 2,
     cost = 6,
     unlocked = true,
@@ -14,7 +11,10 @@ SMODS.Joker {
     perishable_compat = true,
     blueprint_compat = true,
     config = {
-        extra = { init_xmult = 4, xmult = 1, tsuit = '-', percent = 0, suit_counts = {}, suit = 'Default' },
+        extra = { 
+			init_xmult = 4, xmult = 1, tsuit = '-', percent = 0, suit_counts = {}, suit = 'Default',
+		    pos_override = { x = 0, y = 0 } -- default like normal pos
+		},
     },
 	sprite = {
 		['Default'] = 0,
@@ -33,6 +33,15 @@ SMODS.Joker {
             vars = {card.ability.extra.init_xmult, card.ability.extra.xmult, card.ability.extra.tsuit}
         }
     end,
+	-------- THANKS, FLOWIRE! --------
+	load = function(self, card, card_table, other_card)
+		G.E_MANAGER:add_event(Event({
+			func = function()
+				card.children.center:set_sprite_pos(card.ability.extra.pos_override)
+				return true
+			end
+		}))
+	end,
 	update = function(self, card, context)
 		if G.playing_cards then -- prevents a crash when looking at this joker's page in the collection
 			for k in pairs(card.ability.extra.suit_counts) do -- Count occurrences of each suit
@@ -45,7 +54,7 @@ SMODS.Joker {
 				end
 			end
 			
-			card.config.center.pos.x = 0
+			card.ability.extra.pos_override.x = 0
 			card.ability.extra.percent = 0
 			local leng = 0 -- Calculate percentages
 			for _ in pairs(card.ability.extra.suit_counts) do -- manually counts the length of the suit_counts table
@@ -55,7 +64,7 @@ SMODS.Joker {
 				local percentage = (count / #G.playing_cards)
 				if percentage == card.ability.extra.percent then -- If there are 2 or more cards with the same percentage, the text/sprite will revert to default
 					card.ability.extra.tsuit = '-'
-					card.config.center.pos.x = 0
+					card.ability.extra.pos_override.x = 0
 				elseif percentage > card.ability.extra.percent then
 					card.ability.extra.percent = percentage
 					if card.ability.extra.percent == 1/leng then  -- If all suits have the same amount of cards, it'll not say a predominant suit
@@ -69,11 +78,12 @@ SMODS.Joker {
 							card.ability.extra.suit = suit
 						end
 						card.ability.extra.tsuit = localize('buf_'..card.ability.extra.suit)
-						card.config.center.pos.x = card.config.center.sprite[card.ability.extra.suit]
+						card.ability.extra.pos_override.x = card.config.center.sprite[card.ability.extra.suit]
 					end
 				end
 			end
 		
+			card.children.center:set_sprite_pos(card.ability.extra.pos_override)
 			card.ability.extra.xmult = card.ability.extra.percent * card.ability.extra.init_xmult -- Apply percentage to xmult
 		else
 			card.ability.extra.xmult = 1  -- Shows X1 xmult as current in the collection, alluding to the fact that the initial deck is (likely) uniform

@@ -2,10 +2,7 @@ SMODS.Joker {
     key = "kerman",
     name = "Jebediah Kerman",
     atlas = 'kermanatlas',
-    pos = {
-        x = 0,
-        y = 0,
-    },
+    pos = { x = 0, y = 0 },
     rarity = 1,
     cost = 4,
     unlocked = true,
@@ -14,7 +11,10 @@ SMODS.Joker {
     perishable_compat = true,
     blueprint_compat = true,
     config = {
-        extra = { mult = 0, gain = 8, odds = 6 },
+        extra = {
+		    mult = 0, gain = 8, odds = 6,
+		    pos_override = { x = 0, y = 0 } -- default like normal pos
+		},
     },
 	sprite = {
 		['Default'] = 0,
@@ -37,8 +37,14 @@ SMODS.Joker {
             vars = {card.ability.extra.mult, card.ability.extra.gain, card.ability.extra.odds, (G.GAME.probabilities.normal or 1)}
         }
     end,
-	add_to_deck = function(self,card,context)
-		card.config.center.pos.x = card.config.center.sprite['Default'] -- Set to default sprite when added to deck, just in case
+	-------- THANKS, FLOWIRE! --------
+	load = function(self, card, card_table, other_card)
+		G.E_MANAGER:add_event(Event({
+			func = function()
+				card.children.center:set_sprite_pos(card.ability.extra.pos_override)
+				return true
+			end
+		}))
 	end,
     calculate = function(card, card, context)
         if context.joker_main then
@@ -80,8 +86,9 @@ SMODS.Joker {
 					G.E_MANAGER:add_event(Event({
 						func = function()
 						card:juice_up(1, 0.5)
-						card.config.center.pos.x = card.config.center.sprite[context.consumeable.ability.name] or card.config.center.sprite['Default']
-					return true end}))
+						card.ability.extra.pos_override.x = card.config.center.sprite[context.consumeable.ability.name] or card.config.center.sprite['Default'] -- Keep sprite individual
+						card.children.center:set_sprite_pos(card.ability.extra.pos_override) -- Keep sprite individual
+					return true end})) 
 					SMODS.calculate_effect({message = localize('k_upgrade_ex'), colour = G.C.MULT}, card)
 					return true
 					end}))

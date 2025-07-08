@@ -257,7 +257,7 @@ return {
 			j_buf_maggit_alt = { 
 				name = "Maggit",
 				text = {
-					"{X:dark_edition,C:white}^#1#{} Mult if you own a",
+					"{X:expmult,C:white}^#1#{} Mult if you own a",
 					"{C:dark_edition}Nu Metal{} Joker. Otherwise,",
 					"{C:attention}only once{}, create one",
 					"when {C:attention}Blind{} is selected{}",
@@ -396,15 +396,15 @@ return {
         Back = {
 			b_buf_jstation = {
 				name = "JimboStation Deck",
-				text = {"Start run with",
-						"{C:red} Memory Card{}",
+				text = {"Start run with the",
+						"{C:red,T:j_buf_memcard}#1#{} Joker",
 						"{C:attention}+1{} hand size"
 				}
 			},
 			b_buf_galloping = {
 				name = "Galloping Deck",
-				text = {"Start run with",
-						"{C:buf_spc}Black Stallion{}",
+				text = {"Start run with the",
+						"{C:buf_spc,T:j_buf_blackstallion}#1#{} Joker",
 				},
 				unlock = {"Reach Ante",
 						  "level {C:attention}10"
@@ -412,8 +412,8 @@ return {
 			},
 			b_buf_porcelain = {
 				name = "Porcelain Deck",
-				text = {"Start run with",
-						"{C:red}Dorkshire Tea{}",
+				text = {"Start run with the",
+						"{C:red,T:j_buf_dorkshire}#1#{} Joker",
 						"and 1 less",
 						"full {C:attention}Suit{}"
 				},
@@ -421,7 +421,7 @@ return {
 			b_buf_sandstone = {
 				name = "Sandstone Deck",
 				text = {"Win on {C:attention}Ante 6{}",
-						"x2 base Blind size"
+						"{C:red}X2{} base Blind size"
 				}
 			},
         },
@@ -527,43 +527,43 @@ return {
         Sleeve = {
 			sleeve_buf_jstation = {
 				name = "JimboStation Sleeve",
-				text = {"Start run with",
-						"{C:red}Memory Card{}",
+				text = {"Start run with the",
+						"{C:red,T:j_buf_memcard}#1#{} Joker",
 						"{C:attention}+1{} hand size"
 				}
 			},
 			sleeve_buf_jstation_alt = {
 				name = "JimboStation Sleeve",
-				text = {"Your {C:red}Memory Card{}",
-						"is {E:1,C:buf_spc}special{}",
+				text = {"Start run with the",
+						"{C:buf_spc,T:j_buf_dxmemcard}#2#{} Joker instead",
 						"{C:attention}+1{} hand size"
 				}
 			},
 			sleeve_buf_galloping = {
 				name = "Galloping Sleeve",
-				text = {"Start run with",
-						"{C:buf_spc}Black Stallion{}",
+				text = {"Start run with the",
+						"{C:buf_spc,T:j_buf_blackstallion}#1#{} Joker",
 				}
 			},
 			sleeve_buf_galloping_alt = {
 				name = "Galloping Sleeve",
-				text = {"You start with",
-						"{C:green}White Pony{} instead",
-						"{C:blue}-2{} hands"
+				text = {"Start run with the",
+						"{C:green,T:j_buf_whitepony}#2#{} Joker instead",
+						"{C:blue}-2{} hands every round"
 				}
 			},
 			sleeve_buf_porcelain = {
 				name = "Porcelain Sleeve",
-				text = {"Start run with",
-						"{C:red}Dorkshire Tea{}",
+				text = {"Start run with the",
+						"{C:red,T:j_buf_dorkshire}#1#{} Joker",
 						"and 1 less",
 						"full {C:attention}Suit{}"
 				}
 			},
 			sleeve_buf_porcelain_alt = {
 				name = "Porcelain Sleeve",
-				text = {"Start run with",
-						"{C:buf_spc}Dorkshire Gold{}",
+				text = {"Start run with the",
+						"{C:buf_spc,T:j_buf_dorkshire_g}#2#{} Joker",
 						"and 1 less",
 						"full {C:attention}Suit{}"
 				}
@@ -571,13 +571,13 @@ return {
 			sleeve_buf_sandstone = {
 				name = "Sandstone Sleeve",
 				text = {"Win on {C:attention}Ante 6{}",
-						"x2 base Blind size"
+						"{C:red}Doubles{} Blind size"
 				}
 			},
 			sleeve_buf_sandstone_alt = {
 				name = "Sandstone Sleeve",
 				text = {"Win on {C:attention}Ante 5{}",
-						"x2.5 base Blind size"
+						"{C:red}X3{} base Blind size"
 				}
 			},
         },

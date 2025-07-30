@@ -315,8 +315,7 @@ local planetlua = {
 	loc_vars = function(self, info_queue, card)
 		return {
 			vars = {
-				card and cry_prob(card.ability.cry_prob, card.ability.extra.odds, card.ability.cry_rigged) or 1,
-				card and card.ability.extra.odds or self.config.extra.odds,
+				SMODS.get_probability_vars(card, 1, card.ability.extra.odds, "Planet.lua"),
 			},
 		}
 	end,
@@ -325,11 +324,7 @@ local planetlua = {
 	end,
 	use = function(self, card, area, copier)
 		local used_consumable = copier or card
-		if
-			pseudorandom("planetlua")
-			< cry_prob(card.ability.cry_prob, card.ability.extra.odds, card.ability.cry_rigged)
-				/ card.ability.extra.odds
-		then --Code "borrowed" from black hole
+		if SMODS.pseudorandom_probability(card, "planetlua", 1, card.ability.extra.odds, "Planet.lua") then --Code "borrowed" from black hole
 			update_hand_text(
 				{ sound = "button", volume = 0.7, pitch = 0.8, delay = 0.3 },
 				{ handname = localize("k_all_hands"), chips = "...", mult = "...", level = "" }
@@ -473,8 +468,7 @@ local planetlua = {
 			for i = 1, number do
 				quota = quota
 					+ (
-						pseudorandom("planetlua")
-								< cry_prob(card.ability.cry_prob, card.ability.extra.odds, card.ability.cry_rigged) / card.ability.extra.odds
+						SMODS.pseudorandom_probability(card, "planetlua", 1, card.ability.extra.odds, "Planet.lua")
 							and 1
 						or 0
 					)
@@ -577,14 +571,18 @@ local planetlua = {
 			G.GAME.used_vouchers.v_observatory
 			and context.joker_main
 			and (
-				pseudorandom("nstar")
-				< cry_prob(card.ability.cry_prob, card.ability.extra.odds, card.ability.cry_rigged)
-					/ card.ability.extra.odds
+				SMODS.pseudorandom_probability(
+					card,
+					"mstar", --this is how it was before i didnt make it use the same seed
+					1,
+					card.ability.extra.odds,
+					"Planet.lua"
+				)
 			)
 		then
 			local value = G.P_CENTERS.v_observatory.config.extra
 			if Overflow then
-				value = value ^ to_big(card.ability.immutable and card.ability.immutable.overflow_amount or 1)
+				value = value ^ to_big(card:getQty())
 			end
 			return {
 				message = localize({ type = "variable", key = "a_xmult", vars = { value } }),
@@ -699,7 +697,7 @@ local nstar = {
 		if G.GAME.used_vouchers.v_observatory and G.GAME.neutronstarsusedinthisrun ~= nil and context.joker_main then
 			local value = G.GAME.neutronstarsusedinthisrun
 			if Overflow then
-				value = value ^ to_big(card.ability.immutable and card.ability.immutable.overflow_amount or 1)
+				value = value ^ to_big(card:getQty())
 			end
 			return {
 				message = localize({
@@ -877,7 +875,7 @@ local sunplanet = {
 		then
 			local value = G.P_CENTERS.v_observatory.config.extra
 			if Overflow then
-				value = value ^ to_big(card.ability.immutable and card.ability.immutable.overflow_amount or 1)
+				value = value ^ to_big(card:getQty())
 			end
 			return {
 				message = localize({ type = "variable", key = "a_xmult", vars = { value } }),
@@ -987,7 +985,7 @@ local ruutu = {
 		then
 			local value = G.P_CENTERS.v_observatory.config.extra
 			if Overflow then
-				value = value ^ to_big(card.ability.immutable and card.ability.immutable.overflow_amount or 1)
+				value = value ^ to_big(card:getQty())
 			end
 			return {
 				message = localize({ type = "variable", key = "a_xmult", vars = { value } }),
@@ -1076,7 +1074,7 @@ local risti = {
 		then
 			local value = G.P_CENTERS.v_observatory.config.extra
 			if Overflow then
-				value = value ^ to_big(card.ability.immutable and card.ability.immutable.overflow_amount or 1)
+				value = value ^ to_big(card:getQty())
 			end
 			return {
 				message = localize({ type = "variable", key = "a_xmult", vars = { value } }),
@@ -1165,7 +1163,7 @@ local hertta = {
 		then
 			local value = G.P_CENTERS.v_observatory.config.extra
 			if Overflow then
-				value = value ^ to_big(card.ability.immutable and card.ability.immutable.overflow_amount or 1)
+				value = value ^ to_big(card:getQty())
 			end
 			return {
 				message = localize({ type = "variable", key = "a_xmult", vars = { value } }),
@@ -1254,7 +1252,7 @@ local pata = {
 		then
 			local value = G.P_CENTERS.v_observatory.config.extra
 			if Overflow then
-				value = value ^ to_big(card.ability.immutable and card.ability.immutable.overflow_amount or 1)
+				value = value ^ to_big(card:getQty())
 			end
 			return {
 				message = localize({ type = "variable", key = "a_xmult", vars = { value } }),
@@ -1351,7 +1349,7 @@ local kaikki = {
 		then
 			local value = G.P_CENTERS.v_observatory.config.extra
 			if Overflow then
-				value = value ^ to_big(card.ability.immutable and card.ability.immutable.overflow_amount or 1)
+				value = value ^ to_big(card:getQty())
 			end
 			return {
 				message = localize({ type = "variable", key = "a_xmult", vars = { value } }),
@@ -1480,7 +1478,7 @@ local voxel = {
 		then
 			local value = G.P_CENTERS.v_observatory.config.extra
 			if Overflow then
-				value = value ^ to_big(card.ability.immutable and card.ability.immutable.overflow_amount or 1)
+				value = value ^ to_big(card:getQty())
 			end
 			return {
 				message = localize({ type = "variable", key = "a_xmult", vars = { value } }),

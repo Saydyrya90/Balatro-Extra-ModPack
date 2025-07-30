@@ -125,7 +125,7 @@ philosopher_stone = {
     discovered = false,
     config = { },
     cost = 4,
-    pos = { x = 0, y = 1 },
+    pos = { x = 1, y = 0 },
 
     can_use = alchemical_can_use,
 

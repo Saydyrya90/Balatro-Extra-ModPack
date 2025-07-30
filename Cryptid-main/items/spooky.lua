@@ -96,7 +96,7 @@ local wrapped = {
 				card:add_to_deck()
 				G.jokers:emplace(card)
 				return {
-					message = localize("k_extinct_ex"),
+					message = localize("k_eaten_ex"),
 					colour = G.C.FILTER,
 				}
 			end
@@ -166,17 +166,21 @@ local choco1 = {
 	object_type = "Event",
 	key = "choco1",
 	loc_vars = function(self, info_queue, center)
+		local _, aaa = SMODS.get_probability_vars(self, 1, 6, "Chocolate Dice 1")
 		info_queue[#info_queue + 1] = { set = "Other", key = self.key } --todo specific_vars
 		info_queue[#info_queue + 1] = { set = "Other", key = "cry_flickering_desc", specific_vars = { 5 } }
-		info_queue[#info_queue + 1] =
-			{ set = "Joker", key = "j_cry_ghost", specific_vars = { G.GAME.probabilities.normal or 1, 2, 6 } }
+		info_queue[#info_queue + 1] = {
+			set = "Joker",
+			key = "j_cry_ghost",
+			specific_vars = { SMODS.get_probability_vars(self, 1, 2, "Chocolate Dice 1"), aaa },
+		}
 	end,
 	start = function(self)
 		G.GAME.events[self.key] = true
 		local areas = { "jokers", "deck", "hand", "play", "discard" }
 		for k, v in pairs(areas) do
 			for i = 1, #G[v].cards do
-				if pseudorandom(pseudoseed("cry_choco_possession")) < G.GAME.probabilities.normal / 3 then
+				if SMODS.pseudorandom_probability(self, "cry_choco_possession", 1, 3, "Chocolate Dice 1") then
 					SMODS.Stickers.cry_flickering:apply(G[v].cards[i], true)
 				end
 			end
@@ -383,7 +387,7 @@ local choco4 = { --lunar abyss
 			and not context.retrigger_joker
 		then
 			for i = 1, #G.play.cards do
-				if pseudorandom(pseudoseed("cry_choco_lunar")) < G.GAME.probabilities.normal / 4 then
+				if SMODS.pseudorandom_probability(self, "cry_choco_lunar", 1, 4, "Chocolate Dice 4") then
 					local faces = {}
 					for _, v in ipairs(SMODS.Rank.obj_buffer) do
 						local r = SMODS.Ranks[v]
@@ -447,7 +451,7 @@ local choco5 = { --bloodsucker
 			and not context.retrigger_joker
 		then
 			if context.destroying_card:is_suit("Hearts") or context.destroying_card:is_suit("Diamonds") then
-				if pseudorandom(pseudoseed("cry_choco_blood")) < G.GAME.probabilities.normal / 3 then
+				if SMODS.pseudorandom_probability(self, "cry_choco_blood", 1, 3, "Chocolate Dice 5") then
 					context.destroying_card.will_shatter = true
 					local destroying_card = context.destroying_card
 					G.E_MANAGER:add_event(Event({
@@ -759,7 +763,7 @@ local flickering = {
 		return { vars = { 5, card.ability.flick_tally or 5 } }
 	end,
 	apply = function(self, card, val)
-		if not card.ability.eternal or G.GAME.modifiers.cry_sticker_sheet then
+		if not SMODS.is_eternal(card) or G.GAME.modifiers.cry_sticker_sheet then
 			card.ability[self.key] = val
 			if card.ability[self.key] then
 				card.ability.flick_tally = 5
@@ -854,13 +858,12 @@ local trick_or_treat = {
 	calculate = function(self, card, context)
 		if context.selling_self then
 			if
-				pseudorandom(pseudoseed("cry_trick_or_treat"))
-				< cry_prob(
-						card.ability.cry_prob * card.ability.immutable.prob_mod,
-						card.ability.extra.odds,
-						card.ability.cry_rigged
-					)
-					/ card.ability.extra.odds
+				SMODS.pseudorandom_probability(
+					card,
+					"cry_trick_or_treat",
+					1,
+					card and card.ability.extra.odds or self.config.extra.odds
+				)
 			then
 				local spawn_num =
 					to_number(math.min(card.ability.immutable.max_candies, card.ability.extra.num_candies))
@@ -887,14 +890,12 @@ local trick_or_treat = {
 		end
 	end,
 	loc_vars = function(self, info_queue, center)
+		local num, denom =
+			SMODS.get_probability_vars(card, 1, card and card.ability.extra.odds or self.config.extra.odds)
 		return {
 			vars = {
-				cry_prob(
-					center.ability.cry_prob * center.ability.immutable.prob_mod,
-					center.ability.extra.odds,
-					center.ability.cry_rigged
-				),
-				center.ability.extra.odds,
+				num,
+				denom,
 				number_format(center.ability.extra.num_candies),
 			},
 		}
@@ -1109,20 +1110,19 @@ local ghost = {
 			and not context.retrigger_joker
 		then
 			if
-				pseudorandom(pseudoseed("cry_ghost_destroy"))
-				< cry_prob(
-						card.ability.cry_prob,
-						card.ability.extra.odds * card.ability.extra.destroy_rate,
-						card.ability.cry_rigged
-					)
-					/ (card.ability.extra.odds * card.ability.extra.destroy_rate)
+				SMODS.pseudorandom_probability(
+					card,
+					"cry_ghost_destroy",
+					1,
+					(card and card.ability.extra.odds or self.config.extra.odds) * card.ability.extra.destroy_rate
+				)
 			then
 				G.E_MANAGER:add_event(Event({
 					func = function()
 						card:start_dissolve()
 						for i = 1, #G.jokers.cards do
 							if G.jokers.cards[i].ability.cry_possessed then
-								if G.jokers.cards[i].ability.eternal then
+								if SMODS.is_eternal(G.jokers.cards[i]) then
 									G.jokers.cards[i].ability.cry_possessed = nil
 								else
 									G.jokers.cards[i]:start_dissolve()
@@ -1136,13 +1136,12 @@ local ghost = {
 			end
 			--todo: let multiple ghosts possess multiple jokers
 			if
-				pseudorandom(pseudoseed("cry_ghost_possess"))
-				< cry_prob(
-						card.ability.cry_prob,
-						card.ability.extra.odds * card.ability.extra.possess_rate,
-						card.ability.cry_rigged
-					)
-					/ (card.ability.extra.odds * card.ability.extra.possess_rate)
+				SMODS.pseudorandom_probability(
+					card,
+					"ghostdestroy",
+					1,
+					(card and card.ability.extra.odds or self.config.extra.odds) * card.ability.extra.possess_rate
+				)
 			then
 				for i = 1, #G.jokers.cards do
 					G.jokers.cards[i].ability.cry_possessed = nil
@@ -1163,20 +1162,22 @@ local ghost = {
 	end,
 	loc_vars = function(self, info_queue, card)
 		info_queue[#info_queue + 1] = { set = "Other", key = "cry_possessed" }
+		local num, denom = SMODS.get_probability_vars(
+			card,
+			1,
+			(card and card.ability.extra.odds or self.config.extra.odds) * card.ability.extra.destroy_rate
+		)
+		local num2, denom2 = SMODS.get_probability_vars(
+			card,
+			1,
+			(card and card.ability.extra.odds or self.config.extra.odds) * card.ability.extra.possess_rate
+		)
 		return {
 			vars = {
-				cry_prob(
-					card.ability.cry_prob,
-					card.ability.extra.odds * card.ability.extra.possess_rate,
-					card.ability.cry_rigged
-				),
-				cry_prob(
-					card.ability.cry_prob,
-					card.ability.extra.odds * card.ability.extra.destroy_rate,
-					card.ability.cry_rigged
-				),
-				card.ability.extra.odds * card.ability.extra.possess_rate,
-				card.ability.extra.odds * card.ability.extra.destroy_rate,
+				num2,
+				num1,
+				denom2,
+				denom1,
 			},
 		}
 	end,
@@ -1392,7 +1393,7 @@ local candy_dagger = {
 			and not (context.blueprint_card or self).getting_sliced
 			and my_pos
 			and G.jokers.cards[my_pos + 1]
-			and not G.jokers.cards[my_pos + 1].ability.eternal
+			and not SMODS.is_eternal(G.jokers.cards[my_pos + 1])
 			and not G.jokers.cards[my_pos + 1].getting_sliced
 		then
 			local sliced_card = G.jokers.cards[my_pos + 1]
@@ -1533,7 +1534,7 @@ local candy_cane = {
 					end,
 				}))
 				return {
-					message = localize("k_extinct_ex"),
+					message = localize("k_eaten_ex"),
 					colour = G.C.FILTER,
 				}
 			end
@@ -1569,7 +1570,7 @@ local candy_cane = {
 					end,
 				}))
 				return {
-					message = localize("k_extinct_ex"),
+					message = localize("k_eaten_ex"),
 					colour = G.C.FILTER,
 				}
 			end
@@ -1622,7 +1623,7 @@ local candy_buttons = {
 					end,
 				}))
 				return {
-					message = localize("k_extinct_ex"),
+					message = localize("k_eaten_ex"),
 					colour = G.C.FILTER,
 				}
 			end
@@ -1700,7 +1701,7 @@ local jawbreaker = {
 				end,
 			}))
 			return {
-				message = localize("k_extinct_ex"),
+				message = localize("k_eaten_ex"),
 				colour = G.C.FILTER,
 			}
 		end
@@ -1832,7 +1833,7 @@ local brittle = {
 						end,
 					}))
 					return {
-						message = localize("k_extinct_ex"),
+						message = localize("k_eaten_ex"),
 						colour = G.C.FILTER,
 					}
 				end
@@ -1868,9 +1869,12 @@ local monopoly_money = {
 			and not (context.card == card)
 		then
 			if
-				pseudorandom(pseudoseed("cry_monopoly"))
-				< cry_prob(card.ability.cry_prob, card.ability.extra.odds, card.ability.cry_rigged)
-					/ card.ability.extra.odds
+				SMODS.pseudorandom_probability(
+					card,
+					"cry_monopoly",
+					1,
+					card and card.ability.extra.odds or self.config.extra.odds
+				)
 			then
 				G.E_MANAGER:add_event(Event({
 					func = function()
@@ -1904,10 +1908,12 @@ local monopoly_money = {
 		end
 	end,
 	loc_vars = function(self, info_queue, card)
+		local num, denom =
+			SMODS.get_probability_vars(card, 1, card and card.ability.extra.odds or self.config.extra.odds)
 		return {
 			vars = {
-				cry_prob(card.ability.cry_prob, card.ability.extra.odds, card.ability.cry_rigged),
-				card.ability.extra.odds,
+				num,
+				denom,
 			},
 		}
 	end,
@@ -1989,6 +1995,10 @@ local candy_sticks = {
 						return true
 					end,
 				}))
+				return {
+					message = localize("k_eaten_ex"),
+					colour = G.C.FILTER,
+				}
 			end
 		end
 		if context.end_of_round and G.GAME.blind:get_type() == "Boss" then

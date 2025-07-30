@@ -20,28 +20,9 @@ end
 
 -- Shamelessly copying Bunco's config tab layout
 ReduxArcanumMod.config_tab = function()
-    -- local current_overlapping = ReduxArcanumMod.config.overlapping_cards or 1
     local current_new_content = ReduxArcanumMod.config.new_content or true
     local bunco_linked_acid = ReduxArcanumMod.config.bunco_linked_acid or true
     t = {
-        -- create_option_cycle {
-        --     label = "Conflicting Cards",
-        --     info = {
-        --         "How to handle known similar cards from other mods",
-        --         "(Requires restart)"
-        --     },
-        --     options = {
-        --         "Remove from this mod",
-        --         "Remove from the other mod",
-        --         "Do nothing"
-        --     },
-        --     w = 5,
-        --     text_scale = 0.4,
-        --     current_option = current_overlapping,
-        --     ref_table = ReduxArcanumMod.config,
-        --     ref_value = "overlapping_cards",
-        --     opt_callback = 'cycle_options',
-        -- },
         create_toggle {
             label = "New Content",
             info = {

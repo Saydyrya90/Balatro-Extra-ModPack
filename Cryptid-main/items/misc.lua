@@ -27,17 +27,12 @@ local echo = {
 		return {
 			vars = {
 				card and card.ability.retriggers or self.config.retriggers,
-				card and cry_prob(card.ability.cry_prob or 1, card.ability.extra, card.ability.cry_rigged) or 1,
-				card and card.ability.extra or self.config.extra,
+				SMODS.get_probability_vars(card, 1, card.ability.extra, "Echo Card"),
 			},
 		} -- note that the check for (card.ability.cry_prob or 1) is probably unnecessary due to cards being initialised with ability.cry_prob
 	end,
 	calculate = function(self, card, context)
-		if
-			context.repetition
-			and pseudorandom("echo")
-				< cry_prob(card.ability.cry_prob or 1, card.ability.extra or 2, card.ability.cry_rigged) / (card.ability.extra or 2)
-		then
+		if context.repetition and SMODS.pseudorandom_probability(card, "echo", 1, card.ability.extra, "Echo Card") then
 			return {
 				message = localize("k_again_ex"),
 				repetitions = card.ability.retriggers,
@@ -210,26 +205,33 @@ local abstract = {
 	config = { extra = { Emult = 1.15, odds_after_play = 2, odds_after_round = 4, marked = false, survive = false } },
 	--#1# emult, #2# in #3# chance card is destroyed after play, #4# in #5$ chance card is destroyed at end of round (even discarded or in deck)
 	loc_vars = function(self, info_queue, card)
+		local aaa, bbb = SMODS.get_probability_vars(card, 1, card.ability.extra.odds_after_play, "Abstract Card")
+		local ccc, ddd = SMODS.get_probability_vars(card, 1, card.ability.extra.odds_after_round, "Abstract Card")
 		return {
 			vars = {
 				card.ability.extra.Emult,
-				cry_prob(card.ability.cry_prob, card.ability.extra.odds_after_play, card.ability.cry_rigged),
-				card.ability.extra.odds_after_play,
-				cry_prob(card.ability.cry_prob, card.ability.extra.odds_after_round, card.ability.cry_rigged),
-				card.ability.extra.odds_after_round,
+				aaa,
+				bbb,
+				ccc,
+				ddd,
 			},
 		}
 	end,
 	calculate = function(self, card, context)
-		--Druing scoring
+		--During scoring
 		if
 			context.cardarea == G.hand
 			and context.before
 			and not card.ability.extra.marked
-			and not card.ability.eternal
+			and not SMODS.is_eternal(card)
 			and not card.ability.extra.survive --this presvents repitition of shatter chance by shutting it out once it confirms to "survive"
-			and pseudorandom("cry_abstract_destroy")
-				< cry_prob(card.ability.cry_prob, card.ability.extra.odds_after_play, card.ability.cry_rigged) / card.ability.extra.odds_after_play
+			and SMODS.pseudorandom_probability(
+				card,
+				"cry_abstract_destroy",
+				1,
+				card.ability.extra.odds_after_play,
+				"Abstract Card"
+			)
 		then -- the 'card.area' part makes sure the card has a chance to survive if in the play area
 			card.ability.extra.marked = true
 		elseif context.cardarea == G.play and not card.ability.extra.marked then
@@ -254,7 +256,7 @@ local abstract = {
 			and context.cardarea == G.hand
 			and card.ability.extra.marked
 			and not context.repetition
-			and not card.ability.eternal
+			and not SMODS.is_eternal(card)
 			and not (card.will_shatter or card.destroyed or card.shattered)
 		then
 			G.E_MANAGER:add_event(Event({
@@ -416,6 +418,15 @@ local azure_seal = {
 								_planet = v.key
 								break
 							end
+						end
+						if
+							(
+								G.GAME.last_hand_played == "cry_Declare0"
+								or G.GAME.last_hand_played == "cry_Declare1"
+								or G.GAME.last_hand_played == "cry_Declare2"
+							) and Cryptid.enabled("c_cry_voxel") == true
+						then
+							_planet = "c_cry_voxel"
 						end
 					end
 
@@ -668,7 +679,7 @@ local baneful1 = {
 		if G.jokers and G.jokers.cards then
 			for i = #G.jokers.cards, 1, -1 do
 				if
-					not (G.jokers.cards[i].ability.eternal or G.jokers.cards[i].config.center.rarity == "cry_cursed")
+					not (SMODS.is_eternal(G.jokers.cards[i]) or G.jokers.cards[i].config.center.rarity == "cry_cursed")
 				then
 					return false
 				end
@@ -902,12 +913,15 @@ local glitched_shader2 = {
 	key = "ultrafoil",
 	path = "ultrafoil.fs",
 }
+local glitched_shaderb = {
+	object_type = "Shader",
+	key = "glitched_b",
+	path = "glitched_b.fs",
+}
 local glitched = {
 	cry_credits = {
 		art = {
-			"Samario",
-			-- Reduced Motion Shader
-			"Selicre",
+			"Cassknows",
 		},
 		code = {
 			"Math",
@@ -922,7 +936,8 @@ local glitched = {
 	key = "glitched",
 	order = 1,
 	weight = 15,
-	shader = G.SETTINGS.reduced_motion and "ultrafoil" or "glitched",
+	--shader = G.SETTINGS.reduced_motion and "ultrafoil" or "glitched",
+	shader = "glitched_b",
 	in_shop = true,
 	extra_cost = 0,
 	sound = {
@@ -1701,7 +1716,7 @@ local jollyedition = {
 				and context.cardarea == G.play
 			)
 		then
-			return { card and card.edition and card.edition.mult or self.config.mult } -- updated value
+			return { mult = card and card.edition and card.edition.mult or self.config.mult } -- updated value
 		end
 		if context.joker_main then
 			card.config.trigger = true -- context.edition triggers twice, this makes it only trigger once (only for jonklers)
@@ -1844,7 +1859,7 @@ local glass_edition = {
 			and context.other_card == card --animation-wise this looks weird sometimes
 		then
 			if
-				not card.ability.eternal
+				not SMODS.is_eternal(card)
 				and not (
 					pseudorandom(pseudoseed("cry_fragile"))
 					> ((self.config.shatter_chance - 1) / self.config.shatter_chance)
@@ -1874,7 +1889,7 @@ local glass_edition = {
 		end
 		if context.main_scoring and context.cardarea == G.play then
 			if
-				not card.ability.eternal
+				not SMODS.is_eternal(card)
 				and (
 					pseudorandom(pseudoseed("cry_fragile"))
 					> ((self.config.shatter_chance - 1) / self.config.shatter_chance)
@@ -2000,7 +2015,7 @@ local double_sided = {
 	-- 	},
 	extra_gamesets = { "exp" },
 	key = "double_sided",
-	shader = false,
+	shader = G.SETTINGS.reduced_motion and "ultrafoil" or "glitched",
 	order = 32,
 	weight = 10,
 	extra_cost = 0,
@@ -2012,6 +2027,11 @@ local double_sided = {
 		vol = 0.3,
 	},
 	cry_credits = {
+		art = {
+			"Samario",
+			-- Reduced Motion Shader
+			"Selicre",
+		},
 		code = {
 			"Math",
 			"lord-ruby",
@@ -2499,6 +2519,7 @@ local miscitems = {
 	oversat_shader,
 	glitched_shader,
 	glitched_shader2,
+	glitched_shaderb,
 	astral_shader,
 	blurred_shader,
 	glass_shader,
@@ -2542,9 +2563,15 @@ return {
 		function Card:calculate_abstract_break()
 			if self.config.center_key == "m_cry_abstract" and not self.ability.extra.marked then
 				if
-					pseudorandom("cry_abstract_destroy2")
-					< cry_prob(self.ability.cry_prob, self.ability.extra.odds_after_round, self.ability.cry_rigged)
-						/ self.ability.extra.odds_after_round
+					SMODS.pseudorandom_probability(
+						self,
+						"cry_abstract_destroy2",
+						1,
+						self.ability and self.ability.extra and self.ability.extra.odds_after_round
+							or self.config.extra.odds_after_round
+							or 4,
+						"Abstract Card"
+					)
 				then
 					self.ability.extra.marked = true
 					--KUFMO HAS abstract!!!!111!!!

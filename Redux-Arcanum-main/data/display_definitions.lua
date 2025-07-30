@@ -59,7 +59,7 @@ jd_def["j_ReduxArcanum_shock_humor"] = { -- Shock Humor
             end
         end
         card.joker_display_values.count = count
-        card.joker_display_values.odds = localize { type = 'variable', key = "jdis_odds", vars = { (G.GAME and G.GAME.probabilities.normal or 1), card.ability.extra.odds } }
+        card.joker_display_values.odds = localize { type = 'variable', key = "jdis_odds", vars = { SMODS.get_probability_vars(card, 1, card.ability.extra.odds, 'ReduxArcanum_shock_humor') } }
     end
 }
 -- jd_def["j_ReduxArcanum_breaking_bozo"] = { -- Shock Humor

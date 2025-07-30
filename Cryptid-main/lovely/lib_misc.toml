@@ -134,6 +134,7 @@ Cryptid.aliases = {}
 Cryptid.pointerblist = {}
 Cryptid.pointerblistrarity = {}
 Cryptid.mod_gameset_whitelist = {}
+Cryptid.ascension_numbers = {}
 
 Cryptid.pin_debuff = {}
 Cryptid.circus_rarities = {
@@ -162,7 +163,9 @@ end
 '''
 position = "after"
 payload = '''
-SMODS.calculate_context{cry_creating_card = true, card = card}
+if G.deck then
+	SMODS.calculate_context{cry_creating_card = true, card = card}
+end
 '''
 match_indent = true
 

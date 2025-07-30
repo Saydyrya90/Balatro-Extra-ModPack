@@ -215,9 +215,10 @@ target = 'functions/common_events.lua'
 pattern = '''function ease_colour(*'''
 position = 'after'
 payload = '''
-    if G.GAME.ReduxArcanum_salt_in_use then 
+    if G.GAME and G.GAME.ReduxArcanum_salt_in_use then 
         G.GAME.ReduxArcanum_salt_in_use = false
-    return end
+        return
+    end
 '''
 match_indent = true
 

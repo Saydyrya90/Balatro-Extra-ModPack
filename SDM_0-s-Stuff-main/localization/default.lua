@@ -1,5 +1,17 @@
 return {
     descriptions = {
+        Mod = {
+            sdm0sstuff = {
+                name = "SDM_0's Stuff",
+                text = {
+                    "{C:attention,s:1.3}Content{s:1.3} mod that adds new {C:attention,s:1.3}jokers{s:1.3}, {C:tarot,s:1.3}consumables{s:1.3},",
+                    "{C:blue,s:1.3}vouchers{s:1.3}, {C:red,s:1.3}decks{s:1.3}, {C:money,s:1.3}challenges{s:1.3} and {C:bakery,s:1.3}bakery goods{s:1.3}.",
+                    " ",
+                    "{E:2,C:gold,s:1.3}Special thanks{s:1.3} to RattlingSnow, queen of stupid, FlameThrowerFIM,",
+                    "Jamie, N', Larswijn, Darthalex2014, PainKiller and Mysthaps for their help"
+                }
+            }
+        },
         Joker = {
             j_sdm_burger = {
                 name = "Burger",
@@ -200,7 +212,7 @@ return {
                 name = "Rock'N'Roll",
                 text = {
                     "Retrigger all played",
-                    "{C:attention}enhanced{} cards",
+                    "{C:attention}Enhanced{} cards",
                 }
             },
             j_sdm_contract = {
@@ -1071,11 +1083,18 @@ return {
                     "{C:red}X#1#{} base Blind size"
                 }
             },
-            sleeve_sdm_lucky_7_alt = {
+            sleeve_sdm_lucky_7_alt_1 = {
                 name = "Lucky 7 Sleeve",
                 text = {
                     "Start run with a",
                     "{C:purple}Eternal{} {C:attention,T:j_sdm_lucky_joker}Lucky Joker",
+                }
+            },
+            sleeve_sdm_lucky_7_alt_2 = {
+                name = "Lucky 7 Sleeve",
+                text = {
+                    "Start run with a",
+                    "{C:purple}Eternal{} {C:attention,T:j_oops}Oops! All 6s",
                 }
             },
             sleeve_sdm_dna = {

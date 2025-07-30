@@ -118,7 +118,7 @@ SMODS.Voucher {
     unlocked = false,
     unlock_condition = {
         type = "c_ReduxArcanum_alchemicals_bought",
-        extra = 25
+        extra = 10
     },
 
     config = { extra = 9.6 },

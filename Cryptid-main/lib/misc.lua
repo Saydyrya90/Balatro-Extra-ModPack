@@ -1014,6 +1014,9 @@ function Cryptid.get_circus_description()
 	local desc = {}
 	local ind = 1
 	local extra_rarities = {}
+	if not Cryptid.circus_rarities then
+		Cryptid.circus_rarities = {}
+	end
 	for i, v in pairs(Cryptid.circus_rarities) do
 		if not v.hidden then
 			extra_rarities[#extra_rarities + 1] = v
@@ -1165,8 +1168,11 @@ G.FUNCS.exit_overlay_menu_code = function(e)
 		and G.GAME.CODE_DESTROY_CARD.ability.cry_multiuse
 	then
 		G.GAME.CODE_DESTROY_CARD.ability.cry_multiuse = G.GAME.CODE_DESTROY_CARD.ability.cry_multiuse - 1
+	elseif G.GAME.CODE_DESTROY_CARD then
+		G.GAME.CODE_DESTROY_CARD:start_dissolve()
 		G.GAME.CODE_DESTROY_CARD = nil
 	end
+	G.GAME.CODE_DESTROY_CARD = nil
 end
 
 function G.UIDEF.exploit_menu()
@@ -1215,10 +1221,19 @@ function Controller:L_cursor_press(x, y)
 			and G.CONTROLLER.cursor_hover.target.config.on_demand_tooltip.filler.args
 			and G.GAME.hands[G.CONTROLLER.cursor_hover.target.config.on_demand_tooltip.filler.args]
 		then
-			if G.GAME.CODE_DESTROY_CARD then
-				G.GAME.CODE_DESTROY_CARD:start_dissolve()
-				G.GAME.CODE_DESTROY_CARD = nil
+			-- Re-use the Exploit card
+			if G.GAME.ACTIVE_CODE_CARD then
+				if
+					not G.GAME.ACTIVE_CODE_CARD.ability.cry_multiuse
+					or to_big(G.GAME.ACTIVE_CODE_CARD.ability.cry_multiuse) <= to_big(1)
+				then
+					G.GAME.ACTIVE_CODE_CARD:start_dissolve()
+				else
+					G.GAME.ACTIVE_CODE_CARD.ability.cry_multiuse =
+						lenient_bignum(to_big(G.GAME.ACTIVE_CODE_CARD.ability.cry_multiuse) - to_big(1))
+				end
 			end
+			G.GAME.ACTIVE_CODE_CARD = nil
 			G.GAME.cry_exploit_override = G.GAME.USING_EXPLOIT_HAND
 			G.FUNCS.exit_overlay_menu_code()
 		end
@@ -1435,4 +1450,27 @@ function Cryptid.declare_hand_ascended_counter(hand, declarehand)
 		v2.marked = nil
 	end
 	return total
+end
+
+function Cryptid.get_next_tag(override)
+	if next(SMODS.find_card("j_cry_kittyprinter")) then
+		return "tag_cry_cat"
+	end
+end
+
+-- for Cryptid.isNonRollProbabilityContext
+local probability_contexts = {
+	"mod_probability",
+	"fix_probability",
+}
+
+-- Checks if a context table is a probability context called outside of a roll
+function Cryptid.isNonRollProbabilityContext(context)
+	for _, ctx in ipairs(probability_contexts) do
+		if context[ctx] then
+			return context.from_roll
+		end
+	end
+
+	return true
 end

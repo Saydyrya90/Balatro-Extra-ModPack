@@ -53,14 +53,6 @@ SMODS.Joker(studious_joker)
 
 SMODS.Joker { -- Bottled Buffoon
     key = "bottled_buffoon",
-    -- loc_txt = {
-    --     name = "Bottled Buffoon",
-    --     text = {
-    --         "Create an {C:alchemical}Alchemical{} card",
-    --         "every {C:attention}#1#{} hands played",
-    --         "{C:inactive}#2#"
-    --     }
-    -- },
     loc_vars = function(self, info_queue, card)
         local loyalty
         if card.ability.loyalty_remaining == 0 then
@@ -122,15 +114,6 @@ SMODS.Joker { -- Bottled Buffoon
 
 SMODS.Joker { -- Mutated Joker
     key = "mutated_joker",
-    -- loc_txt = {
-    --     name = "Mutated Joker",
-    --     text = {
-    --         "{C:chips}+#1#{} Chips for each",
-    --         "unique {C:alchemical}Alchemical{} card",
-    --         "used this run",
-    --         "{C:inactive}(Currently {C:chips}+#2#{C:inactive} Chips)"
-    --     }
-    -- },
     loc_vars = function(self, info_queue, card)
         local alchemical_tally = 0
         for k, v in pairs(G.GAME.consumeable_usage) do
@@ -237,14 +220,6 @@ SMODS.Joker { -- Mutated Joker
 
 SMODS.Joker { -- Essence of Comedy
     key = "essence_of_comedy",
-    -- loc_txt = {
-    --     name = "Essence of Comedy",
-    --     text = {
-    --         "Gains {X:mult,C:white} X#1# {} Mult",
-    --         "per {C:alchemical}Alchemical{} card used",
-    --         "{C:inactive}(Currently {X:mult,C:white} X#2# {C:inactive} Mult)"
-    --     }
-    -- },
     loc_vars = function(self, info_queue, card)
         return { vars = { card.ability.extra, card.ability.x_mult } }
     end,
@@ -275,23 +250,8 @@ SMODS.Joker { -- Essence of Comedy
 
 SMODS.Joker { -- Shock Humor
     key = "shock_humor",
-    -- loc_txt = {
-    --     name = "Shock Humor",
-    --     text = {
-    --         "{C:green}#1# in #2#{} chance to",
-    --         "create an {C:alchemical}Alchemical{} card",
-    --         "when you discard a {C:attention}Gold{},",
-    --         "{C:attention}Steel{} or {C:attention}Stone{} card"
-    --     }
-    -- },
     loc_vars = function(self, info_queue, card)
-        local first_var
-        if G.GAME and G.GAME.probabilities.normal then
-            first_var = G.GAME.probabilities.normal
-        else
-            first_var = 1
-        end
-        return { vars = { '' .. (first_var), card.ability.extra.odds } }
+        return { vars = {SMODS.get_probability_vars(card, 1, card.ability.extra.odds, 'ReduxArcanum_shock_humor')} }
     end,
     unlocked = true,
     discovered = false,
@@ -311,7 +271,7 @@ SMODS.Joker { -- Shock Humor
         if context.discard and not context.other_card.debuff then
             local other_card_enhancement = SMODS.get_enhancements(context.other_card)
             if other_card_enhancement["m_steel"] or other_card_enhancement["m_gold"] or other_card_enhancement["m_stone"] then
-                if pseudorandom('shock_humor') < G.GAME.probabilities.normal / card.ability.extra.odds then
+                if SMODS.pseudorandom_probability(card, 'shock_humor', 1, card.ability.extra.odds, 'ReduxArcanum_shock_humor') then
                     add_random_alchemical(card)
                     return {
                         message = localize('p_plus_alchemical'),
@@ -325,21 +285,6 @@ SMODS.Joker { -- Shock Humor
 
 SMODS.Joker { -- Breaking Bozo
     key = "breaking_bozo",
-    -- loc_txt = {
-    --     name = "Breaking Bozo",
-    --     text = {
-    --         "After you use an {C:alchemical}Alchemical{}",
-    --         "card, do one at random: ",
-    --         "- Reduce blind by {C:attention}10%{}",
-    --         "- Draw {C:attention}2{} cards",
-    --         "- Earn {C:attention}$5{}"
-    --     },
-    --     unlock = {
-    --         "Use {C:attention}#1#",
-    --         "{E:1,C:alchemical}Alchemical{} cards in",
-    --         "the same run"
-    --     }
-    -- },
     locked_loc_vars = function(self, info_queue)
         return { vars = { self.unlock_condition.extra } }
     end,
@@ -420,18 +365,6 @@ end
 
 chain_reaction = { -- Chain Reaction
     key = "chain_reaction",
-    -- loc_txt = {
-    --     name = "Chain Reaction",
-    --     text = {
-    --         "Create a {C:dark_edition}Negative{} {C:attention}Copy{}",
-    --         "of the first {C:alchemical}Alchemical{} ",
-    --         "card used each blind"
-    --     },
-    --     unlock = {
-    --         "Discover every",
-    --         "{E:1,C:alchemical}Alchemical{} card"
-    --     }
-    -- },
     loc_vars = function(self, info_queue)
         if not ReduxArcanumMod.config.new_content then
             return { key = self.key .. "_classic" }
@@ -517,31 +450,12 @@ chain_reaction = { -- Chain Reaction
     end
 }
 if ReduxArcanumMod.config.new_content then
-    -- chain_reaction.loc_txt.text = {
-    --     "Create a {C:attention}Copy{} of",
-    --     "the first {C:alchemical}Alchemical{} card",
-    --     "used each blind",
-    --     "{C:inactive}(Must have room){}"
-    -- }
     chain_reaction.rarity = 3
 end
 SMODS.Joker(chain_reaction)
 
 SMODS.Joker { -- Catalyst Joker
     key = "catalyst_joker",
-    -- loc_txt = {
-    --     name = "Catalyst Joker",
-    --     text = {
-    --         "{C:attention}+1{} consumable slots.",
-    --         "Gains {X:mult,C:white} X#1# {} Mult for",
-    --         "every {C:attention}Consumable Card{} held",
-    --         "{C:inactive}(Currently {X:mult,C:white} X#2# {C:inactive} Mult)"
-    --     },
-    --     unlock = {
-    --         "Hold #1# {E:1,C:attention}Consumable{}",
-    --         "{E:1,C:attention}Cards{} at once"
-    --     }
-    -- },
     loc_vars = function(self, info_queue, card)
         local current_value = 1
         -- Check to prevent doing calculations on nill variables
@@ -561,7 +475,7 @@ SMODS.Joker { -- Catalyst Joker
     perishable_compat = true,
     eternal_compat = false,
     rarity = 3,
-    cost = 5,
+    cost = 8,
     effect = "",
     config = {
         extra = {
@@ -598,29 +512,3 @@ SMODS.Joker { -- Catalyst Joker
         end
     end
 }
-
--- -- Changed Vanilla Jokers
-
--- SMODS.Joker:take_ownership('ring_master', { -- Showman
---     loc_txt = {
---         name = "Showman",
---         text = {
---             "{C:attention}Joker{} and {C:attention}consumable{} cards",
---             "may appear multiple times",
---         },
---         unlock = {
---             "Reach Ante",
---             "level {E:1,C:attention}#1#",
---         },
---     }
--- })
-
-
--- Mod Compat
-
--- Bunco
-
-if SMODS.Mods["Bunco"] and SMODS.Mods["Bunco"].can_load and
-    ReduxArcanumMod.config.overlapping_cards == 2 then
-    SMODS.Joker:take_ownership('bunc_doodle', {})
-end

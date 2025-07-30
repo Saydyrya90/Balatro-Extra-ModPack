@@ -152,15 +152,45 @@ local dft = Blind.defeat
 function Blind:defeat(s)
 	dft(self, s)
 	local obj = self.config.blind
-	-- Ignore blinds with loc_vars because orb does not properly work with them yet
-	if obj.boss and (obj.boss.no_orb or obj.loc_vars) then
+	if
+		(obj.boss and obj.boss.yes_orb)
+		or (
+			obj.name == "The Hook"
+			or obj.name == "The Ox"
+			or obj.name == "The House"
+			or obj.name == "The Wall"
+			or obj.name == "The Wheel"
+			or obj.name == "The Arm"
+			or obj.name == "The Club"
+			or obj.name == "The Fish"
+			or obj.name == "The Psychic"
+			or obj.name == "The Goad"
+			or obj.name == "The Water"
+			or obj.name == "The Window"
+			or obj.name == "The Manacle"
+			or obj.name == "The Eye"
+			or obj.name == "The Mouth"
+			or obj.name == "The Plant"
+			or obj.name == "The Serpent"
+			or obj.name == "The Pillar"
+			or obj.name == "The Needle"
+			or obj.name == "The Head"
+			or obj.name == "The Tooth"
+			or obj.name == "The Flint"
+			or obj.name == "The Mark"
+			or obj.name == "Amber Acorn"
+			or obj.name == "Verdant Leaf"
+			or obj.name == "Violet Vessel"
+			or obj.name == "Crimsion Heart"
+			or obj.name == "Cerulean Bell"
+		)
+	then
+	else
 		return
 	end
 	if
-		self.name ~= "cry-Obsidian Orb"
 		--Stop impossible blind combinations from happening
-		and self.name ~= "The Sink"
-		and (self.name ~= "cry-oldarm" or not G.GAME.defeated_blinds["bl_psychic"])
+		(self.name ~= "cry-oldarm" or not G.GAME.defeated_blinds["bl_psychic"])
 		and (self.name ~= "The Psychic" or not G.GAME.defeated_blinds["bl_cry_oldarm"])
 		and (self.name ~= "cry-oldarm" or not G.GAME.defeated_blinds["bl_cry_scorch"])
 		and (self.name ~= "cry-scorch" or not G.GAME.defeated_blinds["bl_cry_oldarm"])
@@ -171,7 +201,7 @@ function Blind:defeat(s)
 		and (self.name ~= "The Needle" or not G.GAME.defeated_blinds["bl_cry_tax"])
 		and (self.name ~= "cry-Tax" or not G.GAME.defeated_blinds["bl_needle"])
 	then
-		G.GAME.defeated_blinds[self.config.blind.key] = true
+		G.GAME.defeated_blinds[self.config.blind.key or ""] = true
 	end
 end
 
@@ -248,10 +278,7 @@ local rcc = reset_castle_card
 function reset_castle_card()
 	rcc()
 	G.GAME.current_round.cry_nb_card = { rank = "Ace" }
-	if not G.GAME.current_round.cry_dropshot_card then
-		G.GAME.current_round.cry_dropshot_card = {}
-	end
-	G.GAME.current_round.cry_dropshot_card.suit = "Spades"
+	G.GAME.current_round.cry_dropshot_card = { suit = "Spades" }
 	local valid_castle_cards = {}
 	for k, v in ipairs(G.playing_cards) do
 		if not SMODS.has_no_suit(v) and not SMODS.has_enhancement(v, "m_cry_abstract") then
@@ -261,16 +288,10 @@ function reset_castle_card()
 	if valid_castle_cards[1] then
 		--Dropshot
 		local castle_card = pseudorandom_element(valid_castle_cards, pseudoseed("cry_dro" .. G.GAME.round_resets.ante))
-		if not G.GAME.current_round.cry_dropshot_card then
-			G.GAME.current_round.cry_dropshot_card = {}
-		end
 		G.GAME.current_round.cry_dropshot_card.suit = castle_card.base.suit
 		--Number Blocks
 		local castle_card_two =
 			pseudorandom_element(valid_castle_cards, pseudoseed("cry_nb" .. G.GAME.round_resets.ante))
-		if not G.GAME.current_round.cry_nb_card then
-			G.GAME.current_round.cry_nb_card = {}
-		end
 		G.GAME.current_round.cry_nb_card.rank = castle_card_two.base.value
 		G.GAME.current_round.cry_nb_card.id = castle_card_two.base.id
 	end
@@ -319,6 +340,7 @@ cry_pointer_dt = 0
 cry_jimball_dt = 0
 cry_glowing_dt = 0
 cry_glowing_dt2 = 0
+local none_eval = 0
 function Game:update(dt)
 	upd(self, dt)
 	if not Cryptid.member_count_delay then
@@ -407,9 +429,16 @@ function Game:update(dt)
 			v.children.back:set_sprite_pos(G.P_CENTERS.b_cry_glowing.pos or G.P_CENTERS["b_red"].pos)
 		end
 	end
-	if not G.OVERLAY_MENU and G.GAME.CODE_DESTROY_CARD then
+	if not G.OVERLAY_MENU and G.GAME.CODE_DESTROY_CARD and not G.OVERLAY_MENU_POINTER then
 		G.FUNCS.exit_overlay_menu_code()
 	end
+
+	if not G.OVERLAY_MENU then
+		G.GAME.USING_POINTER = nil
+	else
+		G.OVERLAY_MENU_POINTER = nil
+	end
+
 	--Increase the blind size for The Clock and Lavender Loop
 	local choices = { "Small", "Big", "Boss" }
 	G.GAME.CRY_BLINDS = G.GAME.CRY_BLINDS or {}
@@ -498,6 +527,20 @@ function Game:update(dt)
 				* (G.GAME.blind.cry_round_base_mod and G.GAME.blind:cry_round_base_mod(dt) or 1)
 			G.GAME.blind.chip_text = number_format(G.GAME.blind.chips)
 		end
+	end
+	if
+		G.STATE == G.STATES.DRAW_TO_HAND
+		and not G.hand.cards[1]
+		and not G.deck.cards[1]
+		and G.PROFILES[G.SETTINGS.profile].cry_none
+	then
+		G.STATE = G.STATES.SELECTING_HAND
+		G.STATE_COMPLETE = false
+	end
+	if G.STATE == G.STATES.NEW_ROUND or G.STATE == G.STATES.HAND_PLAYED then
+		none_eval = none_eval + dt
+	else
+		none_eval = 0
 	end
 end
 
@@ -1017,7 +1060,7 @@ function create_card(_type, area, legendary, _rarity, skip_materialize, soulable
 				end
 			end
 			if
-				not card.ability.eternal
+				not SMODS.is_eternal(card)
 				and G.GAME.modifiers.cry_enable_flipped_in_shop
 				and pseudorandom("cry_flip" .. (key_append or "") .. G.GAME.round_resets.ante) > 0.7
 			then
@@ -1695,7 +1738,7 @@ G.FUNCS.skip_booster = function(e)
 				for i = #G.jokers.cards, 1, -1 do
 					if
 						not (
-							G.jokers.cards[i].ability.eternal
+							SMODS.is_eternal(G.jokers.cards[i])
 							or G.jokers.cards[i].config.center.rarity == "cry_cursed"
 						)
 					then
@@ -1773,7 +1816,10 @@ end
 
 local end_roundref = end_round
 function end_round()
-	if (#G.hand.cards < 1 and #G.deck.cards < 1 and #G.play.cards < 1) or (#G.hand.cards < 1 and #G.deck.cards < 1) then
+	if
+		((#G.hand.cards < 1 and #G.deck.cards < 1 and #G.play.cards < 1) or (#G.hand.cards < 1 and #G.deck.cards < 1))
+		and G.STATE == G.STATES.SELECTING_HAND
+	then
 		if
 			Cryptid.enabled("set_cry_poker_hand_stuff") == true
 			and not Cryptid.safe_get(G.PROFILES, G.SETTINGS.profile, "cry_none")
@@ -2105,4 +2151,47 @@ function get_straight(hand, min_length, skip, wrap)
 	end
 
 	return get_straight_ref(hand, min_length + stones, skip, wrap)
+end
+
+local get_prob_vars_ref = SMODS.get_probability_vars
+function SMODS.get_probability_vars(trigger_obj, base_numerator, base_denominator, identifier, from_roll)
+	local mod = trigger_obj and trigger_obj.ability and trigger_obj.ability.cry_prob or 1
+	local numerator = base_numerator * mod
+	if trigger_obj and trigger_obj.ability and trigger_obj.ability.cry_rigged then
+		numerator = base_denominator
+	end
+	return get_prob_vars_ref(trigger_obj, numerator, base_denominator, identifier, from_roll)
+end
+
+local pseudorandom_probability_ref = SMODS.pseudorandom_probability
+function SMODS.pseudorandom_probability(trigger_obj, seed, base_numerator, base_denominator, identifier)
+	local mod = trigger_obj and trigger_obj.ability and trigger_obj.ability.cry_prob or 1
+	local numerator = base_numerator * mod
+	if trigger_obj and trigger_obj.ability and trigger_obj.ability.cry_rigged then
+		SMODS.post_prob = SMODS.post_prob or {}
+		SMODS.post_prob[#SMODS.post_prob + 1] = {
+			pseudorandom_result = true,
+			result = true,
+			trigger_obj = trigger_obj,
+			numerator = base_denominator,
+			denominator = base_denominator,
+			identifier = identifier or seed,
+		}
+		return true
+	end
+	return pseudorandom_probability_ref(trigger_obj, seed, numerator, base_denominator, identifier)
+end
+
+local is_eternalref = SMODS.is_eternal
+function SMODS.is_eternal(card)
+	if not G.deck then
+		return card.ability.eternal
+	end
+	return is_eternalref(card)
+end
+
+local unlock_allref = G.FUNCS.unlock_all
+G.FUNCS.unlock_all = function(e)
+	unlock_allref(e)
+	G.PROFILES[G.SETTINGS.profile].cry_none = true
 end

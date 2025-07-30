@@ -220,17 +220,6 @@ end
 '''
 match_indent = true
 
-# calculate wheel fail (for Wheel of Hope)
-[[patches]]
-[patches.pattern]
-target = "card.lua"
-pattern = "if self.ability.name == 'Ectoplasm' or self.ability.name == 'Hex' or pseudorandom('wheel_of_fortune') < G.GAME.probabilities.normal/self.ability.extra then"
-position = "after"
-payload = '''
-if self.ability.name == 'The Wheel of Fortune' then self.cry_wheel_success = true end
-'''
-match_indent = false
-
 # no "Again!" text if a card will shatter
 [[patches]]
 [patches.pattern]
@@ -257,7 +246,8 @@ target = "functions/button_callbacks.lua"
 pattern = '''add_tag(_tag.config.ref_table)'''
 position = "at"
 payload = '''
-add_tag( next(SMODS.find_card('j_cry_kittyprinter')) and Tag('tag_cry_cat') or _tag.config.ref_table, true)
+local tag_key = Cryptid.get_next_tag()
+add_tag(tag_key and Tag(tag_key) or _tag.config.ref_table, true)
 '''
 match_indent = true
 
@@ -436,8 +426,9 @@ target = "functions/UI_definitions.lua"
 pattern = "local _tag = Tag(G.GAME.round_resets.blind_tags[blind_choice], nil, blind_choice)"
 position = "after"
 payload = '''
-if next(SMODS.find_card('j_cry_kittyprinter')) then
-	_tag = Tag('tag_cry_cat', nil, blind_choice)
+local tag = Cryptid.get_next_tag()
+if tag then
+	_tag = Tag(tag, nil, blind_choice)
 end
 '''
 match_indent = true

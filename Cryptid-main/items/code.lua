@@ -1036,15 +1036,19 @@ local exploit = {
 		return true
 	end,
 	use = function(self, card, area, copier)
+		-- Un-use the card (re-use code is in lib/misc.lua)
 		if not card.ability.cry_multiuse or to_big(card.ability.cry_multiuse) <= to_big(1) then
 			G.GAME.CODE_DESTROY_CARD = copy_card(card)
 			G.consumeables:emplace(G.GAME.CODE_DESTROY_CARD)
-		else
-			G.GAME.CODE_DESTROY_CARD = card
+			G.GAME.CODE_DESTROY_CARD.ability.cry_multiuse = nil
+		end
+		if card.ability.cry_multiuse then
 			card.ability.cry_multiuse = card.ability.cry_multiuse + 1
 		end
+
 		G.GAME.USING_CODE = true
 		G.GAME.USING_EXPLOIT = true
+		G.GAME.ACTIVE_CODE_CARD = G.GAME.CODE_DESTROY_CARD or card
 		G.FUNCS.overlay_menu({ definition = G.UIDEF.exploit_menu() })
 	end,
 }
@@ -1219,7 +1223,7 @@ local rework = {
 			return card.ability.set == "Joker"
 		end)
 		return #cards == 1
-			and not cards[1].ability.eternal
+			and not SMODS.is_eternal(cards[1])
 			and cards[1].ability.name
 				~= ("cry-meteor" or "cry-exoplanet" or "cry-stardust" or "cry_cursed" or ("Diet Cola" or Card.get_gameset(
 					card
@@ -1381,7 +1385,7 @@ local merge = {
 		if
 			#hand ~= 1
 			or #consumeables ~= 1
-			or consumeables[1].ability.eternal
+			or SMODS.is_eternal(consumeables[1])
 			or consumeables[1].ability.set == "Unique"
 		then
 			return false
@@ -1484,7 +1488,7 @@ local commit = {
 			return card.ability.set == "Joker" and not card.getting_sliced
 		end)
 		return #jokers == 1
-			and not jokers[1].ability.eternal
+			and not SMODS.is_eternal(jokers[1])
 			and not (type(jokers[1].config.center.rarity) == "number" and jokers[1].config.center.rarity >= 5)
 	end,
 	use = function(self, card, area, copier)
@@ -2238,6 +2242,8 @@ local hooked = {
 			and context.post_trigger
 			and not context.forcetrigger
 			and not context.other_context.forcetrigger
+			and not context.other_context.mod_probability
+			and not context.other_context.fixed_probability
 		then
 			for i = 1, #G.jokers.cards do
 				if G.jokers.cards[i].sort_id == card.ability.cry_hook_id then
@@ -3121,14 +3127,18 @@ local class = {
 		return { vars = { Cryptid.safe_get(card, "ability", "max_highlighted") or self.config.max_highlighted } }
 	end,
 	use = function(self, card, area, copier)
+		-- Un-use the card
 		if not card.ability.cry_multiuse or to_big(card.ability.cry_multiuse) <= to_big(1) then
 			G.GAME.CODE_DESTROY_CARD = copy_card(card)
 			G.consumeables:emplace(G.GAME.CODE_DESTROY_CARD)
-		else
+			G.GAME.CODE_DESTROY_CARD.ability.cry_multiuse = nil
+		end
+		if card.ability.cry_multiuse then
 			card.ability.cry_multiuse = card.ability.cry_multiuse + 1
 		end
 		G.GAME.USING_CODE = true
 		G.GAME.USING_CLASS = card.ability.max_highlighted
+		G.GAME.ACTIVE_CODE_CARD = G.GAME.CODE_DESTROY_CARD or card
 		G.FUNCS.overlay_menu({ definition = create_UIBox_class() })
 	end,
 	init = function(self)
@@ -3152,10 +3162,19 @@ local class = {
 					end
 					G.hand:unhighlight_all()
 					ccl(self)
-					if G.GAME.CODE_DESTROY_CARD then
-						G.GAME.CODE_DESTROY_CARD:start_dissolve()
-						G.GAME.CODE_DESTROY_CARD = nil
+					-- Re-use the card
+					if G.GAME.ACTIVE_CODE_CARD then
+						if
+							not G.GAME.ACTIVE_CODE_CARD.ability.cry_multiuse
+							or to_big(G.GAME.ACTIVE_CODE_CARD.ability.cry_multiuse) <= to_big(1)
+						then
+							G.GAME.ACTIVE_CODE_CARD:start_dissolve()
+						else
+							G.GAME.ACTIVE_CODE_CARD.ability.cry_multiuse =
+								lenient_bignum(to_big(G.GAME.ACTIVE_CODE_CARD.ability.cry_multiuse) - to_big(1))
+						end
 					end
+					G.GAME.ACTIVE_CODE_CARD = nil
 				end
 			else
 				ccl(self)
@@ -3347,14 +3366,18 @@ local variable = {
 		return { vars = { Cryptid.safe_get(card, "ability", "max_highlighted") or self.config.max_highlighted } }
 	end,
 	use = function(self, card, area, copier)
+		-- Un-use the card
 		if not card.ability.cry_multiuse or to_big(card.ability.cry_multiuse) <= to_big(1) then
 			G.GAME.CODE_DESTROY_CARD = copy_card(card)
 			G.consumeables:emplace(G.GAME.CODE_DESTROY_CARD)
-		else
+			G.GAME.CODE_DESTROY_CARD.ability.cry_multiuse = nil
+		end
+		if card.ability.cry_multiuse then
 			card.ability.cry_multiuse = card.ability.cry_multiuse + 1
 		end
 		G.GAME.USING_CODE = true
 		G.GAME.USING_VARIABLE = card.ability.max_highlighted
+		G.GAME.ACTIVE_CODE_CARD = G.GAME.CODE_DESTROY_CARD or card
 		G.FUNCS.overlay_menu({ definition = create_UIBox_variable_code() })
 	end,
 	init = function(self)
@@ -3378,10 +3401,19 @@ local variable = {
 					end
 					G.hand:unhighlight_all()
 					ccl(self)
-					if G.GAME.CODE_DESTROY_CARD then
-						G.GAME.CODE_DESTROY_CARD:start_dissolve()
-						G.GAME.CODE_DESTROY_CARD = nil
+					-- Re-use the card
+					if G.GAME.ACTIVE_CODE_CARD then
+						if
+							not G.GAME.ACTIVE_CODE_CARD.ability.cry_multiuse
+							or to_big(G.GAME.ACTIVE_CODE_CARD.ability.cry_multiuse) <= to_big(1)
+						then
+							G.GAME.ACTIVE_CODE_CARD:start_dissolve()
+						else
+							G.GAME.ACTIVE_CODE_CARD.ability.cry_multiuse =
+								lenient_bignum(to_big(G.GAME.ACTIVE_CODE_CARD.ability.cry_multiuse) - to_big(1))
+						end
 					end
+					G.GAME.ACTIVE_CODE_CARD = nil
 				end
 			else
 				ccl(self)
@@ -3393,6 +3425,15 @@ local variable = {
 				local c = SMODS.Ranks[card.base.value] or {}
 				if c.hidden or c.noe_doe or c.no_collection or c.no_variable or c.no_code then
 					card.debuff = true
+				else
+					G.E_MANAGER:add_event(Event({
+						trigger = "after",
+						blocking = false,
+						func = function()
+							card.debuff = false
+							return true
+						end,
+					}))
 				end
 			end
 			return emplace_ref(self, card, ...)
@@ -3496,7 +3537,9 @@ local log = {
 		function G.FUNCS.log_antevoucher()
 			G.FUNCS.log_cancel()
 			local pseudorandom = copy_table(G.GAME.pseudorandom)
+			G.GAME.round_resets.ante = G.GAME.round_resets.ante + 1
 			local bl = get_new_boss()
+			G.GAME.round_resets.ante = G.GAME.round_resets.ante - 1
 			G.GAME.LOG_BOSS = bl
 			local voucher = SMODS.get_next_vouchers()
 			G.GAME.LOG_VOUCHER = voucher
@@ -3508,7 +3551,10 @@ local log = {
 			G.CHOOSE_CARD = UIBox({
 				definition = create_UIBox_log({
 					bl and G.localization.descriptions.Blind[bl].name or "None",
-					voucher and G.localization.descriptions.Voucher[voucher[1]].name or "None",
+					voucher
+							and G.P_CENTERS[voucher[1]]
+							and localize({ type = "name_text", set = G.P_CENTERS[voucher[1]].set, key = voucher[1] })
+						or "None",
 				}, localize("cry_code_antevoucher")),
 				config = {
 					align = "cm",
@@ -3528,7 +3574,19 @@ local log = {
 			local pseudorandom = copy_table(G.GAME.pseudorandom)
 			local j = {}
 			for i = 1, 5 do
-				j[#j + 1] = G.localization.descriptions["Joker"][Cryptid.predict_joker("sho")].name
+				local key = Cryptid.predict_joker("sho")
+				local next_joker = G.P_CENTERS[key]
+						and localize({ type = "name_text", set = G.P_CENTERS[key].set, key = key })
+					or "ERROR"
+				if next_joker == "ERROR" then
+					local try = (G.localization.descriptions[G.P_CENTERS[key].set] or {})[key]
+					try = try and try.name or "[ERROR]"
+					if type(try or "a") == "table" then
+						try = try[1]
+					end
+					next_joker = try
+				end
+				j[#j + 1] = next_joker
 			end
 			G.GAME.pseudorandom = copy_table(pseudorandom)
 			G.GAME.USING_CODE = true
@@ -3552,7 +3610,9 @@ local log = {
 			local j = {}
 			for i = 1, 10 do
 				local card = G.deck.cards[#G.deck.cards + 1 - i]
-				j[#j + 1] = localize(card.base.value, "ranks") .. " of " .. localize(card.base.suit, "suits_plural")
+				if card then
+					j[#j + 1] = localize(card.base.value, "ranks") .. " of " .. localize(card.base.suit, "suits_plural")
+				end
 			end
 			G.GAME.USING_CODE = true
 			G.CHOOSE_CARD = UIBox({
@@ -3609,7 +3669,7 @@ local log = {
 							}),
 						},
 					},
-					G.GAME.blind and G.GAME.blind.in_blind and {
+					G.GAME.blind and G.GAME.blind.in_blind and G.deck and #(G.deck.cards or {}) > 0 and {
 						n = G.UIT.R,
 						config = { align = "cm" },
 						nodes = {
@@ -3815,7 +3875,7 @@ local quantify = {
 									or {}
 								local card = create_card(
 									kind or tbl.set,
-									G.jokers,
+									nil,
 									tbl.legendary,
 									tbl.rarity,
 									tbl.skip_materialize,
@@ -3823,10 +3883,16 @@ local quantify = {
 									tbl.forced_key,
 									"cry_quantify_booster"
 								)
-								G.jokers:emplace(card)
 								if to_big(self.ability.choose) <= to_big(0) then
 									self:start_dissolve()
 								end
+								G.E_MANAGER:add_event(Event({
+									trigger = "before",
+									func = function()
+										G.jokers:emplace(card)
+										return true
+									end,
+								}))
 							end
 						end
 					end
@@ -4147,8 +4213,9 @@ local alttab = {
 				ret = "???"
 			end
 		end
-		if next(SMODS.find_card("j_cry_kittyprinter")) then
-			ret = localize({ type = "name_text", key = "tag_cry_cat", set = "Tag" })
+		local tag = Cryptid.get_next_tag()
+		if tag then
+			ret = localize({ type = "name_text", key = tag, set = "Tag" })
 		end
 		return { vars = { ret } }
 	end,
@@ -4165,8 +4232,9 @@ local alttab = {
 				play_sound("tarot1")
 				local tag = nil
 				local type = G.GAME.blind:get_type()
-				if next(SMODS.find_card("j_cry_kittyprinter")) then
-					tag = Tag("tag_cry_cat")
+				local tag_key = Cryptid.get_next_tag()
+				if tag_Key then
+					tag = Tag(tag_key)
 				elseif type == "Boss" then
 					tag = Tag(get_next_tag_key())
 				else
@@ -4190,8 +4258,9 @@ local alttab = {
 					play_sound("tarot1")
 					local tag = nil
 					local type = G.GAME.blind:get_type()
-					if next(SMODS.find_card("j_cry_kittyprinter")) then
-						tag = Tag("tag_cry_cat")
+					local tag_key = Cryptid.get_next_tag()
+					if tag_key then
+						tag = Tag(tag_key)
 					elseif type == "Boss" then
 						tag = Tag(get_next_tag_key())
 					else
@@ -4446,7 +4515,7 @@ local semicolon = {
 			"HexaCryonic",
 		},
 		code = {
-			"Math",
+			"WilsontheWolf",
 		},
 	},
 	dependencies = {
@@ -4843,14 +4912,7 @@ local copypaste = {
 	blueprint_compat = true,
 	loc_vars = function(self, info_queue, card)
 		return {
-			vars = {
-				card and cry_prob(
-					math.min(card.ability.extra.odds / 2, card.ability.cry_prob or 1),
-					card.ability.extra.odds,
-					card.ability.cry_rigged
-				) or 1,
-				card and card.ability.extra.odds or 2,
-			}, -- this effectively prevents a copypaste from ever initially misprinting at above 50% odds. still allows rigging/oops
+			vars = { SMODS.get_probability_vars(card, 1, card.ability.extra.odds, "Copy/Paste") },
 			key = Cryptid.gameset_loc(self, { madness = "madness", exp_modest = "modest" }),
 		}
 	end,
@@ -4889,13 +4951,13 @@ local copypaste = {
 		then
 			if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
 				if
-					pseudorandom("cry_copypaste_joker")
-					< cry_prob(
-							math.min(card.ability.extra.odds / 2, card.ability.cry_prob),
-							card.ability.extra.odds,
-							card.ability.cry_rigged
-						)
-						/ card.ability.extra.odds
+					SMODS.pseudorandom_probability(
+						card,
+						"cry_copypaste_joker",
+						1,
+						card.ability.extra.odds,
+						"Copy/Paste"
+					)
 				then
 					G.E_MANAGER:add_event(Event({
 						func = function()
@@ -4975,7 +5037,7 @@ local cut = {
 				if
 					G.consumeables.cards[i].ability.set == "Code"
 					and not G.consumeables.cards[i].getting_sliced
-					and not G.consumeables.cards[i].ability.eternal
+					and not SMODS.is_eternal(G.consumeables.cards[i])
 				then
 					destructable_codecard[#destructable_codecard + 1] = G.consumeables.cards[i]
 				end

@@ -98,8 +98,8 @@ target = "tag.lua"
 pattern = '''add_tag(Tag(_context.tag.key))'''
 position = "after"
 payload = '''
-for _, v in ipairs(G.GAME.tags) do
-    v:apply_to_run({type = "immediate"})
+for i = 1, #G.GAME.tags do
+    G.GAME.tags[i]:apply_to_run({type = 'immediate'})
 end
 '''
 match_indent = true
@@ -119,6 +119,10 @@ elseif c1.ability.set == "Tag" then
 
     play_sound("generic1", 0.9 + math.random() * 0.1, 0.8)
     play_sound("holo1", 1.2 + math.random() * 0.1, 0.4)
+    
+    for i = 1, #G.GAME.tags do
+        G.GAME.tags[i]:apply_to_run({type = 'immediate'})
+    end
 '''
 match_indent = true
 
@@ -136,8 +140,8 @@ elseif card.ability.set == "Tag" then
     play_sound("generic1", 0.9 + math.random() * 0.1, 0.8)
     play_sound("holo1", 1.2 + math.random() * 0.1, 0.4)
 
-    for _, v in ipairs(G.GAME.tags) do
-        v:apply_to_run({type = "immediate"})
+    for i = 1, #G.GAME.tags do
+        G.GAME.tags[i]:apply_to_run({type = 'immediate'})
     end
 
     dont_dissolve = true

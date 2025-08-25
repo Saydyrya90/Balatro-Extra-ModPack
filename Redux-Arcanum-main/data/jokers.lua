@@ -203,7 +203,7 @@ SMODS.Joker { -- Mutated Joker
         end
 
         if context.joker_main then
-            local alchemical_tally = 1
+            local alchemical_tally = 0
             for k, v in pairs(G.GAME.consumeable_usage) do
                 if v.set == 'Alchemical' then alchemical_tally = alchemical_tally + 1 end
             end

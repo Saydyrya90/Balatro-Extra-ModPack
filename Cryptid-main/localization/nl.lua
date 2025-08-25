@@ -2720,6 +2720,15 @@ return {
 			},
 		},
 		Other = {
+			alt_wheel_of_fortune = {
+				name = "Het rad van fortuin",
+				text = {
+					"Een kans van {C:green}#1# op #2#{} om",
+					"{C:dark_edition}folie{}, {C:dark_edition}holografische{} of",
+					"{C:dark_edition}polychrome{} editie toe te voegen",
+					"aan een willekeurige {C:attention}Joker",
+				},
+			},
 			banana = {
 				name = "Banana",
 				text = {
@@ -3044,6 +3053,7 @@ return {
 			cry_debuff_obsidian_orb = "Applies abilities of all defeated bosses",
 
 			k_code = "Code",
+			k_chips = "fiches",
 			b_code_cards = "Code Cards",
 			b_pull = "PULL",
 			cry_hooked_ex = "Hooked!",

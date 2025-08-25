@@ -52,8 +52,8 @@ return {
 				name = "Krytyczna Talia",
 				text = {
 					"Po każdej zagranej ręce,",
-					"{C:green}#1# na 4{} szans na mnożnik {X:dark_edition,C:white} ^2 {}",
-					"{C:green}#1# na 8{} szans na mnożnik {X:dark_edition,C:white} ^0.5 {}",
+					"{C:green}#1# na #2#{} szans na mnożnik {X:dark_edition,C:white} ^2 {}",
+					"{C:green}#1# na #3#{} szans na mnożnik {X:dark_edition,C:white} ^0.5 {}",
 				},
 			},
 			b_cry_encoded = {
@@ -136,7 +136,7 @@ return {
 				name = "Legendarna Talia",
 				text = {
 					"Rozpoczynasz podejście z {C:legendary}legendarnym{C:legendary} jokerem",
-					"{C:green}1 in 5{} szans na dodanie kolejnego",
+					"{C:green}#1# in #2#{} szans na dodanie kolejnego",
 					"po pokonaniu przeszkadzajki bossa",
 					"{C:inactive}(wymaga miejsca){}",
 				},
@@ -3141,6 +3141,15 @@ return {
 			},
 		},
 		Other = {
+			alt_wheel_of_fortune = {
+				name = "Koło Fortuny",
+				text = {
+					"{C:green}#1# na #2#{} szans zamiany",
+					"losowego {C:attention}jokera na jego wersję",
+					"{C:dark_edition}w folii{}, {C:dark_edition}holograficzną{} lub",
+					"{C:dark_edition}polichromowaną{}",
+				},
+			},
 			banana = {
 				name = "Bananowy",
 				text = {
@@ -3653,6 +3662,7 @@ return {
 			cry_debuff_obsidian_orb = "Aplikuje zdolności wszystkich pokonanych bossów",
 
 			k_code = "Kod",
+			k_chips = "żet",
 			k_unique = "Unikalny",
 			b_code_cards = "Karty Kodowe",
 			b_unique_cards = "Unikalne Karty",

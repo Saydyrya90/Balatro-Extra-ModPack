@@ -75,15 +75,13 @@ local dropshot = {
 				v.cry_dropshot_incompat = nil
 			end
 			if cards > 0 then
-				card.ability.extra.x_mult = card.ability.extra.x_mult + cards * card.ability.extra.Xmult_mod
-				card_eval_status_text(
-					card,
-					"extra",
-					nil,
-					nil,
-					nil,
-					{ message = localize({ type = "variable", key = "a_xmult", vars = { card.ability.extra.x_mult } }) }
-				)
+				SMODS.scale_card(card, {
+					ref_table = card.ability.extra,
+					ref_value = "x_mult",
+					scalar_value = "Xmult_mod",
+					message_key = "a_xmult",
+					message_colour = G.C.RED,
+				})
 				return nil, true
 			end
 		end
@@ -94,7 +92,12 @@ local dropshot = {
 			}
 		end
 		if context.forcetrigger then
-			card.ability.extra.x_mult = card.ability.extra.x_mult + card.ability.extra.Xmult_mod
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "x_mult",
+				scalar_value = "Xmult_mod",
+				no_message = true,
+			})
 			return {
 				message = localize({ type = "variable", key = "a_xmult", vars = { card.ability.extra.x_mult } }),
 				Xmult_mod = card.ability.extra.x_mult,
@@ -345,14 +348,14 @@ local potofjokes = {
 
 			G.hand:change_size(delta)
 
-			card.ability.extra.h_size = card.ability.extra.h_size + card.ability.extra.h_mod
 			card.ability.immutable.h_added = card.ability.immutable.h_added + delta
 
-			return {
-				message = localize({ type = "variable", key = "a_handsize", vars = { card.ability.extra.h_mod } }),
-				colour = G.C.FILTER,
-				card = card,
-			}
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "h_size",
+				scalar_value = "h_mod",
+				message_key = "a_handsize",
+			})
 		end
 	end,
 	add_to_deck = function(self, card, from_debuff)
@@ -514,13 +517,12 @@ local wee_fib = {
 		if context.cardarea == G.play and context.individual and not context.blueprint then
 			local rank = context.other_card:get_id()
 			if rank == 14 or rank == 2 or rank == 3 or rank == 5 or rank == 8 then
-				card.ability.extra.mult = lenient_bignum(to_big(card.ability.extra.mult) + card.ability.extra.mult_mod)
-
-				return {
-					extra = { focus = card, message = localize("k_upgrade_ex") },
-					card = card,
-					colour = G.C.MULT,
-				}
+				SMODS.scale_card(card, {
+					ref_table = card.ability.extra,
+					ref_value = "mult",
+					scalar_value = "mult_mod",
+					message_colour = G.C.MULT,
+				})
 			end
 		end
 		if context.joker_main and (to_big(card.ability.extra.mult) > to_big(0)) then
@@ -535,16 +537,15 @@ local wee_fib = {
 			}
 		end
 		if context.forcetrigger then
-			card.ability.extra.mult = lenient_bignum(to_big(card.ability.extra.mult) + card.ability.extra.mult_mod)
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "mult",
+				scalar_value = "mult_mod",
+				message_colour = G.C.MULT,
+				no_message = true,
+			})
 			return {
-				message = localize({
-					type = "variable",
-					key = "a_mult",
-					vars = { number_format(card.ability.extra.mult) },
-				}),
-				mult_mod = lenient_bignum(card.ability.extra.mult),
-				colour = G.C.MULT,
-				extra = { focus = card, message = localize("k_upgrade_ex") },
+				mult = lenient_bignum(card.ability.extra.mult),
 			}
 		end
 	end,
@@ -648,14 +649,12 @@ local whip = {
 						(#twosuits > 1 or #sevensuits > 1)
 						or (#twosuits == 1 and #sevensuits == 1 and twosuits[1] ~= sevensuits[1])
 					then
-						card.ability.extra.x_mult =
-							lenient_bignum(to_big(card.ability.extra.x_mult) + card.ability.extra.Xmult_mod)
-						card_eval_status_text(card, "extra", nil, nil, nil, {
-							message = localize({
-								type = "variable",
-								key = "a_xmult",
-								vars = { number_format(card.ability.extra.x_mult) },
-							}),
+						SMODS.scale_card(card, {
+							ref_table = card.ability.extra,
+							ref_value = "x_mult",
+							scalar_value = "Xmult_mod",
+							message_key = "a_xmult",
+							message_colour = G.C.MULT,
 						})
 						return nil, true
 					end
@@ -673,14 +672,14 @@ local whip = {
 			}
 		end
 		if context.force_trigger then
-			card.ability.extra.x_mult = lenient_bignum(to_big(card.ability.extra.x_mult) + card.ability.extra.Xmult_mod)
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "x_mult",
+				scalar_value = "Xmult_mod",
+				no_message = true,
+			})
 			return {
-				message = localize({
-					type = "variable",
-					key = "a_xmult",
-					vars = { number_format(card.ability.extra.x_mult) },
-				}),
-				Xmult_mod = card.ability.extra.x_mult,
+				xmult = card.ability.extra.x_mult,
 			}
 		end
 	end,
@@ -794,14 +793,12 @@ local cursor = {
 	end,
 	calculate = function(self, card, context)
 		if context.buying_card and not context.blueprint and not (context.card == card) then
-			card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.chip_mod
-			card_eval_status_text(card, "extra", nil, nil, nil, {
-				message = localize({
-					type = "variable",
-					key = "a_chips",
-					vars = { number_format(card.ability.extra.chips) },
-				}),
-				colour = G.C.CHIPS,
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "chips",
+				scalar_value = "chip_mod",
+				message_key = "a_chips",
+				message_colour = G.C.CHIPS,
 			})
 			return nil, true
 		end
@@ -816,13 +813,14 @@ local cursor = {
 			}
 		end
 		if context.forcetrigger then
-			card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.chip_mod
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "chips",
+				scalar_value = "chip_mod",
+				message_key = "a_chips",
+				message_colour = G.C.CHIPS,
+			})
 			return {
-				message = localize({
-					type = "variable",
-					key = "a_chips",
-					vars = { number_format(card.ability.extra.chips) },
-				}),
 				chip_mod = lenient_bignum(card.ability.extra.chips),
 			}
 		end
@@ -906,16 +904,24 @@ local pickle = {
 			return nil, true
 		end
 		if (context.setting_blind and not context.blueprint) or context.forcetrigger then
-			card.ability.extra.tags = lenient_bignum(to_big(card.ability.extra.tags) - card.ability.extra.tags_mod)
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "tags",
+				scalar_value = "tags_mod",
+				operation = "-",
+				no_message = true,
+			})
 			if to_big(card.ability.extra.tags) > to_big(0) then
-				card_eval_status_text(card, "extra", nil, nil, nil, {
-					message = localize({
-						type = "variable",
-						key = card.ability.extra.tags_mod == 1 and "a_tag_minus" or "a_tags_minus",
-						vars = { number_format(card.ability.extra.tags_mod) },
-					})[1],
-					colour = G.C.FILTER,
-				})
+				if not msg or type(msg) == "string" then
+					card_eval_status_text(card, "extra", nil, nil, nil, {
+						message = msg or localize({
+							type = "variable",
+							key = card.ability.extra.tags_mod == 1 and "a_tag_minus" or "a_tags_minus",
+							vars = { number_format(card.ability.extra.tags_mod) },
+						})[1],
+						colour = G.C.FILTER,
+					})
+				end
 				return nil, true
 			else
 				G.E_MANAGER:add_event(Event({
@@ -1174,17 +1180,25 @@ local chili_pepper = {
 			and not context.repetition
 			and not context.retrigger_joker
 		then
-			card.ability.extra.Xmult = lenient_bignum(to_big(card.ability.extra.Xmult) + card.ability.extra.Xmult_mod)
 			card.ability.extra.rounds_remaining = lenient_bignum(to_big(card.ability.extra.rounds_remaining) - 1)
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "Xmult",
+				scalar_value = "Xmult_mod",
+				no_message = true,
+			})
 			if to_big(card.ability.extra.rounds_remaining) > to_big(0) then
-				return {
-					message = localize({
-						type = "variable",
-						key = "a_xmult",
-						vars = { number_format(card.ability.extra.Xmult) },
-					}),
-					colour = G.C.FILTER,
-				}
+				if not msg or type(msg) == "string" then
+					return {
+						message = msg or localize({
+							type = "variable",
+							key = "a_xmult",
+							vars = { number_format(card.ability.extra.Xmult) },
+						}),
+						colour = G.C.FILTER,
+					}
+				end
+				return nil, true
 			else
 				G.E_MANAGER:add_event(Event({
 					func = function()
@@ -1214,14 +1228,15 @@ local chili_pepper = {
 			end
 		end
 		if context.forcetrigger then
-			card.ability.extra.Xmult = lenient_bignum(to_big(card.ability.extra.Xmult) + card.ability.extra.Xmult_mod)
 			card.ability.extra.rounds_remaining = lenient_bignum(to_big(card.ability.extra.rounds_remaining) - 1)
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "Xmult",
+				scalar_value = "Xmult_mod",
+				message_key = "a_xmult",
+				message_colour = G.C.MULT,
+			})
 			return {
-				message = localize({
-					type = "variable",
-					key = "a_xmult",
-					vars = { number_format(card.ability.extra.Xmult) },
-				}),
 				Xmult_mod = lenient_bignum(card.ability.extra.Xmult),
 			}
 		end
@@ -1276,13 +1291,11 @@ local compound_interest = {
 
 			local old = lenient_bignum(card.ability.extra.percent)
 
-			card.ability.extra.percent =
-				lenient_bignum(to_big(card.ability.extra.percent) + card.ability.extra.percent_mod)
-
-			Cryptid.apply_scale_mod(card, card.ability.extra.percent_mod, old, card.ability.extra.percent, {
-				base = { { "extra", "percent" } },
-				scaler = { { "extra", "percent_mod" } },
-				scaler_base = { card.ability.extra.percent_mod },
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "percent",
+				scalar_value = "percent_mod",
+				no_message = true,
 			})
 			if to_big(bonus) > to_big(0) then
 				return bonus
@@ -1407,24 +1420,24 @@ local eternalflame = {
 			and (context.card.sell_cost >= 2 or Card.get_gameset(card) ~= "modest")
 			and not context.blueprint
 		then
-			card.ability.extra.x_mult = lenient_bignum(to_big(card.ability.extra.x_mult) + card.ability.extra.extra)
-			card_eval_status_text(card, "extra", nil, nil, nil, {
-				message = localize({
-					type = "variable",
-					key = "a_xmult",
-					vars = { number_format(card.ability.extra.x_mult) },
-				}),
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "x_mult",
+				scalar_value = "extra",
+				message_key = "a_xmult",
+				message_colour = G.C.MULT,
 			})
 			return nil, true
 		end
 		if context.forcetrigger then
-			card.ability.extra.x_mult = lenient_bignum(to_big(card.ability.extra.x_mult) + card.ability.extra.extra)
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "x_mult",
+				scalar_value = "extra",
+				message_key = "a_xmult",
+				message_colour = G.C.MULT,
+			})
 			return {
-				message = localize({
-					type = "variable",
-					key = "a_xmult",
-					vars = { number_format(card.ability.extra.x_mult) },
-				}),
 				Xmult_mod = lenient_bignum(card.ability.extra.x_mult),
 			}
 		end
@@ -1696,9 +1709,13 @@ local jimball = {
 					}
 				end
 			else
-				card.ability.extra.x_mult =
-					lenient_bignum(to_big(card.ability.extra.x_mult) + card.ability.extra.x_mult_mod)
-				--TODO return the proper upgrade text
+				SMODS.scale_card(card, {
+					ref_table = card.ability.extra,
+					ref_value = "x_mult",
+					scalar_value = "x_mult_mod",
+					message_key = "a_xmult",
+					message_colour = G.C.MULT,
+				})
 				return nil, true
 			end
 		end
@@ -1714,14 +1731,14 @@ local jimball = {
 			}
 		end
 		if context.forcetrigger then
-			card.ability.extra.x_mult =
-				lenient_bignum(to_big(card.ability.extra.x_mult) + card.ability.extra.x_mult_mod)
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "x_mult",
+				scalar_value = "x_mult_mod",
+				message_key = "a_xmult",
+				message_colour = G.C.MULT,
+			})
 			return {
-				message = localize({
-					type = "variable",
-					key = "a_xmult",
-					vars = { number_format(card.ability.extra.x_mult) },
-				}),
 				Xmult_mod = lenient_bignum(card.ability.extra.x_mult),
 			}
 		end
@@ -1925,12 +1942,11 @@ local fspinner = {
 			local play_more_than = (G.GAME.hands[context.scoring_name].played or 0)
 			for k, v in pairs(G.GAME.hands) do
 				if k ~= context.scoring_name and v.played >= play_more_than and v.visible then
-					card.ability.extra.chips =
-						lenient_bignum(to_big(card.ability.extra.chips) + card.ability.extra.chip_mod)
-					return {
-						message = localize("k_upgrade_ex"),
-						card = card,
-					}
+					SMODS.scale_card(card, {
+						ref_table = card.ability.extra,
+						ref_value = "chips",
+						scalar_value = "chip_mod",
+					})
 				end
 			end
 		end
@@ -1945,13 +1961,14 @@ local fspinner = {
 			}
 		end
 		if context.forcetrigger then
-			card.ability.extra.chips = lenient_bignum(to_big(card.ability.extra.chips) + card.ability.extra.chip_mod)
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "chips",
+				scalar_value = "chip_mod",
+				message_key = "a_chips",
+				message_colour = G.C.BLUE,
+			})
 			return {
-				message = localize({
-					type = "variable",
-					key = "a_chips",
-					vars = { number_format(card.ability.extra.chips) },
-				}),
 				chip_mod = lenient_bignum(card.ability.extra.chips),
 			}
 		end
@@ -2136,21 +2153,21 @@ local krustytheclown = {
 			}
 		end
 		if context.cardarea == G.play and context.individual and not context.blueprint then
-			card.ability.extra.x_mult = lenient_bignum(to_big(card.ability.extra.x_mult) + card.ability.extra.extra)
-			return {
-				extra = { focus = card, message = localize("k_upgrade_ex") },
-				card = card,
-				colour = G.C.MULT,
-			}
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "x_mult",
+				scalar_value = "extra",
+			})
 		end
 		if context.forcetrigger then
-			card.ability.extra.x_mult = lenient_bignum(to_big(card.ability.extra.x_mult) + card.ability.extra.extra)
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "x_mult",
+				scalar_value = "extra",
+				message_key = "a_xmult",
+				message_colour = G.C.RED,
+			})
 			return {
-				message = localize({
-					type = "variable",
-					key = "a_xmult",
-					vars = { number_format(card.ability.extra.x_mult) },
-				}),
 				Xmult_mod = lenient_bignum(card.ability.extra.x_mult),
 			}
 		end
@@ -2188,7 +2205,18 @@ local blurred = {
 	blueprint_compat = true,
 	demicoloncompat = true,
 	loc_vars = function(self, info_queue, center)
-		return { vars = { math.min(center.ability.immutable.max_hand_size_mod, center.ability.extra.extra_hands) } }
+		local aaa
+		if next(SMODS.find_mod("sdm0sstuff")) then
+			if G.localization.descriptions.Other.blurred_sdm0 then
+				aaa = {}
+				localize({ type = "other", key = "blurred_sdm0", nodes = aaa, vars = {} })
+				aaa = aaa[1]
+			end
+		end
+		return {
+			vars = { math.min(center.ability.immutable.max_hand_size_mod, center.ability.extra.extra_hands) },
+			main_end = aaa,
+		}
 	end,
 	atlas = "atlastwo",
 	calculate = function(self, card, context)
@@ -2428,25 +2456,23 @@ local antennastoheaven = {
 		if context.cardarea == G.play and context.individual and not context.blueprint then
 			local rank = context.other_card:get_id()
 			if rank == 4 or rank == 7 then
-				card.ability.extra.x_chips =
-					lenient_bignum(to_big(card.ability.extra.x_chips) + card.ability.extra.bonus)
-				return {
-					extra = { focus = card, message = localize("k_upgrade_ex") },
-					card = card,
-					colour = G.C.CHIPS,
-				}
+				SMODS.scale_card(card, {
+					ref_table = card.ability.extra,
+					ref_value = "x_chips",
+					scalar_value = "bonus",
+				})
 			end
 		end
 		if context.forcetrigger then
-			card.ability.extra.x_chips = lenient_bignum(to_big(card.ability.extra.x_chips) + card.ability.extra.bonus)
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "x_chips",
+				scalar_value = "bonus",
+				message_key = "a_xchips",
+				message_colour = G.C.CHIPS,
+			})
 			return {
-				message = localize({
-					type = "variable",
-					key = "a_xchips",
-					vars = { number_format(card.ability.extra.x_chips) },
-				}),
 				Xchip_mod = lenient_bignum(card.ability.extra.x_chips),
-				colour = G.C.CHIPS,
 			}
 		end
 	end,
@@ -2924,16 +2950,15 @@ local unjust_dagger = {
 					return true
 				end,
 			}))
-			card_eval_status_text(card, "extra", nil, nil, nil, {
-				message = localize({
-					type = "variable",
-					key = "a_xmult",
-					vars = {
-						number_format(lenient_bignum(to_big(card.ability.extra.x_mult) + 0.2 * sliced_card.sell_cost)),
-					},
-				}),
-				colour = G.C.RED,
-				no_juice = true,
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "x_mult",
+				scalar_table = {
+					sell_cost = sliced_card.sell_cost * 0.2,
+				},
+				scalar_value = "sell_cost",
+				message_key = "a_xmult",
+				message_colour = G.C.RED,
 			})
 			return nil, true
 		end
@@ -2955,12 +2980,17 @@ local unjust_dagger = {
 					return true
 				end,
 			}))
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "x_mult",
+				scalar_table = {
+					sell_cost = sliced_card.sell_cost * 0.2,
+				},
+				scalar_value = "sell_cost",
+				message_key = "a_xmult",
+				message_colour = G.C.RED,
+			})
 			return {
-				message = localize({
-					type = "variable",
-					key = "a_xmult",
-					vars = { number_format(card.ability.extra.x_mult) },
-				}),
 				Xmult_mod = lenient_bignum(card.ability.extra.x_mult),
 			}
 		end
@@ -3041,17 +3071,29 @@ local monkey_dagger = {
 					return true
 				end,
 			}))
-			card_eval_status_text(card, "extra", nil, nil, nil, {
-				message = localize({
-					type = "variable",
-					key = "a_chips",
-					vars = {
-						number_format(lenient_bignum(to_big(card.ability.extra.chips) + 10 * sliced_card.sell_cost)),
-					},
-				}),
-				colour = G.C.CHIPS,
-				no_juice = true,
+			local msg = SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "x_mult",
+				scalar_table = {
+					sell_cost = sliced_card.sell_cost * 10,
+				},
+				scalar_value = "sell_cost",
 			})
+			if not msg or type(msg) == "string" then
+				card_eval_status_text(card, "extra", nil, nil, nil, {
+					message = msg or localize({
+						type = "variable",
+						key = "a_chips",
+						vars = {
+							number_format(
+								lenient_bignum(to_big(card.ability.extra.chips) + 10 * sliced_card.sell_cost)
+							),
+						},
+					}),
+					colour = G.C.CHIPS,
+					no_juice = true,
+				})
+			end
 			return nil, true
 		end
 		if context.forcetrigger and my_pos and G.jokers.cards[my_pos - 1] then
@@ -3072,12 +3114,17 @@ local monkey_dagger = {
 					return true
 				end,
 			}))
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "chips",
+				scalar_table = {
+					sell_cost = sliced_card.sell_cost * 10,
+				},
+				scalar_value = "sell_cost",
+				message_key = "a_chips",
+				message_colour = G.C.BLUE,
+			})
 			return {
-				message = localize({
-					type = "variable",
-					key = "a_chips",
-					vars = { number_format(card.ability.extra.chips) },
-				}),
 				chip_mod = lenient_bignum(card.ability.extra.chips),
 			}
 		end
@@ -3158,18 +3205,15 @@ local pirate_dagger = {
 					return true
 				end,
 			}))
-			card_eval_status_text(card, "extra", nil, nil, nil, {
-				message = localize({
-					type = "variable",
-					key = "a_xchips",
-					vars = {
-						number_format(
-							lenient_bignum(to_big(card.ability.extra.x_chips) + 0.25 * sliced_card.sell_cost)
-						),
-					},
-				}),
-				colour = G.C.CHIPS,
-				no_juice = true,
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "x_chips",
+				scalar_table = {
+					sell_cost = sliced_card.sell_cost * 0.25,
+				},
+				scalar_value = "sell_cost",
+				message_key = "a_xchips",
+				message_colour = G.C.BLUE,
 			})
 			return nil, true
 		end
@@ -3191,12 +3235,17 @@ local pirate_dagger = {
 					return true
 				end,
 			}))
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "x_chips",
+				scalar_table = {
+					sell_cost = sliced_card.sell_cost * 0.25,
+				},
+				scalar_value = "sell_cost",
+				message_key = "a_xchips",
+				message_colour = G.C.BLUE,
+			})
 			return {
-				message = localize({
-					type = "variable",
-					key = "a_xchips",
-					vars = { number_format(card.ability.extra.x_chips) },
-				}),
 				Xchip_mod = lenient_bignum(card.ability.extra.x_chips),
 			}
 		end
@@ -3262,20 +3311,21 @@ local mondrian = {
 			and not context.individual
 			and not context.repetition
 		then
-			card.ability.extra.x_mult = lenient_bignum(to_big(card.ability.extra.x_mult) + card.ability.extra.extra)
-			return {
-				message = localize("k_upgrade_ex"),
-				card = card,
-			}
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "x_mult",
+				scalar_value = "extra",
+			})
 		end
 		if context.forcetrigger then
-			card.ability.extra.x_mult = lenient_bignum(to_big(card.ability.extra.x_mult) + card.ability.extra.extra)
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "x_mult",
+				scalar_value = "extra",
+				message_key = "a_xmult",
+				message_colour = G.C.RED,
+			})
 			return {
-				message = localize({
-					type = "variable",
-					key = "a_xmult",
-					vars = { number_format(card.ability.extra.x_mult) },
-				}),
 				Xmult_mod = lenient_bignum(card.ability.extra.x_mult),
 			}
 		end
@@ -3466,13 +3516,11 @@ local spaceglobe = {
 						return true
 					end,
 				}))
-				card.ability.extra.x_chips =
-					lenient_bignum(to_big(card.ability.extra.x_chips) + card.ability.extra.Xchipmod)
-				return {
-					message = localize("k_upgrade_ex"),
-					card = card,
-					colour = G.C.CHIPS,
-				}
+				SMODS.scale_card(card, {
+					ref_table = card.ability.extra,
+					ref_value = "x_chips",
+					scalar_value = "Xchipmod",
+				})
 			end
 		end
 		if context.joker_main and (to_big(card.ability.extra.x_chips) > to_big(1)) then
@@ -3487,16 +3535,15 @@ local spaceglobe = {
 			}
 		end
 		if context.forcetrigger then
-			card.ability.extra.x_chips =
-				lenient_bignum(to_big(card.ability.extra.x_chips) + card.ability.extra.Xchipmod)
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "x_chips",
+				scalar_value = "Xchipmod",
+				message_key = "a_xchips",
+				message_colour = G.C.BLUE,
+			})
 			return {
-				message = localize({
-					type = "variable",
-					key = "a_xchips",
-					vars = { number_format(card.ability.extra.x_chips) },
-				}),
 				Xchip_mod = lenient_bignum(card.ability.extra.x_chips),
-				colour = G.C.CHIPS,
 			}
 		end
 	end,
@@ -4010,6 +4057,9 @@ local rnjoker = {
 					if valid_context then
 						local cond_passed = false
 						local times_passed = 1
+						if j_context == "playing_card_added" and context.cards and context.cards[1] then
+							times_passed = #context.cards
+						end
 						if j.cond then
 							if j.cond == "buy_common" then
 								if
@@ -4158,16 +4208,38 @@ local rnjoker = {
 									cond_passed = true
 								end
 							elseif j.cond == "odds" then
-								if
-									SMODS.pseudorandom_probability(
-										card,
-										"rnj",
-										1,
-										card and card.ability.extra.cond_value or 0,
-										"RNJoker"
-									)
-								then
-									cond_passed = true
+								if j_context == "playing_card_added" and context.cards and context.cards[1] then
+									for i = 1, #context.cards do
+										if
+											SMODS.pseudorandom_probability(
+												card,
+												"rnj",
+												1,
+												card and card.ability.extra.cond_value or 0,
+												"RNJoker"
+											)
+										then
+										else
+											times_passed = math.max(0, times_passed - 1)
+										end
+									end
+									if times_passed == 0 then
+										cond_passed = false
+									else
+										cond_passed = true
+									end
+								else
+									if
+										SMODS.pseudorandom_probability(
+											card,
+											"rnj",
+											1,
+											card and card.ability.extra.cond_value or 0,
+											"RNJoker"
+										)
+									then
+										cond_passed = true
+									end
 								end
 							end
 						else
@@ -4821,12 +4893,7 @@ local rnjoker = {
 						"odds",
 					}
 				elseif context == "playing_card_added" then
-					conds = {
-						"suit",
-						"rank",
-						"face",
-						"odds",
-					}
+					conds = { "odds" }
 				elseif context == "setting_blind" then
 					conds = {
 						"boss",
@@ -7601,7 +7668,8 @@ local wheelhope = {
 	blueprint_compat = true,
 	demicoloncompat = true,
 	loc_vars = function(self, info_queue, center)
-		info_queue[#info_queue + 1] = G.P_CENTERS.c_wheel_of_fortune
+		local aaa, bbb = SMODS.get_probability_vars(nil, 1, 4, "wheel_of_fortune")
+		info_queue[#info_queue + 1] = { key = "alt_wheel_of_fortune", set = "Other", specific_vars = { aaa, bbb } }
 		return {
 			vars = {
 				number_format(center.ability.extra.extra),
@@ -7623,25 +7691,25 @@ local wheelhope = {
 		end
 		if context.pseudorandom_result and not context.result then
 			if context.identifier and context.identifier == "wheel_of_fortune" then
-				card.ability.extra.x_mult = lenient_bignum(to_big(card.ability.extra.x_mult) + card.ability.extra.extra)
-				card_eval_status_text(card, "extra", nil, nil, nil, {
-					message = localize({
-						type = "variable",
-						key = "a_xmult",
-						vars = { number_format(card.ability.extra.x_mult) },
-					}),
+				SMODS.scale_card(card, {
+					ref_table = card.ability.extra,
+					ref_value = "x_mult",
+					scalar_value = "extra",
+					message_key = "a_xmult",
+					message_colour = G.C.RED,
 				})
 				return nil, true
 			end
 		end
 		if context.forcetrigger then
-			card.ability.extra.x_mult = lenient_bignum(to_big(card.ability.extra.x_mult) + card.ability.extra.extra)
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "x_mult",
+				scalar_value = "extra",
+				message_key = "a_xmult",
+				message_colour = G.C.RED,
+			})
 			return {
-				message = localize({
-					type = "variable",
-					key = "a_xmult",
-					vars = { number_format(card.ability.extra.x_mult) },
-				}),
 				Xmult_mod = lenient_bignum(card.ability.extra.x_mult),
 			}
 		end
@@ -8013,11 +8081,28 @@ local translucent = {
 	cost = 4,
 	order = 52,
 	immutable = true,
+	blueprint_compat = true,
 	eternal_compat = false,
 	demicoloncompat = true,
 	atlas = "atlasthree",
+	loc_vars = function(self, info_queue, card)
+		local aaa
+		if G.jokers then
+			for k, v in ipairs(G.jokers.cards) do
+				if (v.edition and v.edition.negative) and G.localization.descriptions.Other.remove_negative then
+					aaa = {}
+					localize({ type = "other", key = "remove_negative", nodes = aaa, vars = {} })
+					aaa = aaa[1]
+					break
+				end
+			end
+		end
+		return {
+			main_end = aaa,
+		}
+	end,
 	calculate = function(self, card, context)
-		if (context.selling_self and not (context.retrigger_joker or context.blueprint)) or context.forcetrigger then
+		if context.selling_self and not context.retrigger_joker or context.forcetrigger then
 			local jokers = {}
 			for i = 1, #G.jokers.cards do
 				if G.jokers.cards[i] ~= card and not G.jokers.cards[i].debuff then
@@ -8026,7 +8111,14 @@ local translucent = {
 			end
 			if #jokers > 0 then
 				if #G.jokers.cards <= G.jokers.config.card_limit then
-					card_eval_status_text(card, "extra", nil, nil, nil, { message = localize("k_duplicated_ex") })
+					card_eval_status_text(
+						context.blueprint_card or card,
+						"extra",
+						nil,
+						nil,
+						nil,
+						{ message = localize("k_duplicated_ex") }
+					)
 					local chosen_joker = pseudorandom_element(jokers, pseudoseed("trans"))
 					local _card =
 						copy_card(chosen_joker, nil, nil, nil, chosen_joker.edition and chosen_joker.edition.negative)
@@ -8037,10 +8129,24 @@ local translucent = {
 					G.jokers:emplace(_card)
 					return nil, true
 				else
-					card_eval_status_text(card, "extra", nil, nil, nil, { message = localize("k_no_room_ex") })
+					card_eval_status_text(
+						context.blueprint_card or card,
+						"extra",
+						nil,
+						nil,
+						nil,
+						{ message = localize("k_no_room_ex") }
+					)
 				end
 			else
-				card_eval_status_text(card, "extra", nil, nil, nil, { message = localize("k_no_other_jokers") })
+				card_eval_status_text(
+					context.blueprint_card or card,
+					"extra",
+					nil,
+					nil,
+					nil,
+					{ message = localize("k_no_other_jokers") }
+				)
 			end
 		end
 	end,
@@ -8097,16 +8203,19 @@ local morse = {
 	atlas = "atlastwo",
 	calculate = function(self, card, context)
 		if context.selling_card and context.card.edition and not context.blueprint then
-			card.ability.extra.money = lenient_bignum(to_big(card.ability.extra.money) + card.ability.extra.bonus)
-			return {
-				card_eval_status_text(card, "extra", nil, nil, nil, {
-					message = localize("k_upgrade_ex"),
-					colour = G.C.MONEY,
-				}),
-			}
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "money",
+				scalar_value = "bonus",
+			})
 		end
 		if context.forcetrigger then
-			card.ability.extra.money = lenient_bignum(to_big(card.ability.extra.money) + card.ability.extra.bonus)
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "money",
+				scalar_value = "bonus",
+				no_message = true,
+			})
 			ease_dollars(lenient_bignum(card.ability.extra.money))
 		end
 	end,
@@ -8146,11 +8255,20 @@ local membershipcard = {
 	demicoloncompat = true,
 	atlas = "atlasthree",
 	loc_vars = function(self, info_queue, card)
+		local aaa
+		if not Cryptid_config.HTTPS then
+			if G.localization.descriptions.Other.cry_https_disabled then
+				aaa = {}
+				localize({ type = "other", key = "cry_https_disabled", nodes = aaa, vars = {} })
+				aaa = aaa[1]
+			end
+		end
 		return {
 			vars = {
 				number_format(card.ability.extra.Xmult_mod),
 				number_format(lenient_bignum(to_big(card.ability.extra.Xmult_mod) * Cryptid.member_count)),
 			},
+			main_end = aaa,
 		}
 	end,
 	calculate = function(self, card, context)
@@ -9141,6 +9259,7 @@ local cookie = {
 				chip_mod = lenient_bignum(card.ability.extra.chips),
 				message = "+" .. number_format(card.ability.extra.chips),
 				colour = G.C.CHIPS,
+				operation = "-",
 			}
 		end
 		if context.cry_press then
@@ -9175,16 +9294,15 @@ local cookie = {
 					{ message = localize("k_eaten_ex"), colour = G.C.CHIPS }
 				)
 			else
-				card.ability.extra.chips =
-					lenient_bignum(to_big(card.ability.extra.chips) - card.ability.extra.chip_mod)
-				card_eval_status_text(
-					card,
-					"extra",
-					nil,
-					nil,
-					nil,
-					{ message = "-" .. number_format(card.ability.extra.chip_mod), colour = G.C.CHIPS }
-				)
+				SMODS.scale_card(card, {
+					ref_table = card.ability.extra,
+					ref_value = "chips",
+					scalar_value = "chip_mod",
+					scaling_message = {
+						message = "-" .. number_format(card.ability.extra.chip_mod),
+						colour = G.C.CHIPS,
+					},
+				})
 			end
 		end
 	end,
@@ -9763,13 +9881,11 @@ local zooble = {
 					end
 				end
 				if #unique_ranks >= 1 then
-					card.ability.extra.mult =
-						lenient_bignum(card.ability.extra.mult + (#unique_ranks * to_big(card.ability.extra.a_mult)))
-					return {
-						message = localize("k_upgrade_ex"),
-						colour = G.C.RED,
-						card = card,
-					}
+					SMODS.scale_card(card, {
+						ref_table = card.ability.extra,
+						ref_value = "mult",
+						scalar_value = "a_mult",
+					})
 				end
 			end
 		end
@@ -9784,13 +9900,14 @@ local zooble = {
 			}
 		end
 		if context.forcetrigger then
-			card.ability.extra.mult = lenient_bignum(card.ability.extra.mult + to_big(card.ability.extra.a_mult))
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "mult",
+				scalar_value = "a_mult",
+				message_key = "a_mult",
+				message_colour = G.C.RED,
+			})
 			return {
-				message = localize({
-					type = "variable",
-					key = "a_mult",
-					vars = { number_format(card.ability.extra.mult) },
-				}),
 				mult_mod = lenient_bignum(card.ability.extra.mult),
 			}
 		end
@@ -10344,7 +10461,7 @@ local yarnball = { -- +1 to all listed probabilities for the highest cat tag lev
 			"Darren_The_Frog",
 		},
 		code = {
-			"Lily",
+			"Lily Felli",
 		},
 	},
 	object_type = "Joker",
@@ -10361,52 +10478,33 @@ local yarnball = { -- +1 to all listed probabilities for the highest cat tag lev
 	cost = 8,
 	order = 140,
 	demicoloncompat = false,
-	config = { extra = { oddsmod = 1 }, immutable = { lasthighest = 0 } },
-	loc_vars = function(self, info_queue, card)
-		return { vars = { card.ability.extra.oddsmod } }
-	end,
-	update = function(self, card, dt)
-		if G.GAME and G.GAME.tags and card.ability then
-			local highest = 0
-			for i, tag in pairs(G.GAME.tags) do
-				local lvl = tag.ability.level
-				if lvl == nil then
-					lvl = 1
-				end
-
-				-- print("trying comparison of " .. tostring(lvl) .. " > " .. tostring(highest))
-				if tag.key == "tag_cry_cat" and lvl > highest then
-					highest = lvl
-					-- get highest cat tag level
-					-- unfortunately this probably causes lag if you have 2763 cat tags but thats your problem not mine
-				end
-			end
-
-			-- print(card.ability.immutable.lasthighest, highest)
-			if highest ~= card.ability.immutable.lasthighest then
-				for k, v in pairs(G.GAME.probabilities) do
-					G.GAME.probabilities[k] = (v - card.ability.immutable.lasthighest) + highest
-					-- im not fully sure on this, but we're having fun :)
-
-					-- i dont even know if you have to iterate through all of them, but this is what oa6 does
-				end
-				card.ability.immutable.lasthighest = highest
-			end
-		end
-	end,
 	in_pool = function(self)
-		local r = false
+		if not G.GAME.tags or #G.GAME.tags == 0 then
+			return false
+		end
 		for _, tag in pairs(G.GAME.tags) do
 			if tag.key == "tag_cry_cat" then
-				r = true
+				return true
 			end
 		end
-		return r
+		return false
 	end,
+	calculate = function(self, card, context)
+		if context.mod_probability and not context.blueprint then
+			local highest_cat_lvl = 0
+			for _, tag in pairs(G.GAME.tags) do
+				local lvl = tag.ability.level
+				if highest_cat_lvl < 1 and tag.key == "tag_cry_cat" then
+					highest_cat_lvl = 1
+				end
+				if lvl and lvl > highest_cat_lvl then
+					highest_cat_lvl = lvl
+				end
+			end
 
-	remove_from_deck = function(self, card, from_debuff)
-		for k, v in pairs(G.GAME.probabilities) do
-			G.GAME.probabilities[k] = (v - card.ability.immutable.lasthighest)
+			return {
+				numerator = context.numerator + highest_cat_lvl,
+			}
 		end
 	end,
 }
@@ -10438,6 +10536,8 @@ local pizza = {
 	cost = 8,
 	order = 141,
 	demicoloncompat = true,
+	eternal_compat = false,
+	blueprint_compat = true,
 	config = { extra = { rounds_needed = 3, rounds_left = 3, slices = 6 }, immutable = { max_spawn = 100 } },
 	loc_vars = function(self, info_queue, card)
 		info_queue[#info_queue + 1] = G.P_CENTERS.j_cry_pizza_slice
@@ -10517,6 +10617,8 @@ local pizza_slice = {
 		return false
 	end,
 	demicoloncompat = true,
+	eternal_compat = false,
+	blueprint_compat = true,
 	config = { extra = { xmult = 1, xmult_mod = 0.5 } },
 	loc_vars = function(self, info_queue, card)
 		return { vars = { number_format(card.ability.extra.xmult_mod), number_format(card.ability.extra.xmult) } }
@@ -10524,22 +10626,18 @@ local pizza_slice = {
 	calculate = function(self, card, context)
 		if context.selling_card and context.card and context.card.config.center.key == "j_cry_pizza_slice" then
 			if context.card ~= card then
-				card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.xmult_mod
-				if not context.forcetrigger then
-					return {
-						message = localize({ type = "variable", key = "a_xmult", vars = { card.ability.extra.xmult } }),
-						colour = G.C.FILTER,
-					}
-				end
+				SMODS.scale_card(card, {
+					ref_table = card.ability.extra,
+					ref_value = "xmult",
+					scalar_value = "xmult_mod",
+					message_key = "a_xmult",
+					message_colour = G.C.RED,
+					no_message = context.forcetrigger,
+				})
 			end
 		end
 		if context.joker_main or context.forcetrigger then
 			return {
-				message = localize({
-					type = "variable",
-					key = "a_xmult",
-					vars = { number_format(card.ability.extra.xmult) },
-				}),
 				Xmult_mod = lenient_bignum(card.ability.extra.xmult),
 			}
 		end
@@ -10610,13 +10708,14 @@ local fading_joker = { -- +1 to all listed probabilities for the highest cat tag
 	end,
 	calculate = function(self, card, context)
 		if context.perishable_debuffed or context.forcetrigger then
-			card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.xmult_mod
-			if not context.forcetrigger then
-				return {
-					message = localize({ type = "variable", key = "a_xmult", vars = { card.ability.extra.xmult } }),
-					colour = G.C.FILTER,
-				}
-			end
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "xmult",
+				scalar_value = "xmult_mod",
+				message_key = "a_xmult",
+				message_colour = G.C.RED,
+				no_message = context.forcetrigger,
+			})
 		end
 		if context.joker_main or context.forcetrigger then
 			return {
@@ -10680,13 +10779,14 @@ local poor_joker = { -- +1 to all listed probabilities for the highest cat tag l
 	end,
 	calculate = function(self, card, context)
 		if context.rental or context.forcetrigger then
-			card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_mod
-			if not context.forcetrigger then
-				return {
-					message = localize({ type = "variable", key = "a_mult", vars = { card.ability.extra.mult } }),
-					colour = G.C.FILTER,
-				}
-			end
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "mult",
+				scalar_value = "mult_mod",
+				message_key = "a_mult",
+				message_colour = G.C.RED,
+				no_message = context.forcetrigger,
+			})
 		end
 		if context.joker_main or context.forcetrigger then
 			return {
@@ -10841,7 +10941,7 @@ local miscitems = {
 	highfive,
 	sock_and_sock,
 	brokenhome,
-	--yarnball,
+	yarnball,
 	pizza,
 	pizza_slice,
 	paved_joker,

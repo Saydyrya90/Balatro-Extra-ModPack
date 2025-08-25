@@ -2717,6 +2717,15 @@ return {
 			},
 		},
 		Other = {
+			alt_wheel_of_fortune = {
+				name = "The Wheel of Fortune",
+				text = {
+					"{C:green}#1# dalam #2#{} peluang untuk menambah",
+					"edisi {C:dark_edition}Foil{}, {C:dark_edition}Holographic{}, dan",
+					"{C:dark_edition}Polychrome{}",
+					"menghancurkan sebuah {C:attention}Joker secara acak",
+				},
+			},
 			banana = {
 				name = "Banana",
 				text = {
@@ -3042,6 +3051,7 @@ return {
 			cry_debuff_obsidian_orb = "Applies abilities of all defeated bosses",
 
 			k_code = "Code",
+			k_chips = "chip",
 			b_code_cards = "Code Cards",
 			b_pull = "PULL",
 			cry_hooked_ex = "Hooked!",

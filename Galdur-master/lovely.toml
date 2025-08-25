@@ -7,7 +7,7 @@ priority = 10
 # Card:draw()
 [[patches]]
 [patches.pattern]
-target = 'card.lua'
+target = '=[SMODS _ "src/card_draw.lua"]'
 pattern = '''self.children.back:draw(overlay)'''
 position = 'at'
 match_indent = true
@@ -70,7 +70,7 @@ local selected_back = saveTable and saveTable.BACK.name or (args.challenge and a
 # Card:draw()
 [[patches]]
 [patches.pattern]
-target = 'card.lua'
+target = '=[SMODS _ "src/card_draw.lua"]'
 pattern = '''local currentBack = self.params.viewed_back and G.GAME.viewed_back or G.GAME.selected_back'''
 position = 'at'
 match_indent = true

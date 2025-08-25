@@ -256,6 +256,7 @@ SMODS.Edition {
     pos = { x = 0, y = 0 },
     -- no_collection = true,
     prefix_config = { key = false, shader = false },
+    skip_debug = true,
     loc_vars = function()
         return { vars = { 1.5 } }
     end

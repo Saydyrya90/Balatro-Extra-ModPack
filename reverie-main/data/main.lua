@@ -1577,13 +1577,13 @@ Game.update_shop_reverie_ref = Game.update_shop
 function Game:update_shop(dt)
     self:update_shop_reverie_ref(dt)
 
-    if G.STATE_COMPLETE then
-        for _, v in ipairs(G.GAME.tags) do
-            v:apply_to_run({
-                type = "immediate"
-            })
-        end
-    end
+    -- if G.STATE_COMPLETE then
+    --     for _, v in ipairs(G.GAME.tags) do
+    --         v:apply_to_run({
+    --             type = "immediate"
+    --         })
+    --     end
+    -- end
 
     if Reverie.find_used_cine("Reverie") and not G.booster_pack_meteors then
         ease_background_colour_blind(G.STATES.SPECTRAL_PACK)

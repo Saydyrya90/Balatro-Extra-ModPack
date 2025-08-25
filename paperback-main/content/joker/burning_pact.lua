@@ -30,13 +30,13 @@ SMODS.Joker {
     end
 
     if context.paperback and context.paperback.drawing_cards and card.ability.extra.active then
-      if not context.blueprint then
-        card.ability.extra.active = false
-      end
-
       return {
         draw_extra = card.ability.extra.cards
       }
+    end
+
+    if context.hand_drawn and not context.blueprint then
+      card.ability.extra.active = false
     end
   end
 }

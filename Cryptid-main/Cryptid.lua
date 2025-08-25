@@ -17,7 +17,6 @@ Cryptid_config.gameset_toggle = true
 SMODS.current_mod.optional_features = {
 	retrigger_joker = true,
 	post_trigger = true,
-	quantum_enhancements = false,
 	-- Here are some other ones Steamodded has
 	-- Cryptid doesn't use them YET, but these should be uncommented if Cryptid uses them
 	-- These ones add new card areas that Steamodded will calculate through
@@ -186,6 +185,9 @@ function SMODS.injectItems(...)
 				v.unlocked = true
 			end
 		end
+	end
+	if G.PROFILES[G.SETTINGS.profile].all_unlocked then
+		G.PROFILES[G.SETTINGS.profile].cry_none = (Cryptid.enabled("set_cry_poker_hand_stuff") == true)
 	end
 	G.P_CENTERS.j_stencil.immutable = true
 	G.P_CENTERS.j_four_fingers.immutable = true

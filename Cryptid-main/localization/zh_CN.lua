@@ -84,8 +84,8 @@ return {
 				name = "暴击牌组",
 				text = {
 					"每打出一手牌后",
-					"{C:green}#1#/4{}几率获得{X:dark_edition,C:white}^2{}倍率",
-					"{C:green}#1#/8{}几率获得{X:dark_edition,C:white}^0.5{}倍率",
+					"{C:green}#1#/#2#{}几率获得{X:dark_edition,C:white}^2{}倍率",
+					"{C:green}#1#/#3#{}几率获得{X:dark_edition,C:white}^0.5{}倍率",
 				},
 				unlock = {
 					"拥有一张{C:attention}灌铅{}小丑",
@@ -462,7 +462,7 @@ return {
 				text = {
 					"以一张{C:legendary}传奇{C:legendary}小丑牌开始",
 					"击败Boss盲注后",
-					"{C:green}1 / 5{} 几率创建另外一张",
+					"{C:green}#1# / #2#{} 几率创建另外一张",
 					"{C:inactive}(必须有空间){}",
 				},
 				unlock = {
@@ -3261,7 +3261,15 @@ return {
 			},
 		},
 		Other = {
-
+			alt_wheel_of_fortune = {
+				name = "命运之轮",
+				text = {
+					"有{C:green}#1#/#2#{}几率",
+					"给一张随机{C:attention}小丑牌",
+					"添加{C:dark_edition}闪箔{}、{C:dark_edition}镭射{}",
+					"或{C:dark_edition}多彩{}版本",
+				},
+			},
 			banana = {
 				name = "香蕉",
 				text = {
@@ -5030,6 +5038,7 @@ return {
 			cry_code_with_suits = "包括花色",
 			cry_code_without_suits = "忽略花色",
 			k_code = "代码",
+			k_chips = "筹码",
 			k_cry_candy = "糖果",
 			k_cry_cursed = "诅咒",
 			k_cry_epic = "史诗",

@@ -319,17 +319,15 @@ local exponentia = {
 			}
 		end
 		if context.forcetrigger then
-			card.ability.extra.Emult = card.ability.extra.Emult + card.ability.extra.Emult_mod
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "Emult",
+				scalar_value = "Emult_mod",
+				message_key = "a_powmult",
+				message_colour = G.C.DARK_EDITION,
+			})
 			return {
-				message = localize({
-					type = "variable",
-					key = "a_powmult",
-					vars = {
-						number_format(card.ability.extra.Emult),
-					},
-				}),
 				Emult_mod = lenient_bignum(card.ability.extra.Emult),
-				colour = G.C.DARK_EDITION,
 			}
 		end
 	end,
@@ -366,18 +364,12 @@ local exponentia = {
 			then
 				for _, v in pairs(find_joker("cry-Exponentia")) do
 					local old = v.ability.extra.Emult
-					v.ability.extra.Emult = lenient_bignum(to_big(v.ability.extra.Emult) + v.ability.extra.Emult_mod)
-					card_eval_status_text(v, "extra", nil, nil, nil, {
-						message = localize({
-							type = "variable",
-							key = "a_powmult",
-							vars = { number_format(v.ability.extra.Emult) },
-						}),
-					})
-					Cryptid.apply_scale_mod(v, v.ability.extra.Emult_mod, old, v.ability.extra.Emult, {
-						base = { { "extra", "Emult" } },
-						scaler = { { "extra", "Emult_mod" } },
-						scaler_base = { v.ability.extra.Emult_mod },
+					SMODS.scale_card(v, {
+						ref_table = v.ability.extra,
+						ref_value = "Emult",
+						scalar_value = "Emult_mod",
+						message_key = "a_powmult",
+						message_colour = G.C.DARK_EDITION,
 					})
 				end
 			end
@@ -649,13 +641,11 @@ local crustulum = {
 	end,
 	calculate = function(self, card, context)
 		if context.reroll_shop and not context.blueprint then
-			card.ability.extra.chips = lenient_bignum(to_big(card.ability.extra.chips) + card.ability.extra.chip_mod)
-			card_eval_status_text(card, "extra", nil, nil, nil, {
-				message = localize({
-					type = "variable",
-					key = "a_chips",
-					vars = { number_format(card.ability.extra.chips) },
-				}),
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "chips",
+				scalar_value = "chip_mod",
+				message_key = "a_chips",
 				colour = G.C.CHIPS,
 			})
 			return nil, true
@@ -671,13 +661,14 @@ local crustulum = {
 			}
 		end
 		if context.forcetrigger then
-			card.ability.extra.chips = lenient_bignum(to_big(card.ability.extra.chips) + card.ability.extra.chip_mod)
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "chips",
+				scalar_value = "chip_mod",
+				message_key = "a_chips",
+				colour = G.C.CHIPS,
+			})
 			return {
-				message = localize({
-					type = "variable",
-					key = "a_chips",
-					vars = { number_format(card.ability.extra.chips) },
-				}),
 				chip_mod = lenient_bignum(card.ability.extra.chips),
 			}
 		end
@@ -742,15 +733,13 @@ local primus = {
 				end
 			end
 			if check then
-				card.ability.extra.Emult =
-					lenient_bignum(to_big(card.ability.extra.Emult) + card.ability.extra.Emult_mod)
+				SMODS.scale_card(card, {
+					ref_table = card.ability.extra,
+					ref_value = "Emult",
+					scalar_value = "Emult_mod",
+					message_colour = G.C.DARK_EDITION,
+				})
 				card.children.floating_sprite:set_sprite_pos({ x = 8, y = 6 })
-				return {
-					card_eval_status_text(card, "extra", nil, nil, nil, {
-						message = localize("k_upgrade_ex"),
-						colour = G.C.DARK_EDITION,
-					}),
-				}
 			end
 		end
 		if context.joker_main and (to_big(card.ability.extra.Emult) > to_big(1)) then
@@ -771,15 +760,13 @@ local primus = {
 			card.children.floating_sprite:set_sprite_pos({ x = 2, y = 4 })
 		end
 		if context.forcetrigger then
-			card.ability.extra.Emult = lenient_bignum(to_big(card.ability.extra.Emult) + card.ability.extra.Emult_mod)
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "Emult",
+				scalar_value = "Emult_mod",
+				message_colour = G.C.DARK_EDITION,
+			})
 			return {
-				message = localize({
-					type = "variable",
-					key = "a_powmult",
-					vars = {
-						number_format(card.ability.extra.Emult),
-					},
-				}),
 				Emult_mod = lenient_bignum(card.ability.extra.Emult),
 				colour = G.C.DARK_EDITION,
 			}
@@ -823,15 +810,27 @@ local scalae = {
 			(context.end_of_round and not context.individual and not context.repetition and not context.blueprint)
 			or context.forcetrigger
 		then
-			card.ability.extra.scale = lenient_bignum(to_big(card.ability.extra.scale) + card.ability.extra.scale_mod)
-			return {
-				message = localize("k_upgrade_ex"),
-				colour = G.C.DARK_EDITION,
-			}
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "scale",
+				scalar_value = "scale_mod",
+				message_colour = G.C.DARK_EDITION,
+			})
 		end
 	end,
-	cry_scale_mod = function(self, card, joker, orig_scale_scale, true_base, orig_scale_base, new_scale_base)
-		if joker.ability.name ~= "cry-Scalae" then
+	calc_scaling = function(self, card, other, current_scaling, current_scalar, args)
+		if other.ability.name ~= "cry-Scalae" then
+			if not G.GAME.cryptid_base_scales then
+				G.GAME.cryptid_base_scales = {}
+			end
+			if not G.GAME.cryptid_base_scales[other.config.center.key] then
+				G.GAME.cryptid_base_scales[other.config.center.key] = {}
+			end
+			if not G.GAME.cryptid_base_scales[other.config.center.key][args.scalar_value] then
+				G.GAME.cryptid_base_scales[other.config.center.key][args.scalar_value] = current_scalar
+			end
+			local true_base = G.GAME.cryptid_base_scales[other.config.center.key][args.scalar_value]
+			local orig_scale_scale = current_scaling
 			local new_scale = lenient_bignum(
 				to_big(true_base)
 					* (
@@ -844,10 +843,13 @@ local scalae = {
 						) ^ to_big(card.ability.extra.scale)
 					)
 			)
-			if not Cryptid.is_card_big(joker) and to_big(new_scale) >= to_big(1e300) then
+			if not Cryptid.is_card_big(other) and to_big(new_scale) >= to_big(1e300) then
 				new_scale = 1e300
 			end
-			return new_scale
+			return {
+				scalar_value = new_scale,
+				message = localize("k_upgrade_ex"),
+			}
 		end
 	end,
 	loc_vars = function(self, info_queue, card)
@@ -921,8 +923,15 @@ local stella_mortis = {
 					quaota = planet_to_destroy.ability.immutable and planet_to_destroy.ability.immutable.overflow_amount
 				end
 				planet_to_destroy.getting_sliced = true
-				card.ability.extra.Emult =
-					lenient_bignum(card.ability.extra.Emult + to_big(card.ability.extra.Emult_mod) * quota)
+				SMODS.scale_card(card, {
+					ref_table = card.ability.extra,
+					ref_value = "Emult",
+					scalar_value = "Emult_mod",
+					operation = function(ref_table, ref_value, initial, change)
+						ref_table[ref_value] = initial + change * quota
+					end,
+					message_key = "a_powmult",
+				})
 				G.E_MANAGER:add_event(Event({
 					func = function()
 						(context.blueprint_card or card):juice_up(0.8, 0.8)
@@ -931,17 +940,6 @@ local stella_mortis = {
 					end,
 				}))
 				planet_to_destroy.dissolve = 0 --timing issues related to crossmod stuff
-				if not (context.blueprint_card or self).getting_sliced then
-					card_eval_status_text((context.blueprint_card or card), "extra", nil, nil, nil, {
-						message = localize({
-							type = "variable",
-							key = "a_powmult",
-							vars = {
-								number_format(lenient_bignum(card.ability.extra.Emult)),
-							},
-						}),
-					})
-				end
 				return nil, true
 			end
 		end
@@ -1304,21 +1302,28 @@ local energia = {
 		if context.cry_add_tag then
 			local value = #G.GAME.tags or 0
 			local t = to_number(math.min(card.ability.immutable.max_tags - value, card.ability.extra.tags))
-			card.ability.extra.tags = lenient_bignum(to_big(card.ability.extra.tags) + card.ability.extra.tag_mod)
-			if t > 0 then
-				card_eval_status_text(card, "extra", nil, nil, nil, {
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "tags",
+				scalar_value = "tag_mod",
+				scaling_message = {
 					message = localize({
 						type = "variable",
 						key = card.ability.extra.tags == 1 and "a_tag" or "a_tags",
 						vars = { t },
 					})[1],
 					colour = G.C.DARK_EDITION,
-				})
-			end
+				},
+			})
 			return { tags = math.max(t, 0) }
 		end
 		if context.forcetrigger then
-			card.ability.extra.tags = lenient_bignum(to_big(card.ability.extra.tags) + card.ability.extra.tag_mod)
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "tags",
+				scalar_value = "tag_mod",
+				no_message = true,
+			})
 		end
 	end,
 	cry_credits = {
@@ -1344,91 +1349,59 @@ local verisimile = {
 	rarity = "cry_exotic",
 	cost = 50,
 	order = 516,
-	immutable = true,
+
+	-- "i'm not making this compatible" - nova
+	-- "well i am" - invalid, writing this comment
+	demicoloncompat = true,
 	blueprint_compat = true,
-	demicoloncompat = false, -- "i'm not making this compatible" - nova
+
 	atlas = "placeholders",
 	loc_vars = function(self, info_queue, center)
 		return { vars = { number_format(center.ability.extra.xmult) } }
 	end,
 	calculate = function(self, card, context)
-		if context.post_trigger and not context.blueprint then
-			--Todo: Gros Michel, Cavendish, Planet.lua
-			--Bus driver is ignored because it always triggers anyway
-			if
-				context.other_joker.ability.name == "8 Ball"
-				or context.other_joker.ability.name == "Space Joker"
-				or context.other_joker.ability.name == "Business Card"
-				or context.other_joker.ability.name == "Hallucination"
-			then
-				local variable = context.other_joker
-				card.ability.extra.xmult = lenient_bignum(to_big(card.ability.extra.xmult) + variable.ability.extra)
-				card_eval_status_text(card, "extra", nil, nil, nil, {
-					message = localize({
-						type = "variable",
-						key = "a_xmult",
-						vars = { number_format(card.ability.extra.xmult) },
-					}),
-				})
-			elseif
-				context.other_joker.ability.name == "Reserved Parking"
-				or context.other_joker.ability.name == "Bloodstone"
-				or context.other_joker.ability.name == "cry-Googol Play Card"
-				or context.other_joker.ability.name == "cry-Boredom"
-				or context.other_joker.ability.name == "cry-bonusjoker"
-				or context.other_joker.ability.name == "cry-multjoker"
-				or context.other_joker.ability.name == "cry-scrabble"
-			then
-				local variable = context.other_joker
-				card.ability.extra.xmult =
-					lenient_bignum(to_big(card.ability.extra.xmult) + variable.ability.extra.odds)
-				card_eval_status_text(card, "extra", nil, nil, nil, {
-					message = localize({
-						type = "variable",
-						key = "a_xmult",
-						vars = { number_format(card.ability.extra.xmult) },
-					}),
-				})
-			elseif context.other_joker.ability.name == "cry-notebook" then
-				--This also triggers at notebook's end of round which isn't intentional but i'm not bothered enough about this to find a workaround
-				local variable = context.other_joker
-				card.ability.extra.xmult =
-					lenient_bignum(to_big(card.ability.extra.xmult) + variable.ability.extra.odds)
-				card_eval_status_text(card, "extra", nil, nil, nil, {
-					message = localize({
-						type = "variable",
-						key = "a_xmult",
-						vars = { number_format(card.ability.extra.xmult) },
-					}),
-				})
-			end
-			return nil, true
-		elseif context.consumeable and not context.blueprint then
-			if context.consumeable.ability.name == "The Wheel of Fortune" and context.consumeable.cry_wheel_success then
-				local variable = context.consumeable
-				card.ability.extra.xmult = lenient_bignum(to_big(card.ability.extra.xmult) + variable.ability.extra) --Doesn't account for misprintizing for some reason
-				card_eval_status_text(card, "extra", nil, nil, nil, {
-					message = localize({
-						type = "variable",
-						key = "a_xmult",
-						vars = { number_format(card.ability.extra.xmult) },
-					}),
-				})
-			end
-		elseif context.joker_main and (to_big(card.ability.extra.xmult) > to_big(1)) then
+		if context.pseudorandom_result and context.result then
+			-- implementation that doesn't use SMODS.scale_card; use if scale_card causes weird or unexpected behavior
+			--[[
+			card.ability.extra.xmult = lenient_bignum(card.ability.extra.xmult + context.denominator)
 			return {
-				message = localize({
-					type = "variable",
-					key = "a_xmult",
-					vars = { number_format(card.ability.extra.xmult) },
-				}),
-				Xmult_mod = lenient_bignum(card.ability.extra.xmult),
+                message = localize({
+                    type = "variable",
+                    key = "a_xmult",
+                    vars = { number_format(card.ability.extra.xmult) },
+                })
+			}
+			]]
+
+			SMODS.scale_card(card, {
+				-- this should not affect the probability in the context table
+				block_overrides = {
+					scalar = true,
+				},
+
+				ref_table = card.ability.extra,
+				ref_value = "xmult",
+				scalar_table = context,
+				scalar_value = "denominator",
+				scaling_message = {
+					message = localize({
+						type = "variable",
+						key = "a_xmult",
+						vars = { number_format(card.ability.extra.xmult) },
+					}),
+				},
+			})
+
+		-- forcetriggers won't scale non verisimile, because how much would you scale it by
+		elseif context.joker_main or context.forcetrigger then
+			return {
+				xmult = lenient_bignum(card.ability.extra.xmult),
 			}
 		end
 	end,
 	cry_credits = {
 		idea = { "Enemui" },
-		code = { "Jevonn" },
+		code = { "Jevonn", "invalidOS" },
 	},
 }
 local duplicare = {
@@ -1469,13 +1442,20 @@ local duplicare = {
 				) or (context.individual and context.cardarea == G.play)
 			)
 		then
-			card.ability.extra.Xmult = lenient_bignum(to_big(card.ability.extra.Xmult) + card.ability.extra.Xmult_mod)
-			card_eval_status_text(card, "extra", nil, nil, nil, { message = localize("k_upgrade_ex") })
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "Xmult",
+				scalar_value = "Xmult_mod",
+			})
 		end
 		if (context.joker_main and (to_big(card.ability.extra.Xmult) > to_big(1))) or context.forcetrigger then
 			if context.forcetrigger then
-				card.ability.extra.Xmult =
-					lenient_bignum(to_big(card.ability.extra.Xmult) + card.ability.extra.Xmult_mod)
+				SMODS.scale_card(card, {
+					ref_table = card.ability.extra,
+					ref_value = "Xmult",
+					scalar_value = "Xmult_mod",
+					no_message = true,
+				})
 			end
 			return {
 				message = localize({

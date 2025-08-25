@@ -59,8 +59,8 @@ return {
 				name = "Bộ Bài Chí Mạng",
 				text = {
 					"Sau mỗi tay bài đã chơi,",
-					"Xác suất {C:green}#1# trên 4{} cho {X:dark_edition,C:white} ^2 {} Nhân",
-					"Xác suất {C:green}#1# trên 8{} cho {X:dark_edition,C:white} ^0.5 {} Nhân",
+					"Xác suất {C:green}#1# trên #2#{} cho {X:dark_edition,C:white} ^2 {} Nhân",
+					"Xác suất {C:green}#1# trên #3#{} cho {X:dark_edition,C:white} ^0.5 {} Nhân",
 				},
 			},
 			b_cry_e_deck = {
@@ -181,7 +181,7 @@ return {
 				name = "Bộ Bài Huyền Thoại",
 				text = {
 					"Bắt đầu với một Joker {C:legendary}Huyền Thoại",
-					"Xác suất {C:green}1 trên 5{} tạo ra thêm một lá nữa",
+					"Xác suất {C:green}#1# trên #2#{} tạo ra thêm một lá nữa",
 					"khi Boss Blind bị đánh bại {C:inactive}(Phải có ô trống)",
 				},
 			},
@@ -3655,6 +3655,15 @@ return {
 			},
 		},
 		Other = {
+			alt_wheel_of_fortune = {
+				name = "Bánh Xe Số Phận",
+				text = {
+					"Xác suất {C:green}#1# trên #2#{} để thêm",
+					"ấn bản {C:dark_edition}Ánh Kim{}, {C:dark_edition}Lấp Lánh",
+					"hoặc {C:dark_edition}Đa Sắc{} cho một {C:attention}Joker",
+					"ngẫu nhiên",
+				},
+			},
 			disabled = {
 				name = "Vô Hiệu",
 				text = {
@@ -4274,6 +4283,7 @@ return {
 			cry_joke_placeholder = "(bội số của 8)",
 
 			k_code = "Code",
+			k_chips = "chip",
 			k_content_set = "Thiết Lập Chủ Đề",
 			b_content_sets = "Thiết Lập Chủ Đề",
 			--Why aren't these in vanilla?

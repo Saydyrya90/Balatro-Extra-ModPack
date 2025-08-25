@@ -26,7 +26,7 @@ local function get_coordinates(position, width)
     return {x = (position) % width, y = math.floor((position) / width)}
 end
 
-local function coordinate(position)
+local function coordinate_from_atlas_index(position)
     return get_coordinates(position - 1)
 end
 
@@ -74,7 +74,21 @@ end
 -- Exotic in_pool function
 
 BUNCOMOD.funcs.exotic_in_pool = function()
-    return G.GAME and G.GAME.Exotic
+    if G.GAME and G.GAME.Exotic then return true end
+    --In case a Spectrum somehow gets played without enabling exotics, check directly:
+    local spectrum_played = false
+    if G and G.GAME and G.GAME.hands then
+        for k, v in pairs(G.GAME.hands) do
+            if string.find(k, "Spectrum", nil, true) then
+                if G.GAME.hands[k].played > 0 then
+                    spectrum_played = true
+                    break
+                end
+            end
+        end
+    end
+
+    return spectrum_played
 end
 
 -- Dictionary wrapper
@@ -92,8 +106,8 @@ end
 SMODS.Atlas({
     key = 'modicon',
     path = 'Icon/Icon.png',
-    px = 34,
-    py = 34
+    px = 32,
+    py = 32
 })
 
 -- Config globals
@@ -268,11 +282,32 @@ function BUNCOMOD.content.config_tab()
     }}
 end
 
--- Credits tab
+-- Audio + Credits tab
 
+G.SETTINGS.SOUND.bunc_trigger_finger_volume = G.SETTINGS.SOUND.bunc_trigger_finger_volume or 100
+G.SETTINGS.SOUND.bunc_mousetrap_volume = G.SETTINGS.SOUND.bunc_mousetrap_volume or 100
+G.SETTINGS.SOUND.bunc_stylophone_volume = G.SETTINGS.SOUND.bunc_stylophone_volume or 100
 SMODS.current_mod.extra_tabs = function()
     local text_scale = 0.6
 	return {
+		{
+			label = localize('b_set_audio'),
+			tab_definition_function = function()
+				return {n = G.UIT.ROOT, config = {r = 0.1, minw = 4, align = "tm", padding = 0.2, colour = G.C.BLACK}, nodes = {
+                    {n=G.UIT.R, config={align = "cm", padding = 0.1, outline_colour = G.C.JOKER_GREY, r = 0.1, outline = 1}, nodes={
+                        {n=G.UIT.R, config={align = "tm", padding = 0}, nodes={
+                            create_slider({label = G.localization.descriptions.Joker.j_bunc_trigger_finger.name .. " (" .. G.localization.misc.dictionary.bunc_volume .. ")", w = 5, h = 0.4, ref_table = G.SETTINGS.SOUND, ref_value = 'bunc_trigger_finger_volume', min = 0, max = 100}),
+                        }},
+                        {n=G.UIT.R, config={align = "tm", padding = 0}, nodes={
+                            create_slider({label = G.localization.descriptions.Joker.j_bunc_mousetrap.name .. " (" .. G.localization.misc.dictionary.bunc_volume .. ")", w = 5, h = 0.4, ref_table = G.SETTINGS.SOUND, ref_value = 'bunc_mousetrap_volume', min = 0, max = 100}),
+                        }},
+                        {n=G.UIT.R, config={align = "tm", padding = 0}, nodes={
+                            create_slider({label = G.localization.descriptions.Joker.j_bunc_stylophone.name .. " (" .. G.localization.misc.dictionary.bunc_volume .. ")", w = 5, h = 0.4, ref_table = G.SETTINGS.SOUND, ref_value = 'bunc_stylophone_volume', min = 0, max = 100}),
+                        }},
+                    }}
+				}}
+			end,
+		},
 		{
 			label = G.localization.misc.dictionary.b_credits,
 			tab_definition_function = function()
@@ -351,15 +386,15 @@ SMODS.current_mod.extra_tabs = function()
                             }},
                             {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
                                 {n=G.UIT.T, config={text = 'Shinosan', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
-                            }}
-                        }},
-                        {n=G.UIT.C, config={align = "tl", padding = 0.05, minw = 2.0}, nodes={
+                            }},
                             {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
                                 {n=G.UIT.T, config={text = 'Mikadoe', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
                             }},
                             {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
                                 {n=G.UIT.T, config={text = 'Lyman', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
                             }},
+                        }},
+                        {n=G.UIT.C, config={align = "tl", padding = 0.05, minw = 2.0}, nodes={
                             {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
                                 {n=G.UIT.T, config={text = 'jostro', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
                             }},
@@ -419,6 +454,18 @@ SMODS.current_mod.extra_tabs = function()
                             }},
                             {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
                                 {n=G.UIT.T, config={text = 'VisJoker', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'LucasBondDavid', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'JayJayDee', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'Marffe', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
+                            }},
+                            {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
+                                {n=G.UIT.T, config={text = 'Mr. Clover', scale = text_scale*0.5, colour = G.C.UI.TEXT_LIGHT, shadow = true}},
                             }}
                         }},
                     }},
@@ -448,179 +495,270 @@ SMODS.Consumable:take_ownership('pluto', {
     set_card_type_badge = function(self, card, badges)
         badges[1] = create_badge(config.fixed_badges and localize('k_planet') or localize('k_dwarf_planet'), get_type_colour(self or card.config, card), nil, 1.2)
     end
-})
+}, true)
 
 SMODS.Consumable:take_ownership('ceres', {
     set_card_type_badge = function(self, card, badges)
         badges[1] = create_badge(config.fixed_badges and localize('k_planet_q') or localize('k_dwarf_planet'), get_type_colour(self or card.config, card), nil, 1.2)
     end
-})
+}, true)
 
 SMODS.Consumable:take_ownership('eris', {
     set_card_type_badge = function(self, card, badges)
         badges[1] = create_badge(config.fixed_badges and localize('k_planet_q') or localize('k_dwarf_planet'), get_type_colour(self or card.config, card), nil, 1.2)
     end
-})
+}, true)
 
 -- Fixed sprites
 
 SMODS.Atlas({key = 'bunco_resprites_jokers', path = 'Resprites/Jokers.png', px = 71, py = 95})
-SMODS.Atlas({key = 'bunco_resprites_consumables', path = 'Resprites/Consumables.png', px = 71, py = 95})
+SMODS.Atlas({key = 'bunco_resprites_tarots', path = 'Resprites/Tarots.png', px = 71, py = 95})
+SMODS.Atlas({key = 'bunco_resprites_planets', path = 'Resprites/Planets.png', px = 71, py = 95})
+SMODS.Atlas({key = 'bunco_resprites_spectrals', path = 'Resprites/Spectrals.png', px = 71, py = 95})
+
+function use_fixed_sprite_atlas()
+    return config.fixes_sprites and not next(SMODS.find_mod("malverk"))
+end
 
 if config.fixed_sprites then
 
-    -- High contrast
+    -- -- High contrast
 
     G.C['SO_1']['Spades'] = HEX('3c4368')
 
-    G.C.SUITS = G.C["SO_" .. (G.SETTINGS.colourblind_option and 2 or 1)]
+    -- G.C.SUITS = G.C["SO_" .. (G.SETTINGS.colourblind_option and 2 or 1)]
 
-    if not (SMODS.Mods["malverk"] or {}).can_load then
+    if not next(SMODS.find_mod("malverk")) then
 
         -- Jokers
 
         SMODS.Joker:take_ownership('juggler', {
-            pos = coordinate(1),
+            pos = coordinate_from_atlas_index(1),
             atlas = 'bunco_resprites_jokers'
-        })
+        }, true)
 
         SMODS.Joker:take_ownership('drunkard', {
-            pos = coordinate(2),
+            pos = coordinate_from_atlas_index(2),
             atlas = 'bunco_resprites_jokers'
-        })
+        }, true)
 
         SMODS.Joker:take_ownership('acrobat', {
-            pos = coordinate(3),
+            pos = coordinate_from_atlas_index(3),
             atlas = 'bunco_resprites_jokers'
-        })
+        }, true)
 
         SMODS.Joker:take_ownership('credit_card', {
-            pos = coordinate(4),
+            pos = coordinate_from_atlas_index(4),
             atlas = 'bunco_resprites_jokers'
-        })
+        }, true)
 
         SMODS.Joker:take_ownership('troubadour', {
-            pos = coordinate(5),
+            pos = coordinate_from_atlas_index(5),
             atlas = 'bunco_resprites_jokers'
-        })
+        }, true)
 
         SMODS.Joker:take_ownership('even_steven', {
-            pos = coordinate(6),
+            pos = coordinate_from_atlas_index(6),
             atlas = 'bunco_resprites_jokers'
-        })
+        }, true)
 
         SMODS.Joker:take_ownership('odd_todd', {
-            pos = coordinate(7),
+            pos = coordinate_from_atlas_index(7),
             atlas = 'bunco_resprites_jokers'
-        })
+        }, true)
 
         SMODS.Joker:take_ownership('fibonacci', {
-            pos = coordinate(8),
+            pos = coordinate_from_atlas_index(8),
             atlas = 'bunco_resprites_jokers'
-        })
+        }, true)
 
         SMODS.Joker:take_ownership('drivers_license', {
-            pos = coordinate(9),
+            pos = coordinate_from_atlas_index(9),
             atlas = 'bunco_resprites_jokers'
-        })
+        }, true)
 
         SMODS.Joker:take_ownership('gift', {
-            pos = coordinate(10),
+            pos = coordinate_from_atlas_index(10),
             atlas = 'bunco_resprites_jokers'
-        })
+        }, true)
 
         SMODS.Joker:take_ownership('flash', {
-            pos = coordinate(11),
+            pos = coordinate_from_atlas_index(11),
             atlas = 'bunco_resprites_jokers'
-        })
+        }, true)
 
         SMODS.Joker:take_ownership('ramen', {
-            pos = coordinate(12),
+            pos = coordinate_from_atlas_index(12),
             atlas = 'bunco_resprites_jokers'
-        })
+        }, true)
 
         SMODS.Joker:take_ownership('selzer', {
-            pos = coordinate(13),
+            pos = coordinate_from_atlas_index(13),
             atlas = 'bunco_resprites_jokers'
-        })
+        }, true)
 
         SMODS.Joker:take_ownership('scholar', {
-            pos = coordinate(14),
+            pos = coordinate_from_atlas_index(14),
             atlas = 'bunco_resprites_jokers'
-        })
+        }, true)
 
         -- Consumables
 
         SMODS.Consumable:take_ownership('fool', {
-            pos = coordinate(1),
-            atlas = 'bunco_resprites_consumables'
-        })
+            pos = coordinate_from_atlas_index(1),
+            atlas = 'bunco_resprites_tarots'
+        }, true)
 
         SMODS.Consumable:take_ownership('lovers', {
-            pos = coordinate(2),
-            atlas = 'bunco_resprites_consumables'
-        })
+            pos = coordinate_from_atlas_index(2),
+            atlas = 'bunco_resprites_tarots'
+        }, true)
 
         SMODS.Consumable:take_ownership('chariot', {
-            pos = coordinate(3),
-            atlas = 'bunco_resprites_consumables'
-        })
+            pos = coordinate_from_atlas_index(3),
+            atlas = 'bunco_resprites_tarots'
+        }, true)
 
         SMODS.Consumable:take_ownership('wheel_of_fortune', {
-            pos = coordinate(4),
-            atlas = 'bunco_resprites_consumables'
-        })
+            pos = coordinate_from_atlas_index(4),
+            atlas = 'bunco_resprites_tarots'
+        }, true)
 
         SMODS.Consumable:take_ownership('tower', {
-            pos = coordinate(5),
-            atlas = 'bunco_resprites_consumables'
-        })
+            pos = coordinate_from_atlas_index(5),
+            atlas = 'bunco_resprites_tarots'
+        }, true)
 
         SMODS.Consumable:take_ownership('moon', {
-            pos = coordinate(6),
-            atlas = 'bunco_resprites_consumables'
-        })
+            pos = coordinate_from_atlas_index(6),
+            atlas = 'bunco_resprites_tarots'
+        }, true)
 
         SMODS.Consumable:take_ownership('world', {
-            pos = coordinate(7),
-            atlas = 'bunco_resprites_consumables'
-        })
+            pos = coordinate_from_atlas_index(7),
+            atlas = 'bunco_resprites_tarots'
+        }, true)
 
         SMODS.Consumable:take_ownership('soul', {
-            pos = coordinate(8),
-            atlas = 'bunco_resprites_consumables'
-        })
+            pos = coordinate_from_atlas_index(1),
+            atlas = 'bunco_resprites_spectrals'
+        }, true)
 
         SMODS.Consumable:take_ownership('ceres', {
-            pos = coordinate(9),
-            atlas = 'bunco_resprites_consumables'
-        })
+            pos = coordinate_from_atlas_index(1),
+            atlas = 'bunco_resprites_planets'
+        }, true)
 
         SMODS.Consumable:take_ownership('mercury', {
-            pos = coordinate(10),
-            atlas = 'bunco_resprites_consumables'
-        })
+            pos = coordinate_from_atlas_index(2),
+            atlas = 'bunco_resprites_planets'
+        }, true)
 
         SMODS.Consumable:take_ownership('uranus', {
-            pos = coordinate(11),
-            atlas = 'bunco_resprites_consumables'
-        })
+            pos = coordinate_from_atlas_index(3),
+            atlas = 'bunco_resprites_planets'
+        }, true)
 
         SMODS.Consumable:take_ownership('pluto', {
-            pos = coordinate(12),
-            atlas = 'bunco_resprites_consumables'
-        })
+            pos = coordinate_from_atlas_index(4),
+            atlas = 'bunco_resprites_planets'
+        }, true)
 
         SMODS.Consumable:take_ownership('incantation', {
-            pos = coordinate(13),
-            atlas = 'bunco_resprites_consumables'
-        })
+            pos = coordinate_from_atlas_index(2),
+            atlas = 'bunco_resprites_spectrals'
+        }, true)
 
         SMODS.Consumable:take_ownership('black_hole', {
-            pos = coordinate(14),
-            atlas = 'bunco_resprites_consumables'
+            pos = coordinate_from_atlas_index(3),
+            atlas = 'bunco_resprites_spectrals'
         })
 
+    end
+
+    if next(SMODS.find_mod("malverk")) then
+        AltTexture({
+            key = 'tarots_fixed_sprites',
+            set = 'Tarot',
+            path = 'Resprites/Tarots.png',
+            keys = {
+            'c_fool',
+            'c_lovers',
+            'c_chariot',
+            'c_wheel_of_fortune',
+            'c_tower',
+            'c_moon',
+            'c_world',
+            },
+            loc_txt = {
+            name = 'Tarot Fixes'
+            }
+        })
+        AltTexture({
+            key = 'planets_fixed_sprites',
+            set = 'Planet',
+            path = 'Resprites/Planets.png',
+            keys = {
+            'c_ceres',
+            'c_mercury',
+            'c_uranus',
+            'c_pluto',
+            },
+            loc_txt = {
+            name = 'Planet Fixes'
+            }
+        })
+        AltTexture({
+            key = 'spectrals_fixed_sprites',
+            set = 'Spectral',
+            path = 'Resprites/Spectrals.png',
+            keys = {
+            'c_soul',
+            'c_incantation',
+            'c_black_hole'
+            },
+            loc_txt = {
+            name = 'Spectral Fixes'
+            }
+        })
+        AltTexture({
+            key = 'jokers_fixed_sprites',
+            set = 'Joker',
+            path = 'Resprites/Jokers.png',
+            keys = {
+            'j_juggler',
+            'j_drunkard',
+            'j_acrobat',
+            'j_credit_card',
+            'j_troubadour',
+            'j_even_steven',
+            'j_odd_todd',
+            'j_fibonacci',
+            'j_drivers_license',
+            'j_gift',
+            'j_flash',
+            'j_ramen',
+            'j_selzer',
+            'j_scholar'
+            },
+            loc_txt = {
+            name = 'Joker Fixes'
+            }
+        })
+        
+        TexturePack({
+            key = 'bunc_fixed_sprites',
+            textures = {
+            'bunc_jokers_fixed_sprites',
+            'bunc_tarots_fixed_sprites',
+            'bunc_planets_fixed_sprites',
+            'bunc_spectrals_fixed_sprites',
+            },
+            loc_txt = {
+            name = 'Bunco Resprites',
+            text = {'Port of Bunco sprite fixes'}
+            }
+        })
     end
 
 end
@@ -652,6 +790,17 @@ if config.gameplay_reworks then
                         add_tag(Tag('tag_bunc_breaking'))
                         play_sound('generic1', 0.9 + math.random() * 0.1, 0.8)
                         play_sound('holo1', 1.2 + math.random() * 0.1, 0.4)
+
+                        -- Trigger immediate tags
+                        G.E_MANAGER:add_event(Event({
+                            trigger = 'immediate',
+                            func = function()
+                                for i = 1, #G.GAME.tags do
+                                    G.GAME.tags[i]:apply_to_run({ type = 'immediate' })
+                                end
+                                return true
+                            end
+                        }))
                         return true
                     end)
                 }))
@@ -716,7 +865,7 @@ if config.gameplay_reworks then
                     return true
                 end)
 
-                G.GAME.current_round.free_rerolls = G.GAME.current_round.free_rerolls + 1
+                G.GAME.current_round.free_rerolls = math.max(G.GAME.current_round.free_rerolls + 1, 0)
                 calculate_reroll_cost(true)
 
                 tag.triggered = true
@@ -735,16 +884,11 @@ if config.gameplay_reworks then
             info_queue[#info_queue+1] = G.P_CENTERS.e_polychrome
             info_queue[#info_queue+1] = G.P_CENTERS.e_bunc_glitter
 
-            local vars
-            if G.GAME and G.GAME.probabilities.normal then
-                vars = {G.GAME.probabilities.normal, self.config.extra}
-            else
-                vars = {1, self.config.extra}
-            end
+            local vars = {SMODS.get_probability_vars(card, 1, self.config.extra, 'wheel_of_fortune')}
             return {key = 'c_bunc_wheel_of_fortune', vars = vars}
         end,
-        pos = config.fixed_sprites and coordinate(4) or nil,
-        atlas = config.fixed_sprites and 'bunco_resprites_consumables' or nil
+        pos = use_fixed_sprite_atlas() and coordinate_from_atlas_index(4) or nil,
+        atlas = use_fixed_sprite_atlas() and 'bunco_resprites_tarots' or nil
     })
 
     SMODS.Consumable:take_ownership('aura', {
@@ -762,14 +906,14 @@ end
 
 -- Temporary extra chips
 
-local original_end_round = end_round
+local bunc_original_end_round = end_round
 function end_round()
     for _, v in ipairs(G.playing_cards) do
         if v.ability and type(v.ability) == 'table' and v.ability.temporary_extra_chips then
             v.ability.temporary_extra_chips = nil
         end
     end
-    original_end_round()
+    bunc_original_end_round()
 end
 
 local Card_get_chip_bonus = Card.get_chip_bonus
@@ -797,9 +941,9 @@ function post_eval_card(card, context)
     return ret
 end
 
-local original_calculate_main_scoring = SMODS.calculate_main_scoring
+local bunc_original_calculate_main_scoring = SMODS.calculate_main_scoring
 function SMODS.calculate_main_scoring(context, scoring_hand)
-    original_calculate_main_scoring(context, scoring_hand)
+    bunc_original_calculate_main_scoring(context, scoring_hand)
 
     -- Post-scoring
 
@@ -816,90 +960,71 @@ end
 
 -- Repetitions unlocking
 
-local original_calculate_repetitions = SMODS.calculate_repetitions
+local bunc_original_calculate_repetitions = SMODS.calculate_repetitions
 SMODS.calculate_repetitions = function(card, context, reps)
-    original_calculate_repetitions(card, context, reps)
+    bunc_original_calculate_repetitions(card, context, reps)
 
-    local locked_card
-
-    for i = 1, #G.P_LOCKED do
-        locked_card = G.P_LOCKED[i]
-
-        if not locked_card.unlocked and locked_card.check_for_unlock and type(locked_card.check_for_unlock) == 'function' then
-            locked_card:check_for_unlock({type = 'repetition', repetition_amount = #reps - 1})
-        end
-    end
+    check_for_unlock({type = 'repetition', repetition_amount = #reps - 1})
 end
 
 -- Various on-money-gain functions
 
-BUNCOMOD.funcs.ease_dollars = function(mod)
-    if G.GAME.Trident and (to_big(mod) <= to_big(0)) then --Vermilion Trident 1/2
-        G.GAME.ante_purchases = (G.GAME.ante_purchases or 0) + 1
+table.insert(SMODS.calculation_keys, "bunc_new_dollars_mod")
+local bunc_original_smods_calculate_individal_effect = SMODS.calculate_individual_effect
+SMODS.calculate_individual_effect = function(effect, scored_card, key, amount, from_edition)
+    
+    if key == "bunc_new_dollars_mod" then
+        return { [key] = amount }
     end
 
-    G.GAME.money_spend_this_round = G.GAME.money_spend_this_round or 0 --Money spent in one shop unlock 1/2
-    if to_big(mod) < to_big(0) then
-        G.GAME.money_spend_this_round = G.GAME.money_spend_this_round - mod
-
-        local locked_card
-
-        for i = 1, #G.P_LOCKED do
-            locked_card = G.P_LOCKED[i]
-
-            if not locked_card.unlocked and locked_card.check_for_unlock and type(locked_card.check_for_unlock) == 'function' then
-                locked_card:check_for_unlock({type = 'round_spend_money', round_spend_money = G.GAME.money_spend_this_round})
-            end
-        end
-    end
-
-    if G.jokers ~= nil then --Jokers that affect money income
-        for _, v in ipairs(G.jokers.cards) do
-            if v.config.center.key == 'j_bunc_fiendish' and not v.debuff then
-                if to_big(mod) > to_big(0) then
-                    if pseudorandom('fiendish'..G.SEED) < G.GAME.probabilities.normal / v.ability.extra.odds then
-                        mod = to_big(1)
-                        local message = to_number(mod)
-                        G.E_MANAGER:add_event(Event{func = function()
-                            card_eval_status_text(
-                            v,
-                            'extra',
-                            nil, nil, nil,
-                            {message = '$'..(message or '1'), colour = G.C.RED, instant = true})
-                        return true end})
-                    else
-                        mod = to_big(mod) * to_big(2)
-                        local message = to_number(mod)
-                        G.E_MANAGER:add_event(Event{func = function()
-                            card_eval_status_text(
-                            v,
-                            'extra',
-                            nil, nil, nil,
-                            {message = '$'..message, colour = G.C.ORANGE, instant = true})
-                        return true end})
-                    end
-                end
-            end
-            if v.config.center.key == 'j_bunc_bounty_hunter' and not v.debuff then
-                if to_big(mod) > to_big(0) then
-                    v:calculate_joker({get_money = true})
-                    mod = to_big(mod) - to_big(1)
-                    G.E_MANAGER:add_event(Event{func = function()
-                        card_eval_status_text(
-                        v,
-                        'extra',
-                        nil, nil, nil,
-                        {message = G.localization.misc.dictionary.bunc_robbed, colour = G.C.ORANGE, instant = true})
-                    return true end})
-                end
-            end
-        end
-    end
-    return(mod)
+    return bunc_original_smods_calculate_individal_effect(effect, scored_card, key, amount, from_edition)
 end
 
-local original_game_update = Game.update
+local bunc_original_ease_dollars = ease_dollars
+function ease_dollars(mod, instant)
+if G.GAME.Trident and (to_big(mod) <= to_big(0)) then -- Vermilion Trident 1/2
+        G.GAME.ante_purchases = (G.GAME.ante_purchases or 0) + 1
+    end
+    
+    G.GAME.bunc_money_spend_this_round = G.GAME.bunc_money_spend_this_round or 0 -- Money spent in one shop unlock 1/2
+    if to_big(mod) < to_big(0) then
+        G.GAME.bunc_money_spend_this_round = G.GAME.bunc_money_spend_this_round - mod
+        check_for_unlock({type = 'round_spend_money', round_spend_money = G.GAME.bunc_money_spend_this_round})
+    end
 
+    local ret = SMODS.calculate_context({
+        bunc_pre_money_change = true,
+        mod = mod,
+        sign = (to_big(mod) < to_big(0) and -1 or to_big(mod) > to_big(0) and 1 or 0)
+    })
+    mod = ret.calculated and to_big(ret.bunc_new_dollars_mod) or mod
+
+    if to_big(mod) == to_big(0) then return end
+
+    bunc_original_ease_dollars(mod, instant)
+
+    if instant then
+        SMODS.calculate_context({
+            bunc_money_change = true,
+            mod = mod, 
+            sign = (to_big(mod) < to_big(0) and -1 or to_big(mod) > to_big(0) and 1 or 0)
+        })
+    else
+        G.E_MANAGER:add_event(Event({
+        trigger = 'immediate',
+        func = function()
+            SMODS.calculate_context({
+                bunc_money_change = true, 
+                mod = mod, 
+                sign = (to_big(mod) < to_big(0) and -1 or to_big(mod) > to_big(0) and 1 or 0)
+            })
+            return true
+        end
+        }))
+    end
+end
+
+local bunc_original_game_update = Game.update
 function Game:update(dt)
 
     -- The 8
@@ -928,7 +1053,7 @@ function Game:update(dt)
         end
     end
 
-    original_game_update(self, dt)
+    bunc_original_game_update(self, dt)
 end
 
 function BUNCOMOD.content.set_debuff(card)
@@ -994,10 +1119,9 @@ function BUNCOMOD.content.set_debuff(card)
     return false
 end
 
-local original_start_run = Game.start_run
-
+local bunc_original_start_run = Game.start_run
 function Game:start_run(args)
-    original_start_run(self, args)
+    bunc_original_start_run(self, args)
 
     local sledgehammers = SMODS.find_card('j_bunc_sledgehammer')
     for _, card in ipairs(sledgehammers) do
@@ -1014,7 +1138,15 @@ SMODS.Tag:take_ownership('double', {
             return {key = 'tag_bunc_double'}
         end
     end,
-})
+}, true)
+
+-- All in Jest compat
+-- AiJ implemented this in a way that usually specific compat isn't required
+-- However in this case I did weird stuff, so putting in a specific fix
+-- Used in Prehistoric Joker
+aij_ids_op = next(SMODS.find_mod("allinjest")) and ids_op or function (card, op, b)
+    return card:get_id() == b
+end
 
 -- Joker creation setup
 
@@ -1026,6 +1158,7 @@ SMODS.Atlas({key = 'bunco_jokers_taped', path = 'Jokers/JokerTaped.png', px = 12
 SMODS.Atlas({key = 'bunco_jokers_headache', path = 'Jokers/JokerHeadache.png', px = 71, py = 95})
 SMODS.Atlas({key = 'bunco_jokers_winking', path = 'Jokers/JokerWinking.png', px = 71, py = 95})
 SMODS.Atlas({key = 'bunco_jokers_border', path = 'Jokers/JokerBorder.png', px = 71, py = 95})
+SMODS.Atlas({key = 'settings_icon', path = 'settings.png', px = 32, py = 32})
 
 SMODS.Sound({key = 'gunshot', path = 'gunshot.ogg'})
 SMODS.Sound({key = 'mousetrap', path = 'mousetrap.ogg'})
@@ -1036,10 +1169,13 @@ SMODS.Sound({key = 'diamond', path = 'diamond.ogg'})
 SMODS.Sound({key = 'fleuron', path = 'fleuron.ogg'})
 SMODS.Sound({key = 'halberd', path = 'halberd.ogg'})
 SMODS.Sound({key = 'stone', path = 'stone.ogg'})
+SMODS.Sound({key = 'paperback_crown', path = 'crown.ogg'})
+SMODS.Sound({key = 'paperback_star', path = 'star.ogg'})
+SMODS.Sound({key = 'minty_3', path = 'meow3.wav'})
 
 SMODS.Shader({key = 'headache', path = 'headache.fs'})
 
-local function create_joker(joker)
+local function bunc_define_joker(joker)
 
     -- Sprite position
 
@@ -1105,7 +1241,7 @@ local function create_joker(joker)
 
     -- Joker creation
 
-    if not (joker.purist == false and config.purist_mode) then SMODS.Joker{
+    SMODS.Joker{
         name = joker.name,
         key = key,
 
@@ -1124,6 +1260,8 @@ local function create_joker(joker)
         blueprint_compat = joker.blueprint,
         eternal_compat = joker.eternal,
         perishable_compat = joker.perishable,
+
+        pools = joker.pools,
 
         process_loc_text = joker.process_loc_text,
 
@@ -1155,8 +1293,7 @@ local function create_joker(joker)
         in_pool = joker.custom_in_pool or pool,
 
         effect = joker.effect
-        }
-    end
+    }
     if joker.drawsteps then
         for index, drawstep in ipairs(joker.drawsteps) do
             drawstep.key = key..'_'..index
@@ -1167,7 +1304,22 @@ end
 
 -- Jokers
 
-create_joker({ -- Cassette
+local bunc_cassette_sprite_change = function(card)
+    local coord = 1
+
+    if BUNCOMOD.funcs.exotic_in_pool() then
+        coord = coord + 70
+    end
+
+    if card.ability and card.ability.extra and card.ability.extra.side then
+        if card.ability.extra.side == 'B' then
+            coord = coord + 1
+        end
+    end
+
+    card.children.center:set_sprite_pos(coordinate_from_atlas_index(coord))
+end
+bunc_define_joker({ -- Cassette
     name = 'Cassette', position = 1,
     vars = {{chips = 45}, {mult = 6}, {side = 'A'}},
     custom_vars = function(self, info_queue, card)
@@ -1206,14 +1358,17 @@ create_joker({ -- Cassette
         }
 
         if card.ability.extra.side == 'A' then
-
-            if card.area and card.area.config.collection and G.P_CENTERS['b_bunc_fairy'].unlocked then
-                info_queue[#info_queue+1] = {set = 'Other', key = 'bunc_light_suits_exotic'}
+            if next(SMODS.find_mod("paperback")) then
+                info_queue[#info_queue + 1] = PB_UTIL.suit_tooltip('light')
             else
-                if G.GAME and G.GAME.Exotic then
+                if card.area and card.area.config.collection and G.P_CENTERS['b_bunc_fairy'].unlocked then
                     info_queue[#info_queue+1] = {set = 'Other', key = 'bunc_light_suits_exotic'}
                 else
-                    info_queue[#info_queue+1] = {set = 'Other', key = 'bunc_light_suits'}
+                    if G.GAME and G.GAME.Exotic then
+                        info_queue[#info_queue+1] = {set = 'Other', key = 'bunc_light_suits_exotic'}
+                    else
+                        info_queue[#info_queue+1] = {set = 'Other', key = 'bunc_light_suits'}
+                    end
                 end
             end
 
@@ -1221,14 +1376,17 @@ create_joker({ -- Cassette
             main_end = main_end,
             vars = vars}
         else
-
-            if card.area and card.area.config.collection and G.P_CENTERS['b_bunc_fairy'].unlocked then
-                info_queue[#info_queue+1] = {set = 'Other', key = 'bunc_dark_suits_exotic'}
+            if next(SMODS.find_mod("paperback")) then
+                info_queue[#info_queue + 1] = PB_UTIL.suit_tooltip('dark')
             else
-                if G.GAME and G.GAME.Exotic then
+                if card.area and card.area.config.collection and G.P_CENTERS['b_bunc_fairy'].unlocked then
                     info_queue[#info_queue+1] = {set = 'Other', key = 'bunc_dark_suits_exotic'}
                 else
-                    info_queue[#info_queue+1] = {set = 'Other', key = 'bunc_dark_suits'}
+                    if G.GAME and G.GAME.Exotic then
+                        info_queue[#info_queue+1] = {set = 'Other', key = 'bunc_dark_suits_exotic'}
+                    else
+                        info_queue[#info_queue+1] = {set = 'Other', key = 'bunc_dark_suits'}
+                    end
                 end
             end
 
@@ -1238,7 +1396,7 @@ create_joker({ -- Cassette
         end
     end,
     rarity = 'Uncommon', cost = 5,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.pre_discard and not context.blueprint then
@@ -1280,31 +1438,21 @@ create_joker({ -- Cassette
     end,
     update = function(self, card)
         if card.VT.w <= 0 then
-            if card.ability.extra.side == 'A' then
-                card.children.center:set_sprite_pos(coordinate(1))
-            else
-                card.children.center:set_sprite_pos(coordinate(2))
-            end
+            bunc_cassette_sprite_change(card)
         end
     end,
     set_sprites = function(self, card, front)
         if self.discovered or card.bypass_discovery_center then
-            if card.ability and card.ability.extra and card.ability.extra.side then
-                if card.ability.extra.side == 'A' then
-                    card.children.center:set_sprite_pos(coordinate(1))
-                else
-                    card.children.center:set_sprite_pos(coordinate(2))
-                end
-            end
+            bunc_cassette_sprite_change(card)
         end
     end
 })
 
-create_joker({ -- Mosaic
+bunc_define_joker({ -- Mosaic
     name = 'Mosaic', position = 3,
     vars = {{mult = 6}},
     rarity = 'Uncommon', cost = 4,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'hand_contents' then
@@ -1340,14 +1488,14 @@ create_joker({ -- Mosaic
     end
 })
 
-create_joker({ -- Voxel
+bunc_define_joker({ -- Voxel
     name = 'Voxel', position = 4,
     vars = {{base = 3}, {bonus = 0.1}, {xmult = 3}, {tally = 0}, {unlock = 10}},
     locked_vars = function(self, info_queue, card)
         return {vars = {self.config.extra.unlock}}
     end,
     rarity = 'Uncommon', cost = 5,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'modify_deck' then
@@ -1392,7 +1540,7 @@ create_joker({ -- Voxel
     end
 })
 
-create_joker({ -- Crop Circles
+bunc_define_joker({ -- Crop Circles
     name = 'Crop Circles', position = 5,
     rarity = 'Common', cost = 4,
     custom_vars = function(self, info_queue, card)
@@ -1404,66 +1552,58 @@ create_joker({ -- Crop Circles
             end
         end
     end,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.individual and context.cardarea == G.play then
 
             local other_card = context.other_card
 
-            if other_card.config.center ~= G.P_CENTERS.m_stone then
+            local rank_mult = 0
+            local suit_mult = 0
 
-                if other_card.base.suit == ('bunc_Fleurons') then
-                    if other_card:get_id() == 8 then
-                        return {
-                            mult = 6,
-                            card = card
-                        }
-                    elseif other_card:get_id() == 12 or other_card:get_id() == 10 or other_card:get_id() == 9 or other_card:get_id() == 6 then
-                        return {
-                            mult = 5,
-                            card = card
-                        }
-                    else
-                        return {
-                            mult = 4,
-                            card = card
-                        }
-                    end
-                elseif other_card.base.suit == ('Clubs') then
-                    if other_card:get_id() == 8 then
-                        return {
-                            mult = 5,
-                            card = card
-                        }
-                    elseif other_card:get_id() == 12 or other_card:get_id() == 10 or other_card:get_id() == 9 or other_card:get_id() == 6 then
-                        return {
-                            mult = 4,
-                            card = card
-                        }
-                    else
-                        return {
-                            mult = 3,
-                            card = card
-                        }
-                    end
-                elseif other_card:get_id() == 8 then
-                    return {
-                        mult = 2,
-                        card = card
-                    }
-                elseif other_card:get_id() == 12 or other_card:get_id() == 10 or other_card:get_id() == 9 or other_card:get_id() == 6 then
-                    return {
-                        mult = 1,
-                        card = card
-                    }
+            if not SMODS.has_no_suit(other_card) then
+                if other_card.base.suit == "bunc_Fleurons" then
+                    suit_mult = suit_mult + 4
+                elseif other_card.base.suit == "Clubs" then
+                    suit_mult = suit_mult + 3
                 end
             end
+
+            if not SMODS.has_no_rank(other_card) then
+                if other_card:get_id() == 8 then
+                    rank_mult = rank_mult + 2
+                elseif other_card:get_id() == 12 or other_card:get_id() == 10 or other_card:get_id() == 9 or other_card:get_id() == 6 then
+                    rank_mult = rank_mult + 1
+                end
+            end
+
+            if (suit_mult + rank_mult) > 0 then
+                if not context.blueprint and BUNCOMOD.funcs.exotic_in_pool() then
+                    event({
+                        blocking = false,
+                        func = function()
+                            card.children.center:set_sprite_pos(coordinate_from_atlas_index(73))
+                            return true
+                        end
+                    })
+                end
+                return {
+                    mult = suit_mult + rank_mult,
+                    card = card
+                }
+            end
+        end
+    end,
+    set_sprites = function(self, card, front)
+        -- Alt textures for slothful to include exotic and paperback suits if they have been unlocked
+        if (self.discovered or card.bypass_discovery_center) and BUNCOMOD.funcs.exotic_in_pool() then
+            card.children.center:set_sprite_pos(coordinate_from_atlas_index(73))
         end
     end
 })
 
-create_joker({ -- Xray
+bunc_define_joker({ -- Xray
     name = 'Xray', position = 6,
     vars = {{bonus = 0.2}, {xmult = 1}},
     rarity = 'Common', cost = 4,
@@ -1478,8 +1618,10 @@ create_joker({ -- Xray
     calculate = function(self, card, context)
         if context.emplaced_card and context.emplaced_card.facing == 'back' and not context.blueprint then
             card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.bonus
-
-            forced_message('X'..tostring(card.ability.extra.xmult)..' '..localize('k_mult'), card, G.C.RED, card.ability.extra.bonus)
+            return {
+                message = localize('k_upgrade_ex'),
+                instant = true
+            }
         end
 
         if context.joker_main then
@@ -1498,14 +1640,14 @@ create_joker({ -- Xray
     end
 })
 
-create_joker({ -- Dread
+bunc_define_joker({ -- Dread
     name = 'Dread', position = 7,
     vars = {{levels = 2}, {trash_list = {}}, {level_up_list = {}}, {unlock = 10}},
     locked_vars = function(self, info_queue, card)
         return {vars = {self.config.extra.unlock}}
     end,
     rarity = 'Rare', cost = 8,
-    blueprint = false, eternal = true,
+    blueprint = false, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'round_deck_size' and args.round_deck_size_diff <= -self.config.extra.unlock then
@@ -1521,7 +1663,7 @@ create_joker({ -- Dread
                 end
             end
 
-            if (context.after or context.first_hand_drawn) and G.GAME.current_round.hands_left == 1 then -- For shaking the card when there's one hand left
+            if (context.after or context.first_hand_drawn) and G.GAME.current_round.hands_left <= 1 then -- For shaking the card when there's one hand left
                 event({func = function ()
                     local eval = function() return G.GAME.current_round.hands_left == nil or G.GAME.current_round.hands_left ~= 0 end
                     juice_card_until(card, eval, true)
@@ -1579,11 +1721,11 @@ create_joker({ -- Dread
     end
 })
 
-create_joker({ -- Prehistoric
+bunc_define_joker({ -- Prehistoric
     name = 'Prehistoric', position = 8,
     vars = {{mult = 16}, {card_list = { }}},
     rarity = 'Uncommon', cost = 5,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'hand_contents' then
@@ -1595,10 +1737,9 @@ create_joker({ -- Prehistoric
     end,
     calculate = function(self, card, context)
         if context.individual and context.cardarea == G.play then
-            for k, v in pairs(card.ability.extra.card_list) do
-                if (v:get_id() == context.other_card:get_id())
-                and (v:is_suit(context.other_card.base.suit) or context.other_card.config.center == G.P_CENTERS.m_wild)
-                and context.other_card.config.center ~= G.P_CENTERS.m_stone then
+            for _, v in ipairs(card.ability.extra.card_list) do
+                if (aij_ids_op(context.other_card, '==', v.rank))
+                and (v.has_any_suit or context.other_card:is_suit(v.suit)) then
                     return {
                         mult = card.ability.extra.mult,
                         card = card
@@ -1607,8 +1748,13 @@ create_joker({ -- Prehistoric
             end
 
             if not context.blueprint then
-                if context.other_card.config.center ~= G.P_CENTERS.m_stone then
-                    table.insert(card.ability.extra.card_list, context.other_card) -- Add the card to the list
+                if not (SMODS.has_no_suit(context.other_card) or SMODS.has_no_rank(context.other_card)) then
+                    table.insert(card.ability.extra.card_list, {
+                        rank = context.other_card:get_id(),
+                        suit = context.other_card.base.suit,
+                        has_any_suit = SMODS.has_any_suit(context.other_card),
+                        ID = context.other_card.unique_val
+                    }) -- Add the card to the list
                 end
             end
 
@@ -1620,10 +1766,10 @@ create_joker({ -- Prehistoric
     end
 })
 
-create_joker({ -- Linocut
+bunc_define_joker({ -- Linocut
     name = 'Linocut', position = 9,
     rarity = 'Uncommon', cost = 4,
-    blueprint = false, eternal = true,
+    blueprint = false, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.after and context.scoring_hand and #context.scoring_hand == 2 and not context.blueprint then
@@ -1637,7 +1783,7 @@ create_joker({ -- Linocut
     end
 })
 
-create_joker({ -- Ghost Print
+bunc_define_joker({ -- Ghost Print
     name = 'Ghost Print', position = 10,
     vars = {{last_hand = 'Nothing'}},
     custom_vars = function(self, info_queue, card)
@@ -1650,7 +1796,7 @@ create_joker({ -- Ghost Print
         return {vars = vars}
     end,
     rarity = 'Uncommon', cost = 6,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.joker_main then
@@ -1669,7 +1815,7 @@ create_joker({ -- Ghost Print
     end
 })
 
-create_joker({ -- Loan Shark
+bunc_define_joker({ -- Loan Shark
     name = 'Loan Shark', position = 11,
     vars = {{dollars = 50}, {cost = -100}},
     custom_vars = function(self, info_queue, card)
@@ -1681,25 +1827,26 @@ create_joker({ -- Loan Shark
         end
     end,
     rarity = 'Uncommon', cost = 3,
-    blueprint = false, eternal = true,
+    blueprint = false, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'round_spend_money' and to_number(args.round_spend_money) >= 100 then
             unlock_card(self)
         end
     end,
-    add = function(self, card)
-        ease_dollars(card.ability.extra.dollars)
+    add = function(self, card, from_debuff)
+        if not from_debuff then
+            ease_dollars(card.ability.extra.dollars)
+        end
         card:set_cost()
     end
 })
 
-create_joker({ -- Basement
+bunc_define_joker({ -- Basement
     name = 'Basement', position = 12,
     rarity = 'Rare', cost = 8,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
-    purist = false,
     calculate = function(self, card, context)
         if context.end_of_round and G.GAME.blind.boss and not context.other_card then
             if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
@@ -1718,7 +1865,7 @@ create_joker({ -- Basement
     end
 })
 
-create_joker({ -- Shepherd
+bunc_define_joker({ -- Shepherd
     name = 'Shepherd', position = 13,
     vars = {{bonus = 6}, {chips = 0}},
     rarity = 'Common', cost = 5,
@@ -1747,7 +1894,7 @@ create_joker({ -- Shepherd
     end
 })
 
-create_joker({ -- Knight
+bunc_define_joker({ -- Joker Knight
     name = 'Knight', position = 14,
     vars = {{bonus = 6}, {mult = 0}},
     rarity = 'Uncommon', cost = 6,
@@ -1758,7 +1905,6 @@ create_joker({ -- Knight
             unlock_card(self)
         end
     end,
-    purist = false,
     calculate = function(self, card, context)
         if context.setting_blind and not card.getting_sliced and not context.blueprint then
             card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.bonus
@@ -1770,16 +1916,21 @@ create_joker({ -- Knight
                 delay(0.15)
                 event({ func = function() G.jokers:shuffle('aajk'); play_sound('cardSlide1', 1);return true end })
                 delay(0.5)
-            return true end })
+                return true 
+            end })
 
-            forced_message('+'..tostring(card.ability.extra.mult)..' '..localize('k_mult'), card, G.C.RED)
+            return {
+                message = '+'..tostring(card.ability.extra.mult)..' '..localize('k_mult'),
+                colour = G.C.RED
+            }
         end
 
         if context.break_positions and not context.blueprint then
             if card.ability.extra.mult ~= 0 then
                 card.ability.extra.mult = 0
-
-                forced_message(localize('k_reset'), card, G.C.RED)
+                return {
+                    message = localize('k_reset')
+                }
             end
         end
 
@@ -1812,21 +1963,20 @@ create_joker({ -- Knight
     end
 })
 
-create_joker({ -- JMJB
+bunc_define_joker({ -- Joker Man & Jester Boy Trading Card No. 54 (JMJB)
     name = 'JMJB', position = 15,
     vars = {{unlock = 50}},
     locked_vars = function(self, info_queue, card)
         return {vars = {self.config.extra.unlock, G.PROFILES[G.SETTINGS.profile].booster_packs_opened or 0}}
     end,
     rarity = 'Rare', cost = 5,
-    blueprint = false, eternal = true,
+    blueprint = false, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'open_pack' and args.packs_total >= self.config.extra.unlock then
             unlock_card(self)
         end
     end,
-    purist = false,
     calculate = function(self, card, context)
         if context.open_booster and context.card.ability.name then
             if (context.open_booster and context.card.ability.name == 'Standard Pack' or
@@ -1855,11 +2005,11 @@ create_joker({ -- JMJB
     end
 })
 
-create_joker({ -- Dogs Playing Poker
+bunc_define_joker({ -- Dogs Playing Poker
     name = 'Dogs Playing Poker', position = 16,
     vars = {{xmult = 2.5}},
     rarity = 'Uncommon', cost = 5,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.joker_main then
@@ -1868,9 +2018,12 @@ create_joker({ -- Dogs Playing Poker
 
             if context.scoring_hand then
                 for i = 1, #context.scoring_hand do
-                    if (context.scoring_hand[i]:get_id() >= 6 or
-                    context.scoring_hand[i]:get_id() < 2) and
-                    context.scoring_hand[i].config.center ~= G.P_CENTERS.m_stone then
+                    if not (
+                        context.scoring_hand[i]:get_id() == 2 or 
+                        context.scoring_hand[i]:get_id() == 3 or
+                        context.scoring_hand[i]:get_id() == 4 or
+                        context.scoring_hand[i]:get_id() == 5
+                    ) or SMODS.has_no_rank(context.scoring_hand[i]) then
                         condition = false
                     end
                 end
@@ -1891,14 +2044,14 @@ create_joker({ -- Dogs Playing Poker
     end
 })
 
-create_joker({ -- Righthook
+bunc_define_joker({ -- Righthook
     name = 'Righthook', position = 17,
     vars = {{unlock = 5}},
     locked_vars = function(self, info_queue, card)
         return {vars = {self.config.extra.unlock}}
     end,
     rarity = 'Rare', cost = 8,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'repetition' and args.repetition_amount >= self.config.extra.unlock then
@@ -1908,7 +2061,7 @@ create_joker({ -- Righthook
     calculate = function(self, card, context)
         if context.repetition and context.cardarea == G.play and context.scoring_hand and context.other_card == context.scoring_hand[#context.scoring_hand] then
 
-            local repetitions = G.GAME.current_round.hands_left
+            local repetitions = G.GAME.cry_panop_juggle or G.GAME.current_round.hands_left -- For cryptid compat
 
             return {
                 message = localize('k_again_ex'),
@@ -1919,20 +2072,15 @@ create_joker({ -- Righthook
     end
 })
 
-create_joker({ -- Fiendish
+bunc_define_joker({ -- Fiendish
     name = 'Fiendish', position = 18,
     vars = {{odds = 3}},
     custom_vars = function(self, info_queue, card)
-        local vars
-        if G.GAME and G.GAME.probabilities.normal then
-            vars = {G.GAME.probabilities.normal, card.ability.extra.odds}
-        else
-            vars = {1, card.ability.extra.odds}
-        end
+        vars = {SMODS.get_probability_vars(card, 1, card.ability.extra.odds, "bunc_fiendish")}
         return {vars = vars}
     end,
     rarity = 'Uncommon', cost = 5,
-    blueprint = false, eternal = true,
+    blueprint = false, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'win_challenge' and G.GAME.challenge == 'c_double_nothing_1' then
@@ -1940,10 +2088,28 @@ create_joker({ -- Fiendish
             unlock_card(self)
         end
     end,
-    purist = false
+    calculate = function(self, card, context)
+        if context.bunc_pre_money_change and context.sign == 1 then
+            if SMODS.pseudorandom_probability(card, 'fiendish'..G.SEED, 1, card.ability.extra.odds, 'bunc_fiendish') then
+                local new_mod = to_big(1)
+                return {
+                    bunc_new_dollars_mod = new_mod,
+                    message = "$" .. to_number(new_mod),
+                    colour = G.C.RED
+                }
+            else
+                local new_mod = to_big(context.mod) * to_big(2)
+                return {
+                    bunc_new_dollars_mod = new_mod,
+                    message = "$" .. to_number(new_mod),
+                    colour = G.C.ORANGE
+                }
+            end
+        end
+    end
 })
 
-create_joker({ -- Carnival
+bunc_define_joker({ -- Carnival
     name = 'Carnival', position = 19,
     vars = {{ante = -huge_number}},
     custom_vars = function (self, info_queue, card)
@@ -1958,14 +2124,13 @@ create_joker({ -- Carnival
         return {main_end = main_end}
     end,
     rarity = 'Rare', cost = 10,
-    blueprint = false, eternal = true,
+    blueprint = false, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'ante_down' and args.ante == 0 then
             unlock_card(self)
         end
     end,
-    purist = false,
     calculate = function(self, card, context)
         if context.end_of_round and G.GAME.blind.boss and not context.other_card and not context.blueprint then
             if G.GAME.round_resets.ante > card.ability.extra.ante then
@@ -1989,11 +2154,11 @@ create_joker({ -- Carnival
     end
 })
 
-create_joker({ -- Sledgehammer
+bunc_define_joker({ -- Sledgehammer
     name = 'Sledgehammer', position = 20,
     vars = {{plus_xmult = 1}, {div_chance_denom = 4}},
     rarity = 'Uncommon', cost = 5,
-    blueprint = false, eternal = true,
+    blueprint = false, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'hand_contents' then
@@ -2055,10 +2220,10 @@ create_joker({ -- Sledgehammer
     end
 })
 
-create_joker({ -- Doorhanger
+bunc_define_joker({ -- Doorhanger
     name = 'Doorhanger', position = 21,
     rarity = 'Rare', cost = 10,
-    blueprint = false, eternal = true,
+    blueprint = false, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'win_custom' and G.GAME.max_common_jokers == 0 then
@@ -2080,11 +2245,11 @@ create_joker({ -- Doorhanger
     end
 })
 
-create_joker({ -- Fingerprints
+bunc_define_joker({ -- Fingerprints
     name = 'Fingerprints', position = 22,
     vars = {{bonus = 50}, {scoring_card_set = {}}},
     rarity = 'Uncommon', cost = 8,
-    blueprint = false, eternal = true,
+    blueprint = false, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.after and context.scoring_name ~= nil and context.scoring_hand and not context.blueprint then
@@ -2109,28 +2274,22 @@ create_joker({ -- Fingerprints
     end
 })
 
-create_joker({ -- Zero Shapiro
+bunc_define_joker({ -- Zero Shapiro
     name = 'Zero Shapiro', position = 23,
     vars = {{odds = 8}},
     custom_vars = function(self, info_queue, card)
-        local vars
-
         info_queue[#info_queue+1] = {set = 'Tag', key = 'tag_d_six'}
 
-        if G.GAME and G.GAME.probabilities.normal then
-            vars = {G.GAME.probabilities.normal, card.ability.extra.odds}
-        else
-            vars = {1, card.ability.extra.odds}
-        end
+        local vars = {SMODS.get_probability_vars(card, 1, card.ability.extra.odds, "bunc_zero_shapiro")}
         return {vars = vars}
     end,
     rarity = 'Uncommon', cost = 4,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.individual and context.cardarea == G.play then
-            if context.other_card.config.center.key == 'm_stone' or context.other_card:get_id() == 0 or not tonumber(context.other_card.base.value) and context.other_card.base.value ~= 'Ace' then
-                if pseudorandom('zero_shapiro'..G.SEED) < G.GAME.probabilities.normal / card.ability.extra.odds then
+            if context.other_card:get_id() == 11 or context.other_card:get_id() == 12 or context.other_card:get_id() == 13 or SMODS.has_no_rank(context.other_card) then
+                if SMODS.pseudorandom_probability(card, pseudorandom('zero_shapiro'..G.SEED), 1, card.ability.extra.odds, 'bunc_zero_shapiro') then
                     return {
                         extra = {message = '+'..localize{type = 'name_text', key = 'tag_d_six', set = 'Tag'}, colour = G.C.GREEN},
                         card = card,
@@ -2147,11 +2306,11 @@ create_joker({ -- Zero Shapiro
     end
 })
 
-create_joker({ -- Nil Bill
+bunc_define_joker({ -- Nil Bill
     name = 'Nil Bill', position = 24,
     vars = {{bonus = 2}},
     rarity = 'Uncommon', cost = 4,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.remove_playing_cards then
@@ -2161,11 +2320,11 @@ create_joker({ -- Nil Bill
     end
 })
 
-create_joker({ -- Bierdeckel
+bunc_define_joker({ -- Bierdeckel
     name = 'Bierdeckel', position = 25,
     vars = {{bonus = 10}},
     rarity = 'Uncommon', cost = 4,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if (context.after or context.discard and context.other_card == context.full_hand[1]) then
@@ -2201,11 +2360,29 @@ create_joker({ -- Bierdeckel
     end
 })
 
-create_joker({ -- Registration Plate
+local bunc_registration_plate_refresh = function (card)
+    -- TODO: Make it so a card cannot be randomly chosen twice
+    local card_list = {}
+    for i = 1, 5 do
+        local index = math.random(#G.deck.cards)
+        table.insert(card_list, G.deck.cards[index])
+    end
+
+    card.ability.extra.combination = {}
+    for i = 1, 5 do
+        table.insert(card.ability.extra.combination, card_list[i].base.value)
+    end
+
+    card.ability.extra.ranks = {}
+    for i = 1, 5 do
+        table.insert(card.ability.extra.ranks, card_list[i]:get_id())
+    end
+end
+bunc_define_joker({ -- Registration Plate
     name = 'Registration Plate', position = 26,
-    vars = {{combination = ''}, {card_list = {}}, {ranks = {}}},
+    vars = {{combination = {"2", "3", "4", "5", "6"}}, {ranks = {}}},
     rarity = 'Rare', cost = 8,
-    blueprint = false, eternal = true,
+    blueprint = false, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'win_challenge' and G.GAME.challenge == 'c_city_1' then
@@ -2214,67 +2391,45 @@ create_joker({ -- Registration Plate
         end
     end,
     custom_vars = function(self, info_queue, card)
-        local vars
-        if card.ability.extra.combination == '' then
-            vars = {'2, 3, 4, 5 '..G.localization.misc.dictionary.bunc_word_and..' 6'}
-        else
-            vars = {card.ability.extra.combination}
+        local vars = {}
+        for i = 1, #card.ability.extra.combination do
+            table.insert(vars, localize(card.ability.extra.combination[i], 'ranks'))
         end
         return {vars = vars}
     end,
-    add = function(self, card)
-        card.ability.extra.card_list = {}
-
-        for i = 1, 5 do
-            local index = math.random(#G.deck.cards)
-            table.insert(card.ability.extra.card_list, G.deck.cards[index])
+    add = function(self, card, from_debuff)
+        if from_debuff then
+            return
         end
 
-        local combination = {}
-
-        for i = 1, 5 do
-            table.insert(combination, card.ability.extra.card_list[i].base.value)
-        end
-
-        card.ability.extra.ranks = {}
-
-        for i = 1, 5 do
-            table.insert(card.ability.extra.ranks, card.ability.extra.card_list[i]:get_id())
-        end
-
-        card.ability.extra.combination = table.concat(combination, ", ", 1, 4).." "..G.localization.misc.dictionary.bunc_word_and.." "..table.concat(combination, " ", 5)
+        bunc_registration_plate_refresh(card)
     end,
     calculate = function(self, card, context)
         if context.end_of_round and #G.deck.cards ~= 0 then
-            card.ability.extra.card_list = {}
 
-            for i = 1, 5 do
-                local index = math.random(#G.deck.cards)
-                table.insert(card.ability.extra.card_list, G.deck.cards[index])
-            end
-
-            local combination = {}
-
-            for i = 1, 5 do
-                table.insert(combination, card.ability.extra.card_list[i].base.value)
-            end
-
-            card.ability.extra.ranks = {}
-
-            for i = 1, 5 do
-                table.insert(card.ability.extra.ranks, card.ability.extra.card_list[i]:get_id())
-            end
-
-            card.ability.extra.combination = table.concat(combination, ", ", 1, 4).." "..G.localization.misc.dictionary.bunc_word_and.." "..table.concat(combination, " ", 5)
+            bunc_registration_plate_refresh(card)
         end
     end
 })
 
-create_joker({ -- Slothful
+local bunc_slothful_sprite_change = function(card)
+    if BUNCOMOD.funcs.exotic_in_pool() then
+        if next(SMODS.find_mod("paperback")) and (SMODS.Suits.paperback_Crowns:in_pool() or SMODS.Suits.paperback_Stars:in_pool()) then
+            card.children.center:set_sprite_pos(coordinate_from_atlas_index(76))
+        else
+            card.children.center:set_sprite_pos(coordinate_from_atlas_index(74))
+        end
+    else
+        if next(SMODS.find_mod("paperback")) and (SMODS.Suits.paperback_Crowns:in_pool() or SMODS.Suits.paperback_Stars:in_pool()) then
+            card.children.center:set_sprite_pos(coordinate_from_atlas_index(75))
+        end
+    end
+end
+bunc_define_joker({ -- Slothful
     name = 'Slothful', position = 27,
     vars = {{mult = 9}},
     rarity = 'Uncommon', cost = 5,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'hand_contents' then
@@ -2290,33 +2445,49 @@ create_joker({ -- Slothful
         end
     end,
     custom_in_pool = function()
-        local condition = false
         if G.playing_cards then
             for k, v in pairs(G.playing_cards) do
-                if v.config.center == G.P_CENTERS.m_wild then condition = true break end
+                if v.config.center == G.P_CENTERS.m_wild then 
+                    return true
+                end
             end
         end
-        return condition
+        return false
     end,
     calculate = function(self, card, context)
         if context.individual and context.cardarea == G.play then
             if context.other_card.config.center == G.P_CENTERS.m_wild then
+                if not context.blueprint then
+                    event({
+                        blocking = false,
+                        func = function()
+                            bunc_slothful_sprite_change(card)
+                            return true
+                        end
+                    })
+                end
                 return {
                     mult = card.ability.extra.mult,
                     card = card
                 }
             end
         end
+    end,
+    set_sprites = function(self, card, front)
+        -- Alt textures for slothful to include exotic and paperback suits if they have been unlocked
+        if self.discovered or card.bypass_discovery_center then
+            bunc_slothful_sprite_change(card)
+        end
     end
 })
 
-create_joker({ -- Neon
+bunc_define_joker({ -- Neon
     name = 'Neon', position = 28,
     custom_vars = function(self, info_queue, card)
         info_queue[#info_queue+1] = G.P_CENTERS.e_bunc_fluorescent
     end,
     rarity = 'Uncommon', cost = 5,
-    blueprint = false, eternal = true,
+    blueprint = false, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'hand_contents' then
@@ -2333,20 +2504,22 @@ create_joker({ -- Neon
     end,
     calculate = function(self, card, context)
         if context.enhance_card and not context.blueprint then
-            if context.enhanced_card:get_edition() == nil then
-                context.enhanced_card:set_edition({bunc_fluorescent = true})
-                event({func = function() big_juice(card) return true end})
+            if context.enhanced_card.area == G.hand then
+                if context.enhanced_card:get_edition() == nil then
+                    context.enhanced_card:set_edition({bunc_fluorescent = true})
+                    event({func = function() big_juice(card) return true end})
+                end
             end
         end
     end
 
 })
 
-create_joker({ -- Gameplan
+bunc_define_joker({ -- Gameplan
     name = 'Gameplan', position = 29,
     vars = {{mult = 20}},
     rarity = 'Uncommon', cost = 5,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'defeat_blind' and args.blind.name == 'Verdant Leaf' then
@@ -2368,15 +2541,15 @@ create_joker({ -- Gameplan
         end
     end,
     calculate = function(self, card, context)
-        if context.joker_main then
+        if context.other_joker then
             local mult = 0
 
             local my_pos = nil
             for i = 1, #G.jokers.cards do
                 if G.jokers.cards[i] == card then my_pos = i; break end
             end
-            if G.jokers.cards[my_pos - 1] then mult = mult + card.ability.extra.mult end
-            if G.jokers.cards[my_pos + 1] then mult = mult + card.ability.extra.mult end
+            if context.other_joker == G.jokers.cards[my_pos - 1] then mult = card.ability.extra.mult end
+            if context.other_joker == G.jokers.cards[my_pos + 1] then mult = card.ability.extra.mult end
 
             if mult ~= 0 then
                 return {
@@ -2386,18 +2559,18 @@ create_joker({ -- Gameplan
                         vars = { mult }
                     },
                     mult_mod = mult,
-                    card = card
+                    card = context.other_joker
                 }
             end
         end
     end
 })
 
-create_joker({ -- Conquest
+bunc_define_joker({ -- Conquest
     name = 'Conquest', position = 30,
     vars = {{chips = 200}, {joker = 0}},
     rarity = 'Uncommon', cost = 5,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'defeat_blind' and args.blind.name == 'Crimson Heart' then
@@ -2452,11 +2625,11 @@ create_joker({ -- Conquest
     end
 })
 
-create_joker({ -- Hierarchy of Needs
+bunc_define_joker({ -- Hierarchy of Needs
     name = 'Hierarchy of Needs', position = 31,
     vars = {{bonus = 5}, {mult = 20}},
     rarity = 'Common', cost = 5,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     update = function(self, card)
         if G.playing_cards then
@@ -2520,7 +2693,7 @@ create_joker({ -- Hierarchy of Needs
     end
 })
 
-create_joker({ -- Dwarven
+bunc_define_joker({ -- Dwarven
     name = 'Dwarven', position = 32,
     custom_vars = function(self, info_queue, card)
         info_queue[#info_queue+1] = G.P_CENTERS.m_stone
@@ -2529,7 +2702,7 @@ create_joker({ -- Dwarven
         return {}
     end,
     rarity = 'Uncommon', cost = 8,
-    blueprint = false, eternal = true,
+    blueprint = false, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'hand_contents' then
@@ -2581,10 +2754,10 @@ create_joker({ -- Dwarven
     end
 })
 
-create_joker({ -- Aristocrat
+bunc_define_joker({ -- Aristocrat
     name = 'Aristocrat', position = 33,
     rarity = 'Uncommon', cost = 6,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'win_custom' and G.GAME.booster_packs_opened == 0 then
@@ -2612,7 +2785,7 @@ create_joker({ -- Aristocrat
     end
 })
 
-create_joker({ -- Metallurgist
+bunc_define_joker({ -- Metallurgist
     name = 'Metallurgist', position = 34,
     vars = {{mult = 10}},
     custom_vars = function(self, info_queue, card)
@@ -2620,7 +2793,7 @@ create_joker({ -- Metallurgist
         return {vars = {card.ability.extra.mult}}
     end,
     rarity = 'Common', cost = 6,
-    blueprint = false, eternal = true,
+    blueprint = false, eternal = true, perishable = true,
     unlocked = true,
     custom_in_pool = function()
         local condition = false
@@ -2649,7 +2822,7 @@ create_joker({ -- Metallurgist
     end
 })
 
-create_joker({ -- Juggalo
+bunc_define_joker({ -- Juggalo
     name = 'Juggalo', position = 35,
     vars = {{unlock = 10}},
     custom_vars = function(self, info_queue, card)
@@ -2663,7 +2836,7 @@ create_joker({ -- Juggalo
         return {vars = {self.config.extra.unlock, G.PROFILES[G.SETTINGS.profile].consumables_with_edition_used or 0}}
     end,
     rarity = 'Rare', cost = 5,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'use_consumable_with_edition' and args.used_total >= self.config.extra.unlock then
@@ -2694,20 +2867,15 @@ create_joker({ -- Juggalo
     end
 })
 
-create_joker({ -- Head in the Clouds
+bunc_define_joker({ -- Head in the Clouds
     name = 'Head in the Clouds', position = 36,
     vars = {{odds = 3}},
     custom_vars = function(self, info_queue, card)
-        local vars
-        if G.GAME and G.GAME.probabilities.normal then
-            vars = {G.GAME.probabilities.normal, card.ability.extra.odds}
-        else
-            vars = {1, card.ability.extra.odds}
-        end
+        vars = {SMODS.get_probability_vars(card, 1, card.ability.extra.odds, "bunc_head_in_the_clouds")}
         return {vars = vars}
     end,
     rarity = 'Uncommon', cost = 6,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'win_custom' then
@@ -2732,24 +2900,25 @@ create_joker({ -- Head in the Clouds
     end,
     calculate = function(self, card, context)
         if context.level_up_hand and context.level_up_hand ~= self.name then
-            if pseudorandom('head_in_the_clouds'..G.SEED) < G.GAME.probabilities.normal / card.ability.extra.odds then
+            if SMODS.pseudorandom_probability(card, 'head_in_the_clouds'..G.SEED, 1, card.ability.extra.odds, 'bunc_head_in_the_clouds') then
                 event({func = function()
                     local hand = 'High Card'
                     card_eval_status_text(context.blueprint_card or card, 'extra', nil, nil, nil, {message = localize('k_upgrade_ex')})
                     update_hand_text({sound = 'button', volume = 0.7, pitch = 0.8, delay = 0.3}, {handname=localize(hand, 'poker_hands'),chips = G.GAME.hands[hand].chips, mult = G.GAME.hands[hand].mult, level=G.GAME.hands[hand].level})
                     level_up_hand(context.blueprint_card or card, self.name, nil, 1)
                     update_hand_text({sound = 'button', volume = 0.7, pitch = 1.1, delay = 0}, {mult = 0, chips = 0, handname = '', level = ''})
-                return true end})
+                    return true 
+                end})
             end
         end
     end
 })
 
-create_joker({ -- Headshot
+bunc_define_joker({ -- Headshot
     name = 'Headshot', position = 37,
     vars = {{xmult = 3}},
     rarity = 'Uncommon', cost = 8,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.joker_main and context.scoring_hand then
@@ -2775,20 +2944,31 @@ create_joker({ -- Headshot
     end
 })
 
-create_joker({ -- Trigger Finger
+function create_UIBox_bunc_trigger_finger_config()    
+    local t = create_UIBox_generic_options({ contents = {
+        {n=G.UIT.R, config={align = "cm", padding = 0.15, colour = G.C.CLEAR}, nodes={
+            {n=G.UIT.C, config={align = "cm", padding = 0.15}, nodes={
+                create_slider({label = G.localization.descriptions.Joker.j_bunc_trigger_finger.name .. " (" .. G.localization.misc.dictionary.bunc_volume .. ")", w = 5, h = 0.4, ref_table = G.SETTINGS.SOUND, ref_value = 'bunc_trigger_finger_volume', min = 0, max = 100}),
+            }}
+        }}
+    }})
+    return t
+end
+G.FUNCS.j_bunc_trigger_finger_settings = function(e)
+	G.FUNCS.overlay_menu{
+		definition = create_UIBox_bunc_trigger_finger_config(),
+        config = {offset = {x=0,y=10}}
+	}
+end
+bunc_define_joker({ -- Trigger Finger
     name = 'Trigger Finger', position = 38,
     vars = {{xmult = 4}, {odds = 10}},
     custom_vars = function(self, info_queue, card)
-        local vars
-        if G.GAME and G.GAME.probabilities.normal then
-            vars = {card.ability.extra.xmult, G.GAME.probabilities.normal, card.ability.extra.odds}
-        else
-            vars = {card.ability.extra.xmult, 1, card.ability.extra.odds}
-        end
+        local vars = {card.ability.extra.xmult, SMODS.get_probability_vars(card, 1, card.ability.extra.odds, 'bunc_trigger_finger')}
         return {vars = vars}
     end,
     rarity = 'Rare', cost = 8,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'defeat_blind' and args.blind.name == 'Cerulean Bell' then
@@ -2796,12 +2976,12 @@ create_joker({ -- Trigger Finger
         end
     end,
     calculate = function(self, card, context)
-        if context.highlight_card and (G.STATE == G.STATES.SELECTING_HAND or G.STATE == G.STATES.DRAW_TO_HAND) then
+        if context.bunc_trigger_finger_highlight_card and (G.STATE == G.STATES.SELECTING_HAND or G.STATE == G.STATES.DRAW_TO_HAND) then
             local cards = {}
             for i = 1, #G.hand.highlighted do
                 table.insert(cards, G.hand.highlighted[i])
             end
-            event({trigger = 'after', func = function()
+            if #cards > 0 and SMODS.pseudorandom_probability(card, 'trigger_finger'..G.SEED, 1, card.ability.extra.odds, 'bunc_trigger_finger') then
                 for i = 1, #cards do
                     if not cards[i].highlighted then
                         cards[i]:highlight()
@@ -2809,10 +2989,23 @@ create_joker({ -- Trigger Finger
                 end
                 if G.hand.highlighted then
                     G.FUNCS.play_cards_from_highlighted()
-                    play_sound('bunc_gunshot')
-                    forced_message(G.localization.misc.dictionary.bunc_pew, card, G.C.RED)
                 end
-            return true end})
+                if G.SETTINGS.SOUND.bunc_trigger_finger_volume == 0 then
+                    return {
+                        message = G.localization.misc.dictionary.bunc_pew,
+                        colour = G.C.RED,
+                        instant = true
+                    }
+                else
+                    return {
+                        message = G.localization.misc.dictionary.bunc_pew,
+                        colour = G.C.RED,
+                        sound = 'bunc_gunshot',
+                        volume = G.SETTINGS.SOUND.bunc_trigger_finger_volume / 100,
+                        instant = true
+                    }
+                end
+            end
         end
         if context.joker_main then
             return {
@@ -2828,11 +3021,11 @@ create_joker({ -- Trigger Finger
     end
 })
 
-create_joker({ -- Hopscotch
+bunc_define_joker({ -- Hopscotch
     name = 'Hopscotch', position = 39,
     vars = {{discard = 1}},
     rarity = 'Common', cost = 4,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.before and context.poker_hands ~= nil and next(context.poker_hands['Straight']) then
@@ -2842,22 +3035,24 @@ create_joker({ -- Hopscotch
     end
 })
 
-create_joker({ -- Pawn
+bunc_define_joker({ -- Pawn
     name = 'Pawn', position = 40,
     custom_vars = function(self, info_queue, card)
         if G.playing_cards and #G.playing_cards > 0 then
             local rank = math.huge
+            local display_rank = ""
             for _, deck_card in ipairs(G.playing_cards) do
-                if deck_card:get_id() < rank and deck_card.config.center ~= G.P_CENTERS.m_stone then
+                if deck_card:get_id() < rank and not SMODS.has_no_rank(deck_card) then
                     rank = deck_card:get_id()
+                    display_rank = deck_card.base.value
                 end
             end
-            return {vars = {localize(tostring(rank), 'ranks')}}
+            return {vars = {localize(tostring(display_rank), 'ranks')}}
         end
         return {vars = {localize('2', 'ranks')}}
     end,
     rarity = 'Common', cost = 5,
-    blueprint = false, eternal = true,
+    blueprint = false, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.after and context.scoring_hand and not context.blueprint then
@@ -2866,7 +3061,7 @@ create_joker({ -- Pawn
                 local other_card = context.scoring_hand[i]
                 local rank = math.huge
                 for _, deck_card in ipairs(G.playing_cards) do
-                    if deck_card:get_id() < rank and deck_card.config.center ~= G.P_CENTERS.m_stone then
+                    if deck_card:get_id() < rank and not SMODS.has_no_rank(deck_card) then
                         rank = deck_card:get_id()
                     end
                 end
@@ -2904,7 +3099,7 @@ create_joker({ -- Pawn
     end
 })
 
-create_joker({ -- Puzzle Board
+bunc_define_joker({ -- Puzzle Board
     name = 'Puzzle Board', position = 41,
     vars = {{odds = 4}},
     custom_vars = function(self, info_queue, card)
@@ -2914,20 +3109,15 @@ create_joker({ -- Puzzle Board
         info_queue[#info_queue+1] = G.P_CENTERS.e_polychrome
         info_queue[#info_queue+1] = G.P_CENTERS.e_bunc_glitter
 
-        local vars
-        if G.GAME and G.GAME.probabilities.normal then
-            vars = {G.GAME.probabilities.normal, card.ability.extra.odds}
-        else
-            vars = {1, card.ability.extra.odds}
-        end
+        vars = {SMODS.get_probability_vars(card, 1, card.ability.extra.odds, "bunc_puzzle_board")}
         return {vars = vars}
     end,
     rarity = 'Uncommon', cost = 6,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.using_consumeable and context.consumeable.ability.set == 'Tarot' then
-            if pseudorandom('puzzle_board'..G.SEED) < G.GAME.probabilities.normal / card.ability.extra.odds then
+            if SMODS.pseudorandom_probability(card, 'puzzle_board'..G.SEED, 1, card.ability.extra.odds, 'bunc_puzzle_board') then
                 local cards = {}
                 local edition = poll_edition('wheel_of_fortune', nil, true, true)
 
@@ -2951,20 +3141,16 @@ create_joker({ -- Puzzle Board
     end
 })
 
-create_joker({ -- Vandalism
-    name = 'Vandalism', position = 42, soul = coordinate(42),
+bunc_define_joker({ -- Vandalism
+    name = 'Vandalism', position = 42, soul = coordinate_from_atlas_index(42),
     vars = {{odds = 4}, {xmult = 2}, {card_list = {}}},
     custom_vars = function(self, info_queue, card)
-        local vars
-        if G.GAME and G.GAME.probabilities.normal then
-            vars = {G.GAME.probabilities.normal, card.ability.extra.odds, card.ability.extra.xmult}
-        else
-            vars = {1, card.ability.extra.odds, card.ability.extra.xmult}
-        end
+        local vars = {SMODS.get_probability_vars(card, 1, card.ability.extra.odds, 'bunc_vandalism')}
+        table.insert(vars, card.ability.extra.xmult)
         return {vars = vars}
     end,
     rarity = 'Rare', cost = 6,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'play_all_flipped' then
@@ -2972,10 +3158,22 @@ create_joker({ -- Vandalism
         end
     end,
     calculate = function(self, card, context)
-        if context.stay_flipped and not context.blueprint then
-            big_juice(card)
+        if context.stay_flipped and context.to_area == G.hand then
+            -- Does not juice while in booster packs
+            if G.STATE == G.STATES.SELECTING_HAND or G.STATE == G.STATES.DRAW_TO_HAND then
+                if (SMODS.pseudorandom_probability(card, 'vandalism'..G.SEED, 1, card.ability.extra.odds, 'bunc_vandalism')) then
+                    big_juice(context.blueprint_card or card)
+                    return {
+                        stay_flipped = true
+                    }
+                else
+                    return {
+                        stay_flipped = false
+                    }
+                end
+            end
         end
-        if context.play_cards then
+        if context.bunc_play_cards then
             card.ability.extra.card_list = {}
             for i = 1, #G.hand.highlighted do
                 if G.hand.highlighted[i].facing == 'back' then
@@ -3008,7 +3206,7 @@ create_joker({ -- Vandalism
             card.children.center.states.collide.can = false
             card.children.center:set_role({major = card, role_type = 'Glued', draw_major = card})
 
-            card.children.back = Sprite(card.T.x, card.T.y, card.T.w, card.T.h, G.ASSET_ATLAS['bunc_bunco_jokers_winking'], coordinate(1))
+            card.children.back = Sprite(card.T.x, card.T.y, card.T.w, card.T.h, G.ASSET_ATLAS['bunc_bunco_jokers_winking'], coordinate_from_atlas_index(1))
             card.children.back.states.hover = card.states.hover
             card.children.back.states.click = card.states.click
             card.children.back.states.drag = card.states.drag
@@ -3036,20 +3234,22 @@ create_joker({ -- Vandalism
     }
 })
 
-create_joker({ -- Protester
+bunc_define_joker({ -- Protester
     name = 'Protester', position = 43,
     vars = {{chip_mult = 8}, {chips = 0}, {rank = -huge_number}},
     rarity = 'Common', cost = 4,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.pre_discard then
             local raised_card = nil
             for i = 1, #G.hand.highlighted do
-                if not card.debuff and card.ability.extra.rank < G.hand.highlighted[i].base.nominal and G.hand.cards[i].ability.effect ~= 'Stone Card' then
-                    card.ability.extra.chips = G.hand.highlighted[i].base.nominal * card.ability.extra.chip_mult
-                    card.ability.extra.rank = G.hand.highlighted[i].base.nominal
-                    raised_card = G.hand.highlighted[i]
+                if not card.debuff and card.ability.extra.rank < G.hand.highlighted[i].base.nominal then
+                    if not SMODS.has_no_rank(G.hand.highlighted[i]) and not G.hand.highlighted[i].debuff then
+                        card.ability.extra.chips = G.hand.highlighted[i].base.nominal * card.ability.extra.chip_mult
+                        card.ability.extra.rank = G.hand.highlighted[i].base.nominal
+                        raised_card = G.hand.highlighted[i]
+                    end
                 end
             end
             if raised_card then
@@ -3079,14 +3279,14 @@ create_joker({ -- Protester
     end
 })
 
-create_joker({ -- Doodle
+bunc_define_joker({ -- Doodle
     name = 'Doodle', position = 44,
     vars = {{active = true}, {unlock = 10}},
     locked_vars = function(self, info_queue, card)
         return {vars = {self.config.extra.unlock, G.PROFILES[G.SETTINGS.profile].career_stats.c_wins}}
     end,
     rarity = 'Rare', cost = 10,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'win_custom' and (G.PROFILES[G.SETTINGS.profile].career_stats.c_wins + 1) >= self.config.extra.unlock then
@@ -3123,7 +3323,7 @@ create_joker({ -- Doodle
     end
 })
 
-create_joker({ -- Disproportionality
+bunc_define_joker({ -- Disproportionality
     name = 'Disproportionality', position = 45,
     vars = {{min = 0}, {max = 200}},
     custom_vars = function(self, info_queue, card)
@@ -3160,7 +3360,7 @@ create_joker({ -- Disproportionality
         }
     end,
     rarity = 'Common', cost = 4,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.joker_main then
@@ -3173,17 +3373,17 @@ create_joker({ -- Disproportionality
     end
 })
 
-create_joker({ -- Running Joke
+bunc_define_joker({ -- Running Joke
     name = 'Running Joke', position = 46,
     custom_vars = function(self, info_queue, card)
         info_queue[#info_queue+1] = G.P_CENTERS.e_negative
         info_queue[#info_queue+1] = G.P_CENTERS.j_joker
     end,
     rarity = 'Rare', cost = 8,
-    blueprint = false, eternal = true,
+    blueprint = false, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
-        if context.enter_shop then
+        if context.bunc_enter_shop then
             big_juice(card)
             local area = G.shop_jokers
             local shop_card = Card(area.T.x + area.T.w/2, area.T.y, G.CARD_W, G.CARD_H, nil, G.P_CENTERS['j_joker'],
@@ -3198,11 +3398,11 @@ create_joker({ -- Running Joke
     end
 })
 
-create_joker({ -- On Broadway
+bunc_define_joker({ -- On Broadway
     name = 'On Broadway', position = 47,
     vars = {{chips = 120}, {mult = 20}},
     rarity = 'Uncommon', cost = 6,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.joker_main and context.scoring_hand and context.poker_hands ~= nil and next(context.poker_hands['Straight']) then
@@ -3230,11 +3430,11 @@ create_joker({ -- On Broadway
     end
 })
 
-create_joker({ -- Rasta
+bunc_define_joker({ -- Rasta
     name = 'Rasta', position = 48,
     vars = {{mult = 12}},
     rarity = 'Common', cost = 5,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'win_custom' and not G.GAME.enhancements_used then
@@ -3273,11 +3473,11 @@ create_joker({ -- Rasta
     end
 })
 
-create_joker({ -- Critic
+bunc_define_joker({ -- Critic
     name = 'Critic', position = 49,
     vars = {{xmult = 2}, {fraction = 3}},
     rarity = 'Common', cost = 6,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.joker_main then
@@ -3295,27 +3495,29 @@ create_joker({ -- Critic
     end
 })
 
-create_joker({ -- Cellphone
+bunc_define_joker({ -- Cellphone
     name = 'Cellphone', position = 50,
     vars = {{active = true}, {cards_to_hand = {}}},
     rarity = 'Uncommon', cost = 8,
-    blueprint = false, eternal = true,
+    blueprint = false, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.first_hand_drawn then
             card.ability.extra.active = true
-            local eval = function() return G.GAME.current_round.hands_played == 0 and G.GAME.current_round.discards_used == 0 end
+            local eval = function() return card.ability.extra.active end
             juice_card_until(card, eval, true)
         end
         if context.joker_main and context.scoring_hand then
             card.ability.extra.cards_to_hand = context.scoring_hand
         end
-        if context.press_play and card.ability.extra.active and G.GAME.current_round.hands_played == 0 then
+        if context.bunc_press_play and card.ability.extra.active and G.GAME.current_round.hands_played == 0 then
             forced_message(G.localization.misc.dictionary.bunc_accepted, card, G.C.GREEN)
         end
         if context.after and G.GAME.current_round.hands_played == 0 then
             event({func = function ()
-                card.ability.extra.active = false
+                if G.GAME.current_round.hands_played > 0 then
+                    card.ability.extra.active = false
+                end
                 return true
             end})
         end
@@ -3339,11 +3541,11 @@ create_joker({ -- Cellphone
     end
 })
 
-create_joker({ -- Wino
+bunc_define_joker({ -- Wino
     name = 'Wino', position = 51,
     vars = {{chips = 12}},
     rarity = 'Common', cost = 5,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.individual and context.cardarea == G.play then
@@ -3360,7 +3562,7 @@ create_joker({ -- Wino
     end
 })
 
-create_joker({ -- Bounty Hunter
+bunc_define_joker({ -- Bounty Hunter
     name = 'Bounty Hunter', position = 52,
     vars = {{bonus = 1}, {mult = 0}, {unlock = -20}},
     locked_vars = function(self, info_queue, card)
@@ -3371,15 +3573,39 @@ create_joker({ -- Bounty Hunter
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'money' then
-            if G.GAME.dollars < to_big(self.config.extra.unlock) then
+            if to_big(G.GAME.dollars) < to_big(self.config.extra.unlock) then
                 unlock_card(self)
             end
         end
     end,
     calculate = function(self, card, context)
-        if context.get_money and not context.blueprint then
+        if context.bunc_pre_money_change and context.sign == 1 and not context.blueprint then
             card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.bonus
+            local new_mod = to_big(context.mod) - to_big(card.ability.extra.bonus)
+            if card.dissolve ~= nil then
+                return {
+                    bunc_new_dollars_mod = new_mod,
+                    message = localize("bunc_robbed"),
+                    colour = G.C.ORANGE,
+                }
+            else
+                return {
+                    bunc_new_dollars_mod = new_mod,
+                    message = localize("bunc_robbed"),
+                    colour = G.C.ORANGE,
+                    extra = {
+                        message = localize {
+                            type = 'variable',
+                            key = 'a_mult',
+                            vars = {card.ability.extra.mult}
+                        }
+                    }
+                }
+            end
         end
+        -- if context.get_money and not context.blueprint then
+        --     card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.bonus
+        -- end
         if context.joker_main and card.ability.extra.mult ~= 0 then
             return {
                 message = localize {
@@ -3394,27 +3620,68 @@ create_joker({ -- Bounty Hunter
     end
 })
 
-create_joker({ -- Mousetrap
+function create_UIBox_bunc_mousetrap_config()    
+    local t = create_UIBox_generic_options({ contents = {
+        {n=G.UIT.R, config={align = "cm", padding = 0.15, colour = G.C.CLEAR}, nodes={
+            {n=G.UIT.C, config={align = "cm", padding = 0.15}, nodes={
+                create_slider({label = G.localization.descriptions.Joker.j_bunc_mousetrap.name .. " (" .. G.localization.misc.dictionary.bunc_volume .. ")", w = 5, h = 0.4, ref_table = G.SETTINGS.SOUND, ref_value = 'bunc_mousetrap_volume', min = 0, max = 100}),
+            }}
+        }}
+    }})
+    return t
+end
+G.FUNCS.j_bunc_mousetrap_settings = function(e)
+	G.FUNCS.overlay_menu{
+		definition = create_UIBox_bunc_mousetrap_config(),
+        config = {offset = {x=0,y=10}}
+	}
+end
+bunc_define_joker({ -- Mousetrap
     name = 'Mousetrap', position = 53,
     vars = {{chips = 300}, {odds = 3}},
     custom_vars = function(self, info_queue, card)
-        local vars
-        if G.GAME and G.GAME.probabilities.normal then
-            vars = {card.ability.extra.chips, G.GAME.probabilities.normal, card.ability.extra.odds}
-        else
-            vars = {card.ability.extra.chips, 1, card.ability.extra.odds}
-        end
+        local vars = {card.ability.extra.chips, SMODS.get_probability_vars(card, 1, card.ability.extra.odds, 'bunc_mousetrap')}
         return {vars = vars}
     end,
     rarity = 'Uncommon', cost = 6,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
+        if (context.end_of_round or context.hand_drawn or context.after) and card.children.center.sprite_pos.y == 15 then
+            G.E_MANAGER:add_event(Event({
+                trigger = 'immediate',
+                func = function()
+                    card:juice_up(0.3, 0.3)
+                    local center = card.children.center
+                    center:set_sprite_pos({ x = 2, y = 5 })
+                    return true
+                end
+            }))
+        end
         if context.joker_main then
-            if pseudorandom('mousetrap'..G.SEED) < G.GAME.probabilities.normal / card.ability.extra.odds then
+            if SMODS.pseudorandom_probability(card, 'mousetrap'..G.SEED, 1, card.ability.extra.odds, 'bunc_mousetrap') then
                 if G.GAME.current_round.hands_left ~= 0 then ease_hands_played(-1) end
-                event({func = function() play_sound('bunc_mousetrap') return true end})
-                forced_message(G.localization.misc.dictionary.bunc_ouch, card, G.C.RED, true)
+                G.E_MANAGER:add_event(Event({
+                    trigger = 'immediate',
+                    func = function()
+                        local center = card.children.center
+                        center:set_sprite_pos({ x = 9, y = 15 })
+                        return true
+                    end
+                }))
+                if G.SETTINGS.SOUND.bunc_mousetrap_volume == 0 then
+                    return {
+                        message = G.localization.misc.dictionary.bunc_ouch,
+                        colour = G.C.RED,
+                    }
+                else
+                    return {
+                        message = G.localization.misc.dictionary.bunc_ouch,
+                        colour = G.C.RED,
+                        sound = "bunc_mousetrap",
+                        volume = G.SETTINGS.SOUND.bunc_mousetrap_volume / 100
+                    }
+                end
             else
                 return {
                     message = localize{type='variable', key='a_chips', vars={card.ability.extra.chips}},
@@ -3425,20 +3692,15 @@ create_joker({ -- Mousetrap
     end
 })
 
-create_joker({ -- The Joker
+bunc_define_joker({ -- The Joker
     name = 'The Joker', custom_atlas = 'bunco_jokers_the_joker', position = 1,
     vars = {{trash_list = {}}, {odds = 3}},
     custom_vars = function(self, info_queue, card)
-        local vars
-        if G.GAME and G.GAME.probabilities.normal then
-            vars = {G.GAME.probabilities.normal, card.ability.extra.odds}
-        else
-            vars = {1, card.ability.extra.odds}
-        end
+        local vars = {SMODS.get_probability_vars(card, 1, card.ability.extra.odds, "bunc_the_joker")}
         return {vars = vars}
     end,
     rarity = 'Rare', cost = 10,
-    blueprint = false, eternal = true,
+    blueprint = false, eternal = true, perishable = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'discover_amount' then
@@ -3453,7 +3715,7 @@ create_joker({ -- The Joker
                 card.ability.extra.trash_list = {}
                 for k, v in ipairs(context.scoring_hand) do
                     if v.config.center == G.P_CENTERS.c_base then
-                        if pseudorandom('the_joker'..G.SEED) < G.GAME.probabilities.normal / card.ability.extra.odds then
+                        if SMODS.pseudorandom_probability(card, 'the_joker'..G.SEED, 1, card.ability.extra.odds, 'bunc_the_joker') then
                             table.insert(card.ability.extra.trash_list, v)
                         end
                     end
@@ -3520,11 +3782,11 @@ create_joker({ -- The Joker
     end
 })
 
-create_joker({ -- Tangram
+bunc_define_joker({ -- Tangram
     name = 'Tangram', position = 54,
     vars = {{mult = 7}},
     rarity = 'Rare', cost = 7,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.individual and context.cardarea == G.play then
@@ -3547,10 +3809,10 @@ create_joker({ -- Tangram
     end
 })
 
-create_joker({ -- Domino
+bunc_define_joker({ -- Domino
     name = 'Domino', position = 55,
     rarity = 'Rare', cost = 12,
-    blueprint = false, eternal = true,
+    blueprint = false, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if (context.buying_card or context.getting_booster_card) and context.pre_cardarea and not context.blueprint then
@@ -3593,18 +3855,35 @@ create_joker({ -- Domino
 
             local card_pos = context.pre_card_pos
             if card_pos then
-                if context.pre_card_left and context.pre_card_left.area ~= G.consumeables then
-                    if G.FUNCS.check_for_buy_space(context.pre_card_left) then
-                        acquire(context.pre_card_left)
+                -- Aquire left then right card
+
+                local left_card = context.pre_card_left
+                local right_card = context.pre_card_right
+                if left_card and left_card.area ~= G.consumeables then
+                    if G.FUNCS.check_for_buy_space(left_card) and 
+                        (left_card.ability.consumeable or 
+                        left_card.ability.set == 'Enhanced' or 
+                        left_card.ability.set == 'Default' or 
+                        left_card.ability.set == 'Joker')
+                    then
+                        acquire(left_card)
+                        big_juice(card)
                     end
-                    big_juice(card)
                 end
-                if context.pre_card_right and context.pre_card_right.area ~= G.consumeables then
-                    if G.FUNCS.check_for_buy_space(context.pre_card_right) then
-                        acquire(context.pre_card_right)
+                if right_card and right_card.area ~= G.consumeables then
+                    if G.FUNCS.check_for_buy_space(right_card) and 
+                        (right_card.ability.consumeable or 
+                        right_card.ability.set == 'Enhanced' or 
+                        right_card.ability.set == 'Default' or 
+                        right_card.ability.set == 'Joker')
+                    then
+                        acquire(right_card)
+                        big_juice(card)
                     end
-                    big_juice(card)
                 end
+
+                -- If all cards from booster have been aquired then close booster
+                -- by setting choices to zero
                 if G.STATE == G.STATES.STANDARD_PACK
                 or G.STATE == G.STATES.BUFFOON_PACK
                 or G.STATE == G.STATES.TAROT_PACK
@@ -3633,7 +3912,7 @@ create_joker({ -- Domino
     end
 })
 
-create_joker({ -- Glue Gun
+bunc_define_joker({ -- Glue Gun
     name = 'Glue Gun', position = 56,
     vars = {{amount = 4}},
     custom_vars = function (self, info_queue, card)
@@ -3651,7 +3930,7 @@ create_joker({ -- Glue Gun
         return {vars = {card.ability.extra.amount}, main_end = main_end}
     end,
     rarity = 'Uncommon', cost = 4,
-    blueprint = false, eternal = false,
+    blueprint = false, eternal = false, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.selling_self and not context.blueprint then
@@ -3672,13 +3951,13 @@ create_joker({ -- Glue Gun
     end
 })
 
-create_joker({ -- Taped
+bunc_define_joker({ -- Taped
     name = 'Taped', custom_atlas = 'bunco_jokers_taped', position = 1,
     custom_vars = function (self, info_queue, card)
         info_queue[#info_queue+1] = {set = 'Other', key = 'bunc_linked_group'}
     end,
     rarity = 'Rare', cost = 6,
-    blueprint = false, eternal = true,
+    blueprint = false, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.before
@@ -3726,7 +4005,7 @@ create_joker({ -- Taped
     end
 })
 
-create_joker({ -- Rubber Band Ball
+bunc_define_joker({ -- Rubber Band Ball
     name = 'Rubber Band Ball', position = 57,
     vars = {{bonus = 1}, {xmult = 1}},
     custom_vars = function (self, info_queue, card)
@@ -3759,7 +4038,7 @@ create_joker({ -- Rubber Band Ball
     end,
 })
 
-create_joker({ -- Headache
+bunc_define_joker({ -- Headache
     name = 'Headache', custom_atlas = 'bunco_jokers_headache', position = 1,
     vars = {{amount = 4}, {destroyed = 0}},
     custom_vars = function (self, info_queue, card)
@@ -3768,7 +4047,7 @@ create_joker({ -- Headache
         return {vars = {card.ability.extra.amount, card.ability.extra.destroyed}}
     end,
     rarity = 'Uncommon', cost = 4,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.remove_playing_cards then
@@ -3782,7 +4061,7 @@ create_joker({ -- Headache
     end,
     set_sprites = function(self, card, front)
         if card.config.center.discovered or card.bypass_discovery_center then
-            card.children.floating_sprite = Sprite(card.T.x, card.T.y, card.T.w, card.T.h, G.ASSET_ATLAS['bunc_bunco_jokers_border'], coordinate(1))
+            card.children.floating_sprite = Sprite(card.T.x, card.T.y, card.T.w, card.T.h, G.ASSET_ATLAS['bunc_bunco_jokers_border'], coordinate_from_atlas_index(1))
             card.children.floating_sprite.states.hover = card.states.hover
             card.children.floating_sprite.states.click = card.states.click
             card.children.floating_sprite.states.drag = card.states.drag
@@ -3825,9 +4104,9 @@ create_joker({ -- Headache
     }
 })
 
-create_joker({ -- Games Collector
+bunc_define_joker({ -- Games Collector
     name = 'Games Collector', position = 58,
-    vars = {{bonus = 10}, {chips = 0}},
+    vars = {{bonus = 10}, {chips = 0}, {drawn_this_round = {}}},
     custom_vars = function (self, info_queue, card)
         info_queue[#info_queue+1] = {set = 'Other', key = 'bunc_linked_group'}
         return {vars = {card.ability.extra.bonus, card.ability.extra.chips}}
@@ -3838,17 +4117,28 @@ create_joker({ -- Games Collector
     calculate = function(self, card, context)
 
         -- Note:
-        -- Due the way this is coded, it will only trigger
+        -- Due to the way this is coded, it will only trigger
         -- upon the group breaking the hand limit.
         -- That means that if you managed to draw a group
         -- "naturally" (so it didn't request other cards)
         -- the Joker won't recieve its bonus
 
-        if context.groups_drawn and not context.blueprint then
-            for _, group in ipairs(context.groups_drawn) do
-                card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.bonus
+        if context.bunc_groups_drawn and not context.blueprint then
+            local upgrade = false
+            for _, group_id in ipairs(context.bunc_groups_drawn) do
+                if not card.ability.extra.drawn_this_round[group_id] then
+                    card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.bonus
+                    card.ability.extra.drawn_this_round[group_id] = true
+                    upgrade = true
+                end
             end
-            forced_message(localize('k_upgrade_ex'), card, G.C.CHIPS)
+            if upgrade then
+                return {
+                    message = localize('k_upgrade_ex'),
+                    colour = G.C.CHIPS
+                }
+            end
+            -- forced_message(localize('k_upgrade_ex'), card, G.C.CHIPS)
         end
         if context.joker_main then
             if card.ability.extra.chips ~= 0 then
@@ -3863,13 +4153,16 @@ create_joker({ -- Games Collector
                 }
             end
         end
+        if context.end_of_round then
+            card.ability.extra.drawn_this_round = {}
+        end
     end,
     custom_in_pool = function()
         return G.GAME.last_card_group
     end
 })
 
-create_joker({ -- Jumper
+bunc_define_joker({ -- Jumper
     name = 'Jumper', position = 59,
     vars = {{bonus = 8}, {chips = 0}},
     rarity = 'Common', cost = 5,
@@ -3902,72 +4195,97 @@ create_joker({ -- Jumper
     end
 })
 
-create_joker({ -- Stylophone
+function create_UIBox_bunc_stylophone_config()    
+    local t = create_UIBox_generic_options({ contents = {
+        {n=G.UIT.R, config={align = "cm", padding = 0.15, colour = G.C.CLEAR}, nodes={
+            {n=G.UIT.C, config={align = "cm", padding = 0.15}, nodes={
+                create_slider({label = G.localization.descriptions.Joker.j_bunc_stylophone.name .. " (" .. G.localization.misc.dictionary.bunc_volume .. ")", w = 5, h = 0.4, ref_table = G.SETTINGS.SOUND, ref_value = 'bunc_stylophone_volume', min = 0, max = 100}),
+            }}
+        }}
+    }})
+    return t
+end
+G.FUNCS.j_bunc_stylophone_settings = function(e)
+	G.FUNCS.overlay_menu{
+		definition = create_UIBox_bunc_stylophone_config(),
+        config = {offset = {x=0,y=10}}
+	}
+end
+bunc_define_joker({ -- Stylophone
     name = 'Stylophone', position = 60,
     vars = {{x = 0.3}},
     rarity = 'Uncommon', cost = 5,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
 
         local function play_stylophone(other_card)
+            if G.SETTINGS.SOUND.bunc_stylophone_volume == 0 then
+                return
+            end
             local instrument = 'bunc_stone'
 
             local function calculate_pitch(pitch)
                 return 2^(pitch / 12)
             end
 
-            if other_card.config.center ~= G.P_CENTERS.m_stone then
-                if other_card.base.suit == 'Spades' then
-                    instrument = 'bunc_spade'
-                elseif other_card.base.suit == 'Clubs' then
-                    instrument = 'bunc_club'
-                elseif other_card.base.suit == 'Hearts' then
-                    instrument = 'bunc_heart'
-                elseif other_card.base.suit == 'Diamonds' then
-                    instrument = 'bunc_diamond'
-                elseif other_card.base.suit == 'bunc_Fleurons' then
-                    instrument = 'bunc_fleuron'
-                elseif other_card.base.suit == 'bunc_Halberds' then
-                    instrument = 'bunc_halberd'
-                end
-                event({trigger = 'after', func = function() play_sound(instrument, calculate_pitch(other_card:get_id()), 2.0) return true end})
-            else
+            if SMODS.has_no_rank(other_card) then
                 event({trigger = 'after', func = function() play_sound(instrument, 1.0, 2.0) return true end})
+            else
+                -- For a theoretical suitless card with a rank
+                if not SMODS.has_no_suit(other_card) then
+                    if other_card.base.suit == 'Spades' then
+                        instrument = 'bunc_spade'
+                    elseif other_card.base.suit == 'Clubs' then
+                        instrument = 'bunc_club'
+                    elseif other_card.base.suit == 'Hearts' then
+                        instrument = 'bunc_heart'
+                    elseif other_card.base.suit == 'Diamonds' then
+                        instrument = 'bunc_diamond'
+                    elseif other_card.base.suit == 'bunc_Fleurons' then
+                        instrument = 'bunc_fleuron'
+                    elseif other_card.base.suit == 'bunc_Halberds' then
+                        instrument = 'bunc_halberd'
+                    elseif other_card.base.suit == 'paperback_Stars' then
+                        instrument = 'bunc_paperback_star'
+                    elseif other_card.base.suit == 'paperback_Crowns' then
+                        instrument = 'bunc_paperback_crown'
+                    elseif other_card.base.suit == 'minty_3s' then
+                        instrument = 'bunc_minty_3'
+                    end
+                end
+                event({trigger = 'after', func = function() play_sound(instrument, calculate_pitch(other_card:get_id()), 2.0 * G.SETTINGS.SOUND.bunc_stylophone_volume / 100) return true end})
             end
         end
 
         if context.individual and context.cardarea == G.play then
-            play_stylophone(context.other_card)
-            if context.other_card.config.center ~= G.P_CENTERS.m_stone then
+            if G.SETTINGS.SOUND.bunc_stylophone_volume > 0 then
+                play_stylophone(context.other_card)
+            end
+            if not SMODS.has_no_rank(context.other_card) then
                 return {
                     mult = context.other_card:get_id() * card.ability.extra.x,
                     card = card
                 }
             end
         end
-        if context.click and context.other_card.area == G.hand then
+        if context.click and context.other_card.area == G.hand and G.SETTINGS.SOUND.bunc_stylophone_volume > 0 then
             extra_juice(card)
             play_stylophone(context.other_card)
         end
     end
 })
 
-create_joker({ -- Kite Experiment
+bunc_define_joker({ -- Kite Experiment
     name = 'Kite Experiment', position = 61,
     vars = {{odds = 2}, {cards_rescored = {}}},
     custom_vars = function(self, info_queue, card)
-        local vars
         info_queue[#info_queue+1] = G.P_CENTERS.m_bunc_copper
-        if G.GAME and G.GAME.probabilities.normal then
-            vars = {G.GAME.probabilities.normal, card.ability.extra.odds}
-        else
-            vars = {1, card.ability.extra.odds}
-        end
+        local vars = {SMODS.get_probability_vars(card, 1, card.ability.extra.odds, "bunc_kite_experiment")}
         return {vars = vars}
     end,
     rarity = 'Uncommon', cost = 6,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     custom_in_pool = function()
         local condition = false
@@ -3988,7 +4306,7 @@ create_joker({ -- Kite Experiment
                 end
             end
 
-            if condition and pseudorandom('kite_experiment'..G.SEED) < G.GAME.probabilities.normal / card.ability.extra.odds then
+            if condition and SMODS.pseudorandom_probability(card, 'kite_experiment'..G.SEED, 1, card.ability.extra.odds, 'bunc_kite_experiment') then
                 context.rescore_cards[1].config.copper_rescored_times = context.rescore_cards[1].config.copper_rescored_times - 1
                 table.insert(card.ability.extra.cards_rescored, context.rescore_cards[1])
                 return {
@@ -4003,7 +4321,7 @@ create_joker({ -- Kite Experiment
     end
 })
 
-create_joker({ -- Robot
+bunc_define_joker({ -- Robot
     name = 'Robot', position = 62,
     vars = {{bonus = 3}, {mult = 0}},
     custom_vars = function(self, info_queue, card)
@@ -4048,7 +4366,7 @@ create_joker({ -- Robot
     end
 })
 
-create_joker({ -- Hardtack
+bunc_define_joker({ -- Hardtack
     name = 'Hardtack', position = 63,
     custom_vars = function(self, info_queue, card)
         info_queue[#info_queue+1] = G.P_CENTERS.m_bunc_cracker
@@ -4067,7 +4385,7 @@ create_joker({ -- Hardtack
     end
 })
 
-create_joker({ -- Pica
+bunc_define_joker({ -- Pica
     name = 'Pica', position = 64,
     custom_vars = function(self, info_queue, card)
         info_queue[#info_queue+1] = G.P_CENTERS.m_bunc_cracker
@@ -4088,65 +4406,60 @@ create_joker({ -- Pica
 
 -- Exotic Jokers
 
-create_joker({ -- Zealous
+bunc_define_joker({ -- Zealous
     type = 'Exotic',
     name = 'Zealous', position = 1,
     custom_vars = function(self, info_queue, card) return {vars = {card.ability.t_mult}} end,
     custom_config = {t_mult = 10, type = 'bunc_Spectrum'},
     rarity = 'Common', cost = 3,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true
 })
 
-create_joker({ -- Lurid
+bunc_define_joker({ -- Lurid
     type = 'Exotic',
     name = 'Lurid', position = 2,
     custom_vars = function(self, info_queue, card) return {vars = {card.ability.t_chips}} end,
     custom_config = {t_chips = 80, type = 'bunc_Spectrum'},
     rarity = 'Common', cost = 3,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true
 })
 
-create_joker({ -- Envious
+bunc_define_joker({ -- Envious
     type = 'Exotic',
     name = 'Envious', position = 3,
     vars = {{s_mult = 6}, {suit = 'bunc_Fleurons'}},
     rarity = 'Common', cost = 5,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     effect = 'Suit Mult'
 })
 
-create_joker({ -- Proud
+bunc_define_joker({ -- Proud
     type = 'Exotic',
     name = 'Proud', position = 4,
     vars = {{s_mult = 6}, {suit = 'bunc_Halberds'}},
     rarity = 'Common', cost = 5,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     effect = 'Suit Mult'
 })
 
-create_joker({ -- Wishalloy
+bunc_define_joker({ -- Wishalloy
     type = 'Exotic',
     name = 'Wishalloy', position = 5,
     vars = {{odds = 7}},
     custom_vars = function(self, info_queue, card)
-        local vars
-        if G.GAME and G.GAME.probabilities.normal then
-            vars = {G.GAME.probabilities.normal, card.ability.extra.odds}
-        else
-            vars = {1, card.ability.extra.odds}
-        end
+        local vars = {SMODS.get_probability_vars(card, 1, card.ability.extra.odds, "bunc_wishalloy")}
         return {vars = vars}
     end,
     rarity = 'Uncommon', cost = 7,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.individual and context.cardarea == G.play and context.other_card:is_suit('bunc_Fleurons') then
-            if pseudorandom('wishalloy'..G.SEED) < G.GAME.probabilities.normal / card.ability.extra.odds then
+            if SMODS.pseudorandom_probability(card, 'wishalloy'..G.SEED, 1, card.ability.extra.odds, 'bunc_wishalloy') then
                 local value = context.other_card:get_chip_bonus()
                 ease_dollars(value)
                 forced_message('$'..value, context.other_card, G.C.MONEY, true, card)
@@ -4155,12 +4468,12 @@ create_joker({ -- Wishalloy
     end
 })
 
-create_joker({ -- Unobtanium
+bunc_define_joker({ -- Unobtanium
     type = 'Exotic',
     name = 'Unobtanium', position = 6,
     vars = {{chips = 30}, {mult = 6}},
     rarity = 'Uncommon', cost = 7,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.individual and context.cardarea == G.play and context.other_card:is_suit('bunc_Halberds') then
@@ -4178,17 +4491,17 @@ create_joker({ -- Unobtanium
     end
 })
 
-create_joker({ -- Dynasty
+bunc_define_joker({ -- Dynasty
     type = 'Exotic',
     name = 'Dynasty', position = 7,
     custom_vars = function(self, info_queue, card) return {vars = {card.ability.x_mult}} end,
     custom_config = {Xmult = 5, type = 'bunc_Spectrum'},
     rarity = 'Rare', cost = 8,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true
 })
 
-create_joker({ -- Magic Wand
+bunc_define_joker({ -- Magic Wand
     type = 'Exotic',
     name = 'Magic Wand', position = 8,
     vars = {{bonus = 3}, {mult = 0}},
@@ -4217,22 +4530,20 @@ create_joker({ -- Magic Wand
     end
 })
 
-create_joker({ -- Starfruit
+bunc_define_joker({ -- Starfruit
     type = 'Exotic',
     name = 'Starfruit', position = 9,
     vars = {{odds = 4}},
     custom_vars = function(self, info_queue, card)
-        local vars
-        if G.GAME and G.GAME.probabilities.normal then
-            vars = {G.GAME.probabilities.normal, card.ability.extra.odds}
-        else
-            vars = {1, card.ability.extra.odds}
-        end
+        local vars = {SMODS.get_probability_vars(card, 1, card.ability.extra.odds, "bunc_starfruit")}
         return {vars = vars}
     end,
     rarity = 'Uncommon', cost = 5,
-    blueprint = false, eternal = false,
+    blueprint = false, eternal = false, perishable = true,
     unlocked = true,
+    pools = {
+        Food = true
+    },
     calculate = function(self, card, context)
         if context.before and context.poker_hands ~= nil and next(context.poker_hands['bunc_Spectrum']) and not context.blueprint then
             forced_message(localize('k_level_up_ex'), card, G.C.RED, true)
@@ -4240,7 +4551,7 @@ create_joker({ -- Starfruit
         end
 
         if context.end_of_round and not context.other_card and not context.blueprint then
-            if pseudorandom('starfruit'..G.SEED) < G.GAME.probabilities.normal / card.ability.extra.odds then
+            if SMODS.pseudorandom_probability(card, 'starfruit'..G.SEED, 1, card.ability.extra.odds, 'bunc_starfruit') then
 
                 forced_message(localize('k_eaten_ex'), card, G.C.FILTER, true)
                 card:start_dissolve()
@@ -4255,12 +4566,15 @@ create_joker({ -- Starfruit
     end
 })
 
-create_joker({ -- Fondue
+bunc_define_joker({ -- Fondue
     type = 'Exotic',
     name = 'Fondue', position = 10,
     rarity = 'Rare', cost = 8,
-    blueprint = false, eternal = true,
+    blueprint = false, eternal = true, perishable = true,
     unlocked = true,
+    pools = {
+        Food = true
+    },
     calculate = function(self, card, context)
         if context.after and G.GAME.current_round.hands_played == 0 and context.scoring_hand and not context.blueprint then
             enable_exotics()
@@ -4282,23 +4596,47 @@ create_joker({ -- Fondue
     end
 })
 
-create_joker({ -- Myopia
+BUNCOMOD.funcs.myopia_check = function (card, suit)
+    if not next(SMODS.find_card('j_bunc_myopia')) then
+        return false
+    end
+    if card.base.suit == 'Spades' and ((card.base.suit == 'Spades') == (suit == 'Spades' or suit == 'bunc_Halberds')) then
+        return true
+    end
+    if card.base.suit == 'Clubs' and ((card.base.suit == 'Clubs') == (suit == 'Clubs' or suit == 'bunc_Halberds')) then
+        return true
+    end
+    return false
+end
+bunc_define_joker({ -- Myopia
     type = 'Exotic',
     name = 'Myopia', position = 11,
     rarity = 'Uncommon', cost = 8,
-    blueprint = false, eternal = true,
+    blueprint = false, eternal = true, perishable = true,
     unlocked = true
 })
 
-create_joker({ -- Astigmatism
+BUNCOMOD.funcs.astigmatism_check = function (card, suit)
+    if not next(SMODS.find_card('j_bunc_myopia')) then
+        return false
+    end
+    if card.base.suit == 'Hearts' and (card.base.suit == 'Hearts') == (suit == 'Hearts' or suit == 'bunc_Fleurons') then
+        return true
+    end
+    if card.base.suit == 'Diamonds' and (card.base.suit == 'Diamonds') == (suit == 'Diamonds' or suit == 'bunc_Fleurons') then
+        return true
+    end
+    return false
+end
+bunc_define_joker({ -- Astigmatism
     type = 'Exotic',
     name = 'Astigmatism', position = 12,
     rarity = 'Uncommon', cost = 8,
-    blueprint = false, eternal = true,
+    blueprint = false, eternal = true, perishable = true,
     unlocked = true
 })
 
-create_joker({ -- ROYGBIV
+bunc_define_joker({ -- ROYGBIV
     type = 'Exotic',
     name = 'ROYGBIV', position = 13,
     vars = {{odds = 7}},
@@ -4306,20 +4644,15 @@ create_joker({ -- ROYGBIV
 
         info_queue[#info_queue+1] = G.P_CENTERS.e_polychrome
 
-        local vars
-        if G.GAME and G.GAME.probabilities.normal then
-            vars = {G.GAME.probabilities.normal, card.ability.extra.odds}
-        else
-            vars = {1, card.ability.extra.odds}
-        end
+        local vars = {SMODS.get_probability_vars(card, 1, card.ability.extra.odds, "bunc_roygbiv")}
         return {vars = vars}
     end,
     rarity = 'Uncommon', cost = 8,
-    blueprint = true, eternal = true,
+    blueprint = true, eternal = true, perishable = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.before and context.poker_hands ~= nil and next(context.poker_hands['bunc_Spectrum']) and context.scoring_hand and not context.blueprint then
-            if pseudorandom('roygbiv'..G.SEED) < G.GAME.probabilities.normal / card.ability.extra.odds then
+            if SMODS.pseudorandom_probability(card, 'roygbiv'..G.SEED, 1, card.ability.extra.odds, 'bunc_roygbiv') then
                 if context.scoring_hand then
 
                     local cards = {}
@@ -4345,7 +4678,7 @@ create_joker({ -- ROYGBIV
 
 -- Legendary Jokers
 
-create_joker({ -- Rigoletto
+bunc_define_joker({ -- Rigoletto
     type = 'Exotic',
     name = 'Rigoletto', position = 1,
     vars = {{bonus = 0.2}, {xmult = 1}, {tally = 0}},
@@ -4387,112 +4720,16 @@ create_joker({ -- Rigoletto
 
 -- Tarots
 
-local thoth_unlock_amount = 100
-
-function create_UIBox_thoth_tarots_unlock(card_centers)
-    G.your_collection = CardArea(
-        0,
-        0,
-        2.85 * G.CARD_W,
-        0.75 * G.CARD_H,
-        {card_limit = 4, type = 'title', highlight_limit = 0}
-    )
-
-    for i, card_center in ipairs(card_centers) do
-        local card = Card(G.your_collection.T.x + G.your_collection.T.w/2 - G.CARD_W/2, G.your_collection.T.y, G.CARD_W, G.CARD_H, G.P_CARDS.empty, card_center, {bypass_discovery_center = true, bypass_discovery_ui = true})
-        card.states.click.can = false
-        card.states.visible = false
-        G.your_collection:emplace(card)
-        event({
-            timer = 'REAL',
-            blockable = false,
-            blocking = false,
-            trigger = 'after',
-            delay = 0.1 * i,
-            func = (function() 
-                card:start_materialize({G.C.SECONDARY_SET.Tarot})
-            return true end)
-        })
-    end
-
-    local criteria = {}
-
-    localize{
-        type = 'descriptions',
-        key = 'deck_locked_discover',
-        set = "Other",
-        nodes = criteria,
-        vars = {thoth_unlock_amount}
-    }
-
-    local criteria_cols = {}
-    for k, v in ipairs(criteria) do
-        if k > 1 then criteria_cols[#criteria_cols+1] = {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={}} end
-        criteria_cols[#criteria_cols+1] = {n=G.UIT.R, config={align = "cm", padding = 0}, nodes=v}
-    end
-
-    local t = create_UIBox_generic_options({padding = 0,back_label = localize('b_continue'), no_pip = true, snap_back = true, back_func = 'continue_unlock', minw = 4.5, contents = {
-        {n=G.UIT.R, config={align = "cm", padding = 0}, nodes={
-            {n=G.UIT.R, config={align = "cm", padding = 0.1}, nodes={
-                {n=G.UIT.R, config={align = "cm", padding = 0.2}, nodes={
-                    {n=G.UIT.O, config={object = DynaText({string = {{string = localize('bunc_thoth_tarots'), suffix = ' '..localize('k_unlocked_ex'), outer_colour = G.C.UI.TEXT_LIGHT}}, colours = {G.C.SECONDARY_SET.Tarot},shadow = true, rotate = true, float = true, scale = 0.7, pop_in = 0.1})}}
-                }},
-                {n=G.UIT.R, config={align = "cm", padding = 0.3, draw_layer = 1}, nodes={
-                    {n=G.UIT.O, config={object = G.your_collection}}
-                }},
-                {n=G.UIT.R, config={align = "cm", padding = 0, draw_layer = 2}, nodes={
-                    {n=G.UIT.R, config={align = "cm", padding = 0.0}, nodes={
-                        {n=G.UIT.R, config={align = "cm", padding = 0.05, emboss = 0.05, colour = G.C.WHITE, r = 0.1}, nodes={
-                            {n=G.UIT.R, config={align = "cm", padding = 0.05, emboss = 0.05, colour = G.C.WHITE, r = 0.1}, nodes={
-                                {n=G.UIT.R, config={align = "cm", padding = 0}, nodes=criteria_cols}
-                            }}
-                        }}
-                    }}
-                }}
-            }}
-        }}
-        }})
-    return t
-end
-
--- SMODS.Keybind{
---     key_pressed = 'l',
---     event = 'pressed',
---     action = function(self)
---         G.E_MANAGER:add_event(Event({
---             trigger = 'immediate',
---             no_delete = true,
---             func = (function()
---                 if not G.OVERLAY_MENU then 
---                     G.SETTINGS.paused = true
---                     G.FUNCS.overlay_menu{
---                         definition = create_UIBox_thoth_tarots_unlock({
---                             G.P_CENTERS['c_bunc_adjustment'],
---                             G.P_CENTERS['c_bunc_art'],
---                             G.P_CENTERS['c_bunc_universe'],
---                             G.P_CENTERS['c_bunc_lust']
---                         }),
---                     }
---                     play_sound('foil1', 0.7, 0.3)
---                     play_sound('gong', 1.4, 0.15)
---                     return true
---                 end
---             end)
---         }), 'unlock')
---     end
--- }
-
 SMODS.Atlas({key = 'bunco_tarots', path = 'Consumables/Tarots.png', px = 71, py = 95})
 SMODS.Atlas({key = 'bunco_tarots_exotic', path = 'Consumables/TarotsExotic.png', px = 71, py = 95})
 
 SMODS.Consumable{ -- Adjustment
     set = 'Tarot', atlas = 'bunco_tarots',
     key = 'adjustment',
-    --unlocked = false,
 
     effect = 'Enhance',
     config = {mod_conv = 'm_bunc_cracker', max_highlighted = 2},
-    pos = coordinate(1),
+    pos = coordinate_from_atlas_index(1),
 
     set_card_type_badge = function(self, card, badges)
         badges[1] = create_badge(G.localization.misc.dictionary.bunc_thoth_tarot, get_type_colour(self or card.config, card), nil, 1.2)
@@ -4502,19 +4739,15 @@ SMODS.Consumable{ -- Adjustment
         info_queue[#info_queue+1] = G.P_CENTERS.m_bunc_cracker
         return {vars = {self.config.max_highlighted, localize{type = 'name_text', set = 'Enhanced', key = self.config.mod_conv}}}
     end,
-    locked_loc_vars = function(self, info_queue, card)
-        return {vars = {thoth_unlock_amount}}
-    end
 }
 
 SMODS.Consumable{ -- The Art
     set = 'Tarot', atlas = 'bunco_tarots',
     key = 'art',
-    --unlocked = false,
 
     effect = 'Enhance',
     config = {mod_conv = 'm_bunc_copper', max_highlighted = 2},
-    pos = coordinate(2),
+    pos = coordinate_from_atlas_index(2),
 
     set_card_type_badge = function(self, card, badges)
         badges[1] = create_badge(G.localization.misc.dictionary.bunc_thoth_tarot, get_type_colour(self or card.config, card), nil, 1.2)
@@ -4524,18 +4757,14 @@ SMODS.Consumable{ -- The Art
         info_queue[#info_queue+1] = G.P_CENTERS.m_bunc_copper
         return {vars = {self.config.max_highlighted, localize{type = 'name_text', set = 'Enhanced', key = self.config.mod_conv}}} 
     end,
-    locked_loc_vars = function(self, info_queue, card)
-        return {vars = {thoth_unlock_amount}}
-    end
 }
 
 SMODS.Consumable{ -- The Universe
     set = 'Tarot', atlas = 'bunco_tarots',
     key = 'universe',
-    --unlocked = false,
 
     config = {max_highlighted = 3},
-    pos = coordinate(3),
+    pos = coordinate_from_atlas_index(3),
 
     set_card_type_badge = function(self, card, badges)
         badges[1] = create_badge(G.localization.misc.dictionary.bunc_thoth_tarot, get_type_colour(self or card.config, card), nil, 1.2)
@@ -4543,9 +4772,6 @@ SMODS.Consumable{ -- The Universe
 
     loc_vars = function(self, info_queue)
         return {vars = {self.config.max_highlighted}}
-    end,
-    locked_loc_vars = function(self, info_queue, card)
-        return {vars = {thoth_unlock_amount}}
     end,
 
     can_use = function(self, card)
@@ -4594,10 +4820,9 @@ SMODS.Consumable{ -- The Universe
 SMODS.Consumable{ -- Lust
     set = 'Tarot', atlas = 'bunco_tarots',
     key = 'lust',
-    --unlocked = false,
 
     config = {bonus = 1, limit = 52},
-    pos = coordinate(4),
+    pos = coordinate_from_atlas_index(4),
 
     set_card_type_badge = function(self, card, badges)
         badges[1] = create_badge(G.localization.misc.dictionary.bunc_thoth_tarot, get_type_colour(self or card.config, card), nil, 1.2)
@@ -4609,9 +4834,6 @@ SMODS.Consumable{ -- Lust
             reward = #G.hand.cards * self.config.bonus
         end
         return {vars = {self.config.bonus, self.config.limit, (reward <= self.config.limit) and reward or self.config.limit}}
-    end,
-    locked_loc_vars = function(self, info_queue, card)
-        return {vars = {thoth_unlock_amount}}
     end,
 
     can_use = function(self, card)
@@ -4634,7 +4856,7 @@ SMODS.Consumable{ -- The Sky
     end,
 
     config = {max_highlighted = 3, suit_conv = 'bunc_Fleurons'},
-    pos = coordinate(1),
+    pos = coordinate_from_atlas_index(1),
 
     loc_vars = function(self) return {vars = {self.config.max_highlighted}} end,
 
@@ -4676,7 +4898,7 @@ SMODS.Consumable{ -- The Abyss
     end,
 
     config = {max_highlighted = 3, suit_conv = 'bunc_Halberds'},
-    pos = coordinate(2),
+    pos = coordinate_from_atlas_index(2),
 
     loc_vars = function(self) return {vars = {self.config.max_highlighted}} end,
 
@@ -4722,7 +4944,7 @@ SMODS.Consumable{ -- Quaoar
     end,
 
     config = {hand_type = 'bunc_Spectrum', softlock = true},
-    pos = coordinate(1),
+    pos = coordinate_from_atlas_index(1),
 
     generate_ui = 0,
     process_loc_text = function(self)
@@ -4741,7 +4963,7 @@ SMODS.Consumable{ -- Haumea
     end,
 
     config = {hand_type = 'bunc_Straight Spectrum', softlock = true},
-    pos = coordinate(2),
+    pos = coordinate_from_atlas_index(2),
 
     generate_ui = 0,
     process_loc_text = function(self)
@@ -4760,7 +4982,7 @@ SMODS.Consumable{ -- Sedna
     end,
 
     config = {hand_type = 'bunc_Spectrum House', softlock = true},
-    pos = coordinate(3),
+    pos = coordinate_from_atlas_index(3),
 
     generate_ui = 0,
     process_loc_text = function(self)
@@ -4779,7 +5001,7 @@ SMODS.Consumable{ -- Makemake
     end,
 
     config = {hand_type = 'bunc_Spectrum Five', softlock = true},
-    pos = coordinate(4),
+    pos = coordinate_from_atlas_index(4),
 
     generate_ui = 0,
     process_loc_text = function(self)
@@ -4799,7 +5021,7 @@ SMODS.Consumable{ -- Cleanse
     key = 'cleanse',
 
     config = {max_highlighted = 3},
-    pos = coordinate(1),
+    pos = coordinate_from_atlas_index(1),
 
     loc_vars = function(self, info_queue)
         info_queue[#info_queue+1] = G.P_CENTERS.e_bunc_fluorescent
@@ -4876,15 +5098,7 @@ function link_cards(cards, source, ignore_groups)
 
     G.PROFILES[G.SETTINGS.profile].cards_linked = (G.PROFILES[G.SETTINGS.profile].cards_linked or 0) + 1
     if G.PROFILES[G.SETTINGS.profile].cards_linked then
-        local locked_card
-
-        for i = 1, #G.P_LOCKED do
-            locked_card = G.P_LOCKED[i]
-
-            if not locked_card.unlocked and locked_card.check_for_unlock and type(locked_card.check_for_unlock) == 'function' then
-                locked_card:check_for_unlock({type = 'link_cards', links_total = G.PROFILES[G.SETTINGS.profile].cards_linked})
-            end
-        end
+        check_for_unlock({type = 'link_cards', links_total = G.PROFILES[G.SETTINGS.profile].cards_linked})
     end
 end
 
@@ -4905,90 +5119,51 @@ SMODS.DrawStep({
     end
 })
 
--- Pseudoinjections for Polyminoes
-
-local original_draw_from_deck_to_hand = G.FUNCS.draw_from_deck_to_hand
-G.FUNCS.draw_from_deck_to_hand = function(e)
-    original_draw_from_deck_to_hand(e)
-
-    event({delay = 0.0, trigger = 'before', func = function()
-
-        local groups = {}
-        local cards_from_groups = {}
-
-        -- Check for linked cards in the G.hand
-
-        for i = 1, #G.hand.cards do
-            local card = G.hand.cards[i]
-            if card.ability.group then
-                local can_insert = true
-
-                for _, group in ipairs(groups) do
-                    if group.id == card.ability.group.id then
-                        can_insert = false
-                    end
-                end
-
-                if can_insert then
-                    table.insert(groups, card.ability.group)
-                end
-            end
-        end
-
-        local m = 1
-        for _, group in ipairs(groups) do
-
+CardArea.bunc_original_cardarea_emplace = CardArea.emplace
+function CardArea:emplace(card, location, stay_flipped)
+    local ret = self:bunc_original_cardarea_emplace(card, location, stay_flipped)
+    if self == G.hand and card.ability.group and card.ability.group.id then
+        event({trigger = 'immediate', func = function()
             local n = 0
             while n < #G.deck.cards do
-                local card = G.deck.cards[#G.deck.cards - n]
+                local other_card = G.deck.cards[#G.deck.cards - n]
 
-                if card.ability.group and (card.ability.group.id == group.id) then
-                    cards_from_groups[m] = card
-                    m = m + 1
+                if other_card == card or other_card.area == G.hand or not other_card then
+
+                else
+                    if other_card.ability.group and other_card.ability.group.id == card.ability.group.id and other_card.area == G.deck then
+                        event({trigger = 'immediate', func = function()
+                            draw_card(G.deck, G.hand, percent, 'up', true, other_card)
+                            return true
+                        end})
+                    end
                 end
 
                 n = n + 1
             end
-        end
 
-        local drawn = false
-
-        for i = 1, #cards_from_groups do
-            local n = 0
-            while n < #G.deck.cards do
-                local card = G.deck.cards[#G.deck.cards - n]
-
-                if card == cards_from_groups[i] then
-                    draw_card(G.deck, G.hand, i * 100 / #cards_from_groups, 'up', true, card)
-                    drawn = true
-                end
-
-                n = n + 1
-            end
-        end
-
-        if groups and drawn then
-            if G.jokers ~= nil then
-                for _, v in ipairs(G.jokers.cards) do
-                    if v.config.center.key == 'j_bunc_games_collector' and not v.debuff then
-                        v:calculate_joker({groups_drawn = groups})
-                    end
-                end
-            end
-        end
-
-    return true end})
+            event({trigger = 'immediate', func = function()
+                SMODS.calculate_context({bunc_groups_drawn = {card.ability.group.id}})
+                return true
+            end})
+            return true 
+        end})
+    end
+    return ret
 end
 
-local original_add_to_highlighted = CardArea.add_to_highlighted
+local bunc_original_add_to_highlighted = CardArea.add_to_highlighted
 function CardArea:add_to_highlighted(card, silent)
     if G.STATE ~= G.STATES.DRAW_TO_HAND and not G.DRAWING_CARDS then
+        local original_highlited_limit = self.config.highlighted_limit
+        self.config.highlighted_limit = G.GAME.THE_8_BYPASS and self.config.type == "hand" and math.huge or self.config.highlighted_limit
+
         if card.ability.group and self then
             local group = {}
             for i = 1, #self.cards do
                 if self.cards[i].ability.group
                 and self.cards[i].ability.group.id == card.ability.group.id then
-                    if self.config.type == 'hand' and not self.cards[i].highlighted then
+                    if self.config.type == 'hand' and not self.cards[i].highlighted and not (card ~= self.cards[i] and self.cards[i].edition and self.cards[i].edition.bunc_fluorescent) then
                         table.insert(group, self.cards[i])
                     end
                 end
@@ -5005,16 +5180,18 @@ function CardArea:add_to_highlighted(card, silent)
                     end
 
                 else
-                    original_add_to_highlighted(self, group[i], (silent == nil) and false or silent)
+                    bunc_original_add_to_highlighted(self, group[i], (silent == nil) and false or silent)
                 end
             end
         else
-            original_add_to_highlighted(self, card, silent)
+            bunc_original_add_to_highlighted(self, card, silent)
         end
+
+        self.config.highlighted_limit = original_highlited_limit
     end
 end
 
-local original_remove_from_highlighted = CardArea.remove_from_highlighted
+local bunc_original_remove_from_highlighted = CardArea.remove_from_highlighted
 function CardArea:remove_from_highlighted(card, force)
     if card.ability.group and self and not force then
         local group = {}
@@ -5033,12 +5210,58 @@ function CardArea:remove_from_highlighted(card, force)
             end
             group[i].highlighted = false
             if i == #group then
-                original_remove_from_highlighted(self, group[i], force)
+                bunc_original_remove_from_highlighted(self, group[i], force)
             end
         end
     else
-        original_remove_from_highlighted(self, card, force)
+        bunc_original_remove_from_highlighted(self, card, force)
     end
+end
+
+-- Allows for a group of over 5 cards to be played/discarded
+local bunc_original_G_FUNCS_can_play = G.FUNCS.can_play
+G.FUNCS.can_play = function(e)
+    local group_size = 0
+
+    if G.hand and G.hand.highlighted then
+        for i = 1, #G.hand.highlighted do
+            if G.hand.highlighted[i].ability.group then
+                group_size = group_size + 1
+            end
+        end
+    end
+
+    local original_play_limit = G.GAME.starting_params.play_limit
+    
+    G.GAME.starting_params.play_limit = math.max(G.GAME.starting_params.play_limit, group_size)
+
+    local ret = bunc_original_G_FUNCS_can_play(e)
+
+    G.GAME.starting_params.play_limit = original_play_limit
+
+    return ret
+end
+local bunc_original_G_FUNCS_can_discard = G.FUNCS.can_discard
+G.FUNCS.can_discard = function(e)
+    local group_size = 0
+
+    if G.hand and G.hand.highlighted then
+        for i = 1, #G.hand.highlighted do
+            if G.hand.highlighted[i].ability.group then
+                group_size = group_size + 1
+            end
+        end
+    end
+
+    local original_discard_limit = G.GAME.starting_params.discard_limit
+    
+    G.GAME.starting_params.discard_limit = math.max(G.GAME.starting_params.discard_limit, group_size)
+
+    local ret = bunc_original_G_FUNCS_can_discard(e)
+
+    G.GAME.starting_params.discard_limit = original_discard_limit
+
+    return ret
 end
 
 -- Polyminoes
@@ -5049,14 +5272,14 @@ SMODS.Atlas({key = 'bunco_polyminoes', path = 'Consumables/Polyminoes.png', px =
 SMODS.ConsumableType{
     key = 'Polymino',
     primary_colour = HEX('424e54'),
-    secondary_colour = G.C.BUNCO_VIRTUAL_DARK,
+    secondary_colour = HEX('4fb66f'),
     collection_rows = {4, 4}
 }
 
 SMODS.UndiscoveredSprite{
     key = 'Polymino',
     atlas = 'bunco_polyminoes_undiscovered',
-    pos = coordinate(1)
+    pos = coordinate_from_atlas_index(1)
 }
 
 SMODS.Consumable{ -- The I
@@ -5120,7 +5343,7 @@ SMODS.Consumable{ -- The I
         card:juice_up(0.3, 0.5)
     end,
 
-    pos = coordinate(1),
+    pos = coordinate_from_atlas_index(1),
 }
 
 SMODS.Consumable{ -- The O
@@ -5200,7 +5423,7 @@ SMODS.Consumable{ -- The O
         card:juice_up(0.3, 0.5)
     end,
 
-    pos = coordinate(2),
+    pos = coordinate_from_atlas_index(2),
 }
 
 SMODS.Consumable{ -- The T
@@ -5290,7 +5513,7 @@ SMODS.Consumable{ -- The T
         card:juice_up(0.3, 0.5)
     end,
 
-    pos = coordinate(3),
+    pos = coordinate_from_atlas_index(3),
 }
 
 SMODS.Consumable{ -- The S
@@ -5382,7 +5605,7 @@ SMODS.Consumable{ -- The S
         card:juice_up(0.3, 0.5)
     end,
 
-    pos = coordinate(4),
+    pos = coordinate_from_atlas_index(4),
 }
 
 SMODS.Consumable{ -- The Z
@@ -5471,7 +5694,7 @@ SMODS.Consumable{ -- The Z
         card:juice_up(0.3, 0.5)
     end,
 
-    pos = coordinate(5),
+    pos = coordinate_from_atlas_index(5),
 }
 
 SMODS.Consumable{ -- The J
@@ -5573,7 +5796,7 @@ SMODS.Consumable{ -- The J
         card:juice_up(0.3, 0.5)
     end,
 
-    pos = coordinate(6),
+    pos = coordinate_from_atlas_index(6),
 }
 
 SMODS.Consumable{ -- The L
@@ -5671,7 +5894,7 @@ SMODS.Consumable{ -- The L
         card:juice_up(0.3, 0.5)
     end,
 
-    pos = coordinate(7),
+    pos = coordinate_from_atlas_index(7),
 }
 
 SMODS.Consumable{ -- The /
@@ -5764,7 +5987,7 @@ SMODS.Consumable{ -- The /
         card:juice_up(0.3, 0.5)
     end,
 
-    pos = coordinate(8),
+    pos = coordinate_from_atlas_index(8),
 
     in_pool = function(self)
         return BUNCOMOD.funcs.exotic_in_pool()
@@ -5809,7 +6032,7 @@ SMODS.Consumable{ -- The 8
         card:juice_up(0.3, 0.5)
     end,
 
-    pos = coordinate(9),
+    pos = coordinate_from_atlas_index(9),
 }
 
 -- Exotic suits
@@ -5878,54 +6101,63 @@ table.insert(SMODS.Suit.obj_buffer, 1, table.remove(SMODS.Suit.obj_buffer, 2))
 
 SMODS.Atlas{key = 'bunco_resprites_enhanced_contrast', path = 'Resprites/EnhancedContrast.png', px = 71, py = 95}
 SMODS.Atlas{key = 'bunco_resprites_enhanced_contrast_ui', path = 'Resprites/EnhancedUIContrast.png', px = 18, py = 18}
+SMODS.Atlas{key = 'bunco_paperback_enhanced_contrast', path = 'Resprites/EnhancedContrastPaperback.png', px = 71, py = 95}
 
-SMODS.DeckSkin.add_palette(SMODS.DeckSkins['default_Spades'], {
-    key = 'recast_contrast',
-    ranks = {'2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace'},
-    display_ranks = {'King', 'Queen', 'Jack'},
-    atlas = 'bunc_bunco_resprites_enhanced_contrast',
-    pos_style = 'deck',
-    colour = HEX('5d55a6'),
-    suit_icon = {
-        atlas = 'bunc_bunco_resprites_enhanced_contrast_ui'
-    }
-})
+-- Bunco High Contrast
 
-SMODS.DeckSkin.add_palette(SMODS.DeckSkins['default_Hearts'], {
-    key = 'recast_contrast',
-    ranks = {'2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace'},
-    display_ranks = {'King', 'Queen', 'Jack'},
-    atlas = 'bunc_bunco_resprites_enhanced_contrast',
-    pos_style = 'deck',
-    colour = HEX('ee151b'),
-    suit_icon = {
-        atlas = 'bunc_bunco_resprites_enhanced_contrast_ui'
-    }
-})
+local collabs = {
+    Hearts = {'AU', 'TBoI', 'CL', 'D2', 'BUG', 'CR'},
+    Diamonds = {'DTD', 'SV', 'EG', 'XR', 'C7', 'R'},
+    Clubs = {'VS', 'STS', 'PC', 'WF', 'DBD', 'FO'},
+    Spades = {'TW', 'CYP', 'SK', 'DS', 'AC', 'STP'},
+}
 
-SMODS.DeckSkin.add_palette(SMODS.DeckSkins['default_Clubs'], {
-    key = 'recast_contrast',
-    ranks = {'2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace'},
-    display_ranks = {'King', 'Queen', 'Jack'},
-    atlas = 'bunc_bunco_resprites_enhanced_contrast',
-    pos_style = 'deck',
-    colour = HEX('197f77'),
-    suit_icon = {
-        atlas = 'bunc_bunco_resprites_enhanced_contrast_ui'
-    }
-})
+local bunc_hc_colours = {
+    Hearts = HEX('ee151b'),
+    Diamonds = HEX('e56b10'),
+    Spades = HEX('5d55a6'),
+    Clubs = HEX('197f77')
+}
 
-SMODS.DeckSkin.add_palette(SMODS.DeckSkins['default_Diamonds'], {
-    key = 'recast_contrast',
-    ranks = {'2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace'},
-    display_ranks = {'King', 'Queen', 'Jack'},
-    atlas = 'bunc_bunco_resprites_enhanced_contrast',
-    pos_style = 'deck',
-    colour = HEX('e56b10'),
-    suit_icon = {
-        atlas = 'bunc_bunco_resprites_enhanced_contrast_ui'
-    }
-})
+for i, suit in ipairs({'Hearts', 'Diamonds', 'Clubs', 'Spades'}) do
+    SMODS.DeckSkin.add_palette(SMODS.DeckSkins['default_' .. suit], {
+        key = 'recast_contrast',
+        ranks = {'2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace', 'paperback_Apostle'},
+        display_ranks = {'King', 'Queen', 'Jack'},
+        atlas = 'bunc_bunco_resprites_enhanced_contrast',
+        pos_style = {
+            fallback_style = "deck",
+            ['paperback_Apostle'] = { pos = {x = 0, y = ({0, 2, 1, 3})[i]}, atlas = 'bunc_bunco_paperback_enhanced_contrast'},
+        },
+        colour = bunc_hc_colours[suit],
+        suit_icon = {
+            atlas = 'bunc_bunco_resprites_enhanced_contrast_ui',
+            pos = {x = i - 1, y = 0}
+        },
+    })
+
+    for _, collab in pairs(collabs[suit]) do
+        SMODS.Atlas{key = 'collab_'.. collab ..'_alt_hc', path = 'Resprites/collabs/collab_' .. collab .. '_EnhancedContrast.png', px = 71, py = 95}
+        SMODS.DeckSkin.add_palette(SMODS.DeckSkins['collab_' .. collab], {
+            key = 'recast_contrast',
+            ranks = {'2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace', 'paperback_Apostle'},
+            display_ranks = {'King', 'Queen', 'Jack'},
+            atlas = 'bunc_bunco_resprites_enhanced_contrast',
+            pos_style = {
+                fallback_style = "deck",
+                ['paperback_Apostle'] = { pos = {x = 0, y = ({0, 2, 1, 3})[i]}, atlas = 'bunc_bunco_paperback_enhanced_contrast'},
+                ['Jack'] = { pos = {x = 0, y = 0}, atlas = 'bunc_collab_'.. collab ..'_alt_hc'},
+                ['Queen'] = { pos = {x = 1, y = 0}, atlas = 'bunc_collab_'.. collab ..'_alt_hc'},
+                ['King'] = { pos = {x = 2, y = 0}, atlas = 'bunc_collab_'.. collab ..'_alt_hc'},
+            },
+            colour = bunc_hc_colours[suit],
+            suit_icon = {
+                atlas = 'bunc_bunco_resprites_enhanced_contrast_ui',
+                pos = {x = i - 1, y = 0}
+            },
+        })
+    end
+end
 
 SMODS.Atlas({key = 'bunco_skins_duckgame_lc', path = 'Skins/SkinDuckGameLC.png', px = 71, py = 95})
 SMODS.Atlas({key = 'bunco_skins_duckgame_hc', path = 'Skins/SkinDuckGameHC.png', px = 71, py = 95})
@@ -6024,12 +6256,12 @@ SMODS.DeckSkin{
 
 function disable_exotics()
     if G.GAME then G.GAME.Exotic = false end
-    say('Triggered Exotic System disabling.')
+    -- say('Triggered Exotic System disabling.')
 end
 
 function enable_exotics()
     if G.GAME then G.GAME.Exotic = true end
-    say('Triggered Exotic System enabling.')
+    -- say('Triggered Exotic System enabling.')
 end
 
 -- Poker hands
@@ -6046,6 +6278,7 @@ SMODS.PokerHandPart{ -- Spectrum base (Referenced from SixSuits)
         -- < 5 hand cant be a spectrum
         if #hand < 5 then return {} end
 
+        local extraCardsAllowed = #hand - 5
         local nonwilds = {}
         for i = 1, #hand do
             local cardsuits = {}
@@ -6056,13 +6289,17 @@ SMODS.PokerHandPart{ -- Spectrum base (Referenced from SixSuits)
                 end
             end
 
-            -- if somehow no suits: spectrum is impossible
+            -- a card with no suit can't contribute to a spectrum
             if #cardsuits == 0 then
-                return {}
+                if extraCardsAllowed <= 0 then return {} end
+                extraCardsAllowed = extraCardsAllowed - 1
             -- if only 1 suit: can be handled immediately
             elseif #cardsuits == 1 then
-                -- if suit is already present, not a spectrum, otherwise remove suit from "not yet used suits"
-                if suits[cardsuits[1]] == 0 then return {} end
+                -- if suit is already present, this card isn't contributing; otherwise remove suit from "not yet used suits"
+                if suits[cardsuits[1]] == 0 then
+                    if extraCardsAllowed <= 0 then return {} end
+                    extraCardsAllowed = extraCardsAllowed - 1
+                end
                 suits[cardsuits[1]] = 0
             -- add all cards with 2-4 suits to a table to be looked at
             elseif #cardsuits < 5 then
@@ -6208,53 +6445,43 @@ SMODS.PokerHand{ -- Spectrum Five (Referenced from SixSuits)
 SMODS.PokerHandPart{ -- Deal base
     key = 'deal',
     func = function(hand)
+        if #hand < 5 then
+            return {}
+        end
         local current_ranks = {}
         local deals = {}
-        for i = 1, #hand do
-            table.insert(current_ranks, hand[i]:get_id())
-        end
 
-        if G.jokers ~= nil then
-            for _, v in ipairs(G.jokers.cards) do
-                if v.config.center.key == 'j_bunc_registration_plate' then
-                    table.insert(deals, v.ability.extra.ranks)
-                end
-            end
-        end
-
-        local count1 = {}
-        for _, value in ipairs(current_ranks) do
-            if count1[value] then
-                count1[value] = count1[value] + 1
-            else
-                count1[value] = 1
-            end
+        for _, v in ipairs(SMODS.find_card("j_bunc_registration_plate")) do
+            table.insert(deals, v.ability.extra.ranks)
         end
 
         for i, deal in ipairs(deals) do
-            local count2 = {}
-            for _, value in ipairs(deal) do
-                if count2[value] then
-                    count2[value] = count2[value] + 1
-                else
-                    count2[value] = 1
+            local deal_count = {} -- Counts # of each rank in deal requirement
+            local hand_count = {} -- Counts # of each rank in the selected cards
+
+            for _, rank in ipairs(deal) do
+                hand_count[rank] = 0
+                deal_count[rank] = (deal_count[rank] or 0) + 1
+            end
+
+            for j = 1, #hand do
+                local match = false -- Every card must match a rank.
+                for rank, _ in pairs(deal_count) do
+                    if hand[j]:get_id() == rank then
+                        match = true
+                        hand_count[rank] = hand_count[rank] + 1
+                    end
+                end
+                if not match then
+                    return {}
                 end
             end
 
             local equal = true
-            for key, count in pairs(count1) do
-                if count2[key] ~= count then
-                    equal = false
-                    break
-                end
-            end
 
-            if equal then
-                for key, count in pairs(count2) do
-                    if count1[key] ~= count then
-                        equal = false
-                        break
-                    end
+            for rank, count in pairs(deal_count) do
+                if hand_count[rank] < count then -- If deal requires more of a rank than in hand, mark as invalid
+                    equal = false
                 end
             end
 
@@ -6296,6 +6523,39 @@ SMODS.PokerHand{ -- Deal
 
 SMODS.Atlas({key = 'bunco_blinds', path = 'Blinds/Blinds.png', px = 34, py = 34, frames = 21, atlas_table = 'ANIMATION_ATLAS'})
 SMODS.Atlas({key = 'bunco_blinds_finisher', path = 'Blinds/BlindsFinisher.png', px = 34, py = 34, frames = 21, atlas_table = 'ANIMATION_ATLAS'})
+local bunc_refresh_boss_blind = function ()
+    if G.GAME.blind.boss or not G.blind_select_opts then return end
+
+    local par = G.blind_select_opts.boss.parent
+    if par and par.config.object then
+        -- G.blind_select_opts.boss:remove()
+        G.blind_select_opts.boss = UIBox{
+            T = {par.T.x, 0, 0, 0},
+            definition = {
+                n = G.UIT.ROOT,
+                config = {
+                    align = "cm",
+                    colour = G.C.CLEAR
+                },
+                nodes = {UIBox_dyn_container({create_UIBox_blind_choice('Boss')}, false,
+                    get_blind_main_colour('Boss'), mix_colours(G.C.BLACK, get_blind_main_colour('Boss'), 0.8))}
+            },
+            config = {
+                align = "bmi",
+                offset = {
+                    x = 0,
+                    y = G.blind_select_opts.boss.alignment.offset.y
+                },
+                major = par,
+                xy_bond = 'Weak'
+            }
+        }
+        par.config.object = G.blind_select_opts.boss
+        par.config.object:recalculate()
+        G.blind_select_opts.boss.parent = par
+        -- G.blind_select_opts.boss.alignment.offset.y = -0.2
+    end
+end
 
 SMODS.Blind{ -- The Paling
     key = 'paling',
@@ -6341,7 +6601,7 @@ SMODS.Blind{ -- The Tine
     end,
 
     recalc_debuff = function(self, card, from_blind)
-        if not G.GAME.blind.disabled and card.area ~= G.jokers and card.config.center ~= G.P_CENTERS.m_stone then
+        if not G.GAME.blind.disabled and card.area ~= G.jokers and not SMODS.has_no_rank(card) then
             if card.base.value == G.GAME.current_round.most_played_rank then
                 card:set_debuff(true)
                 return true
@@ -6420,8 +6680,8 @@ SMODS.Blind{ -- The Flame
     boss = {min = 3},
 
     recalc_debuff = function(self, card, from_blind)
-        if not G.GAME.blind.disabled and card.area ~= G.jokers then
-            if card.config.center ~= G.P_CENTERS.c_base then
+        if not G.GAME.blind.disabled and card.area ~= G.jokers and card.area ~= G.consumeables then
+            if card.config.center.set == "Enhanced" then
                 card:set_debuff(true)
                 return true
             end
@@ -6441,6 +6701,9 @@ SMODS.Blind{ -- The Mask
 
     vars = {},
     loc_vars = function(self)
+        G.GAME.current_round.most_played_poker_hand = G.GAME.current_round.most_played_poker_hand or "High Card"
+        G.GAME.current_round.least_played_poker_hand = G.GAME.current_round.least_played_poker_hand or "High Card"
+
         return {vars = {localize(G.GAME.current_round.most_played_poker_hand, 'poker_hands'), localize(G.GAME.current_round.least_played_poker_hand, 'poker_hands')}}
     end,
     collection_loc_vars = function(self)
@@ -6448,6 +6711,9 @@ SMODS.Blind{ -- The Mask
     end,
 
     modify_hand = function(self, cards, poker_hands, text, mult, hand_chips)
+        G.GAME.current_round.most_played_poker_hand = G.GAME.current_round.most_played_poker_hand or "High Card"
+        G.GAME.current_round.least_played_poker_hand = G.GAME.current_round.least_played_poker_hand or "High Card"
+
         if not G.GAME.blind.disabled then
             if G.GAME.last_hand_played == G.GAME.current_round.most_played_poker_hand then
                 G.GAME.blind.triggered = true
@@ -6455,6 +6721,16 @@ SMODS.Blind{ -- The Mask
             end
         end
         return mult, hand_chips, false
+    end,
+
+    in_pool = function(self)
+        if (G.GAME.round_resets.ante >= self.boss.min) and
+            G.GAME.current_round.most_played_poker_hand ~= G.GAME.current_round.most_played_poker_hand 
+        then
+            return true
+        else
+            return false
+        end
     end,
 
     boss_colour = HEX('efcca6'),
@@ -6511,7 +6787,7 @@ SMODS.Blind{ -- The Knoll
 
     stay_flipped = function(self, area, card)
         if not G.GAME.blind.disabled and (area == G.hand) and
-        G.GAME.current_round.hands_played == 0 and G.GAME.current_round.discards_used == 0 then
+        G.GAME.current_round.hands_played == 0 and G.GAME.current_round.discards_used == 0 and #(G.GAME.Knoll or {}) < G.hand.config.card_limit then
             if G.GAME.dollars > to_big(5) then
                 G.GAME.Knoll = G.GAME.Knoll or {}
                 table.insert(G.GAME.Knoll, card)
@@ -6720,11 +6996,15 @@ SMODS.Blind{ -- The Wind
     boss = {min = 6},
 
     drawn_to_hand = function(self)
-        if not G.GAME.blind.disabled and G.GAME.current_round.hands_played == 0 and G.GAME.current_round.discards_used == 0 then
+        if not G.GAME.blind.disabled and G.GAME.current_round.hands_played == 0 and G.GAME.current_round.discards_used == 0 and not G.GAME.bunc_bl_wind_flag then
             G.GAME.blind.ready = true
             if G.jokers and G.jokers.cards[1] then big_juice(G.jokers.cards[1]) end
             G.GAME.blind:wiggle()
+            G.GAME.bunc_bl_wind_flag = true
         end
+    end,
+    defeat = function(self)
+        G.GAME.bunc_bl_wind_flag = nil
     end,
 
     boss_colour = HEX('a6cdef'),
@@ -6748,9 +7028,15 @@ SMODS.Blind{ -- The Prince
             end
             G.GAME.blind:wiggle()
         end
-        if not G.GAME.blind.disabled and G.GAME.current_round.hands_played > 0 then
+        if not G.GAME.blind.disabled and G.GAME.bunc_bl_prince_flag then
             G.GAME.blind:disable()
         end
+    end,
+    press_play = function(self)
+        G.GAME.bunc_bl_prince_flag = true
+    end,
+    defeat = function(self)
+        G.GAME.bunc_bl_prince_flag = nil
     end,
 
     boss_colour = HEX('f31745'),
@@ -6833,7 +7119,7 @@ SMODS.Blind{ -- Chartreuse Crown
             card.base.suit == ('Hearts') or
             card.base.suit == ('Clubs') or
             card.base.suit == ('Diamonds') then
-                if card.ability.name ~= 'Stone Card' then
+                if not SMODS.has_no_suit(card) then
                     card:set_debuff(true)
                     return true
                 end
@@ -6849,7 +7135,7 @@ SMODS.Blind{ -- Chartreuse Crown
             for k, v in pairs(G.playing_cards) do
                 if (v.base.suit == ('bunc_Fleurons') or
                 v.base.suit == ('bunc_Halberds')) and
-                v.ability.name ~= 'Stone Card' then
+                not SMODS.has_no_suit(v) then
                     exotic_amount = exotic_amount + 1
                 end
             end
@@ -6923,7 +7209,7 @@ SMODS.Blind{ -- Indigo Tower
     dollars = 8,
 
     recalc_debuff = function(self, card, from_blind)
-        if not G.GAME.blind.disabled and card.area ~= G.jokers then
+        if not G.GAME.blind.disabled and card.area ~= G.jokers and card.area ~= G.consumeables then
             if not card.ability.played_this_ante then
                 card:set_debuff(true)
                 return true
@@ -7019,8 +7305,8 @@ SMODS.Back{ -- Fairy
     apply = function()
         enable_exotics()
     end,
-    trigger_effect = function(self, args)
-        if args.context == 'eval' and G.GAME.last_blind and G.GAME.last_blind.boss then
+    calculate = function(self, back, context)
+        if context.round_eval and G.GAME.last_blind and G.GAME.last_blind.boss then
             event({
                 func = (function()
                     local numbers = {}
@@ -7046,7 +7332,7 @@ SMODS.Back{ -- Fairy
         end
     end,
 
-    pos = coordinate(1),
+    pos = coordinate_from_atlas_index(1),
     atlas = 'bunco_decks'
 }
 
@@ -7065,7 +7351,7 @@ SMODS.Back{ -- Digital
         G.GAME.polymino_rate = self.config.polymino_rate
     end,
 
-    pos = coordinate(2),
+    pos = coordinate_from_atlas_index(2),
     atlas = 'bunco_decks'
 }
 
@@ -7083,13 +7369,16 @@ SMODS.Tag{ -- Breaking
     config = {type = 'round_start_bonus'},
 
     apply = function(self, tag, context)
-        if context.type == self.config.type then
+        if context.type == self.config.type or context.type == "immediate" then
             if G.GAME.blind and G.GAME.blind.boss and not G.GAME.blind.disabled then
                 tag:yep('+', G.C.BLUE, function()
                     return true
                 end)
 
-                G.GAME.blind:disable()
+                event({ func = function()
+                    G.GAME.blind:disable()
+                    return true 
+                end })
 
                 tag.triggered = true
                 return true
@@ -7097,7 +7386,7 @@ SMODS.Tag{ -- Breaking
         end
     end,
 
-    pos = coordinate(1),
+    pos = coordinate_from_atlas_index(1),
     atlas = 'bunco_tags',
 
     in_pool = function()
@@ -7137,7 +7426,7 @@ SMODS.Tag{ -- Arcade
         end
     end,
 
-    pos = coordinate(2),
+    pos = coordinate_from_atlas_index(2),
     atlas = 'bunco_tags',
 
     in_pool = function()
@@ -7172,7 +7461,7 @@ SMODS.Tag{ -- Triple
         end
     end,
 
-    pos = coordinate(3),
+    pos = coordinate_from_atlas_index(3),
     atlas = 'bunco_tags',
 
     in_pool = function() return G.GAME.used_vouchers['v_bunc_pin_collector'] end
@@ -7211,7 +7500,7 @@ SMODS.Tag{ -- Glitter
         end
     end,
 
-    pos = coordinate(1),
+    pos = coordinate_from_atlas_index(1),
     atlas = 'bunco_tags_edition',
 }
 
@@ -7248,7 +7537,7 @@ SMODS.Tag{ -- Fluorescent
         end
     end,
 
-    pos = coordinate(2),
+    pos = coordinate_from_atlas_index(2),
     atlas = 'bunco_tags_edition',
 
     in_pool = function()
@@ -7283,7 +7572,7 @@ SMODS.Tag{ -- Chips
         end
     end,
 
-    pos = coordinate(1),
+    pos = coordinate_from_atlas_index(1),
     atlas = 'bunco_tags_hand',
 
     in_pool = function() return false end
@@ -7312,7 +7601,7 @@ SMODS.Tag{ -- Mult
         end
     end,
 
-    pos = coordinate(2),
+    pos = coordinate_from_atlas_index(2),
     atlas = 'bunco_tags_hand',
 
     in_pool = function() return false end
@@ -7341,7 +7630,7 @@ SMODS.Tag{ -- Xmult
         end
     end,
 
-    pos = coordinate(3),
+    pos = coordinate_from_atlas_index(3),
     atlas = 'bunco_tags_hand',
 
     in_pool = function() return false end
@@ -7370,7 +7659,7 @@ SMODS.Tag{ -- Xchip
         end
     end,
 
-    pos = coordinate(4),
+    pos = coordinate_from_atlas_index(4),
     atlas = 'bunco_tags_hand',
 
     in_pool = function() return false end
@@ -7400,7 +7689,7 @@ SMODS.Tag{ -- Filigree
                         enable_exotics()
 
                         for _, v in ipairs(G.pack_cards.cards) do
-                            if (not v:is_suit('bunc_Fleurons') and not v:is_suit('bunc_Halberds')) or v.config.center == G.P_CENTERS.m_wild then
+                            if (not v:is_suit('bunc_Fleurons') and not v:is_suit('bunc_Halberds')) or SMODS.has_any_suit(v) then
                                 local suits = {'bunc_Fleurons', 'bunc_Halberds'}
                                 local suit = pseudorandom_element(suits, pseudoseed('filigree'..G.SEED))
                                 v:change_suit(suit)
@@ -7416,7 +7705,7 @@ SMODS.Tag{ -- Filigree
         end
     end,
 
-    pos = coordinate(1),
+    pos = coordinate_from_atlas_index(1),
     atlas = 'bunco_tags_exotic',
 
     in_pool = BUNCOMOD.funcs.exotic_in_pool
@@ -7433,7 +7722,14 @@ SMODS.Tag{ -- Eternal
 
     apply = function(self, tag, context)
         if context.type == self.config.type then
-            if context.card and not context.card.ability.eternal and not context.card.ability.perishable and context.card.ability.set == 'Joker' then
+            if context.card and 
+                not context.card.ability.eternal and 
+                not context.card.ability.perishable and 
+                not context.card.ability.bunc_scattering and
+                not context.card.ability.bunc_hindered and
+                context.card.ability.set == 'Joker' and
+                context.card.config.center.eternal_compat
+            then
                 local lock = tag.ID
                 G.CONTROLLER.locks[lock] = true
                 tag:yep('+', G.C.RED, function()
@@ -7450,7 +7746,7 @@ SMODS.Tag{ -- Eternal
         end
     end,
 
-    pos = coordinate(1),
+    pos = coordinate_from_atlas_index(1),
     atlas = 'bunco_tags_sticker',
 
     in_pool = function() return false end
@@ -7467,7 +7763,12 @@ SMODS.Tag{ -- Perishable
 
     apply = function(self, tag, context)
         if context.type == self.config.type then
-            if context.card and not context.card.ability.perishable and not context.card.ability.eternal and context.card.ability.set == 'Joker' then
+            if context.card and 
+                not context.card.ability.perishable and 
+                not context.card.ability.eternal and 
+                context.card.ability.set == 'Joker' and
+                context.card.config.center.perishable_compat
+            then
                 local lock = tag.ID
                 G.CONTROLLER.locks[lock] = true
                 tag:yep('+', G.C.RED, function()
@@ -7484,7 +7785,7 @@ SMODS.Tag{ -- Perishable
         end
     end,
 
-    pos = coordinate(2),
+    pos = coordinate_from_atlas_index(2),
     atlas = 'bunco_tags_sticker',
 
     in_pool = function() return false end
@@ -7523,7 +7824,7 @@ SMODS.Tag{ -- Scattering
         end
     end,
 
-    pos = coordinate(3),
+    pos = coordinate_from_atlas_index(3),
     atlas = 'bunco_tags_sticker',
 
     in_pool = function() return false end
@@ -7562,7 +7863,7 @@ SMODS.Tag{ -- Hindered
         end
     end,
 
-    pos = coordinate(4),
+    pos = coordinate_from_atlas_index(4),
     atlas = 'bunco_tags_sticker',
 
     in_pool = function() return false end
@@ -7600,7 +7901,7 @@ SMODS.Tag{ -- Reactive
         end
     end,
 
-    pos = coordinate(5),
+    pos = coordinate_from_atlas_index(5),
     atlas = 'bunco_tags_sticker',
 
     in_pool = function() return false end
@@ -7634,7 +7935,7 @@ SMODS.Tag{ -- Rental
         end
     end,
 
-    pos = coordinate(6),
+    pos = coordinate_from_atlas_index(6),
     atlas = 'bunco_tags_sticker',
 
     in_pool = function() return false end
@@ -7670,6 +7971,7 @@ SMODS.Edition{
     sound = {sound = 'bunc_glitter', per = 1.2, vol = 0.4},
     in_shop = true,
     weight = 9,
+    extra_cost = 3,
     get_weight = function(self)
         return G.GAME.edition_rate * self.weight
     end,
@@ -7686,6 +7988,7 @@ SMODS.Edition{
     sound = {sound = 'bunc_fluorescent', per = 1.2, vol = 0.4},
     in_shop = true,
     weight = 18,
+    extra_cost = 1,
     get_weight = function(self)
         return G.GAME.edition_rate * self.weight
     end,
@@ -7702,7 +8005,7 @@ SMODS.Voucher{ -- Lamination
 
     unlocked = true,
 
-    pos = coordinate(1),
+    pos = coordinate_from_atlas_index(1),
     atlas = 'bunco_vouchers'
 }
 
@@ -7724,7 +8027,7 @@ SMODS.Voucher{ -- Supercoating
         end
     end,
 
-    pos = coordinate(2),
+    pos = coordinate_from_atlas_index(2),
     atlas = 'bunco_vouchers'
 }
 
@@ -7738,7 +8041,7 @@ SMODS.Voucher{ -- Hedge Trimmer
 
     unlocked = true,
 
-    pos = coordinate(3),
+    pos = coordinate_from_atlas_index(3),
     atlas = 'bunco_vouchers'
 }
 
@@ -7767,7 +8070,7 @@ SMODS.Voucher{ -- Chainsaw
         end
     end,
 
-    pos = coordinate(4),
+    pos = coordinate_from_atlas_index(4),
     atlas = 'bunco_vouchers'
 }
 
@@ -7781,7 +8084,7 @@ SMODS.Voucher{ -- Cups 'n' Balls
 
     unlocked = true,
 
-    pos = coordinate(5),
+    pos = coordinate_from_atlas_index(5),
     atlas = 'bunco_vouchers'
 }
 
@@ -7803,7 +8106,7 @@ SMODS.Voucher{ -- Shell Game
         end
     end,
 
-    pos = coordinate(6),
+    pos = coordinate_from_atlas_index(6),
     atlas = 'bunco_vouchers'
 }
 
@@ -7812,7 +8115,7 @@ SMODS.Voucher{ -- Disguise
 
     unlocked = true,
 
-    pos = coordinate(7),
+    pos = coordinate_from_atlas_index(7),
     atlas = 'bunco_vouchers'
 }
 
@@ -7844,7 +8147,7 @@ SMODS.Voucher{ -- Masquerade
         end
     end,
 
-    pos = coordinate(8),
+    pos = coordinate_from_atlas_index(8),
     atlas = 'bunco_vouchers'
 }
 
@@ -7856,18 +8159,13 @@ SMODS.Voucher{ -- Fanny Pack
 
         info_queue[#info_queue+1] = {set = 'Tag', key = 'tag_double'}
 
-        local vars
-        if G.GAME and G.GAME.probabilities.normal then
-            vars = {G.GAME.probabilities.normal, card.ability.extra.odds}
-        else
-            vars = {1, card.ability.extra.odds}
-        end
+        local vars = {SMODS.get_probability_vars(card, 1, card.ability.extra.odds)}
         return {vars = vars}
     end,
 
     unlocked = true,
 
-    pos = coordinate(9),
+    pos = coordinate_from_atlas_index(9),
     atlas = 'bunco_vouchers'
 }
 
@@ -7893,7 +8191,7 @@ SMODS.Voucher{ -- Pin Collector
         end
     end,
 
-    pos = coordinate(10),
+    pos = coordinate_from_atlas_index(10),
     atlas = 'bunco_vouchers'
 }
 
@@ -7902,7 +8200,7 @@ SMODS.Voucher{ -- Arcade Machine
 
     unlocked = true,
 
-    pos = coordinate(11),
+    pos = coordinate_from_atlas_index(11),
     atlas = 'bunco_vouchers'
 }
 
@@ -7924,7 +8222,7 @@ SMODS.Voucher{ -- Polybius
         end
     end,
 
-    pos = coordinate(12),
+    pos = coordinate_from_atlas_index(12),
     atlas = 'bunco_vouchers'
 }
 
@@ -7996,6 +8294,65 @@ end
 SMODS.Atlas({key = 'bunco_booster_packs_blind', path = 'Boosters/BoostersBlind.png', px = 71, py = 95})
 SMODS.Atlas({key = 'bunco_booster_packs_virtual', path = 'Boosters/BoostersVirtual.png', px = 71, py = 95})
 
+-- Blind pack functionality
+
+G.FUNCS.can_use_blind_card = function(e)
+    e.config.colour = G.C.GREEN
+    e.config.button = 'use_blind_card'
+end
+
+G.FUNCS.use_blind_card = function(e)
+    local card = e.config.ref_table
+
+    local boss = card.ability.blind_card.blind.key
+    G.GAME.round_resets.blind_choices.Boss = boss
+
+    play_sound('other1')
+
+    e.config.button = nil
+
+    if G.blind_select_opts.boss then
+        bunc_refresh_boss_blind()
+    end
+
+    -- local par = G.blind_select_opts.boss.parent
+    -- if G.blind_select_opts.boss and par and par.config.object then
+    --     G.blind_select_opts.boss:remove()
+    --     G.blind_select_opts.boss = UIBox{
+    --         T = {par.T.x, 0, 0, 0},
+    --         definition = {
+    --             n = G.UIT.ROOT,
+    --             config = {
+    --                 align = "cm",
+    --                 colour = G.C.CLEAR
+    --             },
+    --             nodes = {UIBox_dyn_container({create_UIBox_blind_choice('Boss')}, false,
+    --                 get_blind_main_colour('Boss'), mix_colours(G.C.BLACK, get_blind_main_colour('Boss'), 0.8))}
+    --         },
+    --         config = {
+    --             align = "bmi",
+    --             offset = {
+    --                 x = 0,
+    --                 y = G.ROOM.T.y + 9
+    --             },
+    --             major = par,
+    --             xy_bond = 'Weak'
+    --         }
+    --     }
+    --     par.config.object = G.blind_select_opts.boss
+    --     par.config.object:recalculate()
+    --     G.blind_select_opts.boss.parent = par
+    --     G.blind_select_opts.boss.alignment.offset.y = 0
+    -- end
+
+    G.PROFILES[G.SETTINGS.profile].blind_cards_used = (G.PROFILES[G.SETTINGS.profile].blind_cards_used or 0) + 1
+    if G.PROFILES[G.SETTINGS.profile].blind_cards_used then
+        check_for_unlock({type = 'use_blind_card', blinds_total = G.PROFILES[G.SETTINGS.profile].blind_cards_used})
+    end
+
+    G.FUNCS.end_consumeable(nil, 0.2)
+end
+
 for i = 1, 4 do -- Blind
     SMODS.Booster{
         type = 'bunc_blind',
@@ -8061,7 +8418,7 @@ for i = 1, 4 do -- Blind
             return t
         end,
 
-        pos = coordinate(i),
+        pos = coordinate_from_atlas_index(i),
         atlas = 'bunco_booster_packs_blind',
 
         in_pool = function() return G.GAME.used_vouchers['v_bunc_disguise'] end
@@ -8149,7 +8506,7 @@ for i = 1, 4 do -- Virtual
             ease_background_colour{new_colour = HEX('50506a'), special_colour = HEX('7e9999'), contrast = 2}
         end,
 
-        pos = coordinate(i),
+        pos = coordinate_from_atlas_index(i),
         atlas = 'bunco_booster_packs_virtual',
     }
 end
@@ -8173,7 +8530,7 @@ SMODS.Sound({key = 'cracker', path = 'cracker.ogg'})
 
 SMODS.Enhancement({ -- Cracker
     key = 'cracker',
-    atlas = 'bunco_enhancements', pos = coordinate(1)
+    atlas = 'bunco_enhancements', pos = coordinate_from_atlas_index(1)
 })
 
 function calculate_cracker_cards(context)
@@ -8231,7 +8588,7 @@ end
 SMODS.Enhancement({ -- Copper
     key = 'copper',
     post_effect = true,
-    rescore_amount = 1, pos = coordinate(2),
+    rescore_amount = 1, pos = coordinate_from_atlas_index(2),
     atlas = 'bunco_enhancements',
     calculate = function(self, card, context, effect)
         if context.post_effect
@@ -8310,7 +8667,7 @@ SMODS.Enhancement({ -- Copper
             end
         end
         -- Reset the retrigger thingy
-        if context.after then
+        if context.after and context.scoring_hand then
             for _, other_card in ipairs(context.scoring_hand) do
                 other_card.config.copper_rescored_times = 0
             end
@@ -8320,31 +8677,69 @@ SMODS.Enhancement({ -- Copper
 
 -- Stickers
 
+function Card:calculate_hindered()
+    if self.ability.bunc_hindered and self.ability.bunc_hindered_sold then
+        self:start_dissolve({G.C.GOLD}, nil, 1.6)
+    end
+end
+function Card:calculate_reactive()
+    if self.ability.bunc_reactive then
+        local skipped_blinds = 0
+        for _, v in pairs(G.GAME.round_resets.blind_states) do
+            if v == 'Skipped' then
+                skipped_blinds = skipped_blinds + 1
+            end
+        end
+        if skipped_blinds == 1 then
+            self:juice_up(0.3, 0.3)
+        end
+    end
+end
+
 SMODS.Atlas({key = 'bunco_stickers', path = 'Stickers/Stickers.png', px = 71, py = 95})
 
 SMODS.Sticker{ -- Scattering
     key = 'scattering',
 
-    apply = function(self, card, val)
-        if card.ability.eternal or card.ability.bunc_hindered or card.ability.bunc_reactive then return end
-        card.ability[self.key] = val
+    should_apply = function(self, card, center, area, bypass_roll)
+        local default_check = SMODS.Sticker.should_apply(self, card, center, area, bypass_roll)
+        local other_sticker_check = not (card.ability.eternal or card.ability.bunc_hindered or card.ability.bunc_reactive)
+        local shop_check = (area == G.shop_jokers) or (area == G.pack_cards)
+        return default_check and other_sticker_check and shop_check
     end,
+    apply = function(self, card, val)
+        -- if card.ability.eternal or card.ability.bunc_hindered or card.ability.bunc_reactive then return end
+        card.ability[self.key] = val
+        -- card.config.center.eternal_compat = false
+    end,
+
+    -- Cross-mod stuff
+    compat_exceptions = {
+        "sarc_cracked_egg"
+    },
 
     badge_colour = HEX('9eacbe'),
 
     order = 5,
 
-    pos = coordinate(1),
+    pos = coordinate_from_atlas_index(1),
     atlas = 'bunco_stickers'
 }
 
 SMODS.Sticker{ -- Hindered
     key = 'hindered',
 
+    should_apply = function(self, card, center, area, bypass_roll)
+        local default_check = SMODS.Sticker.should_apply(self, card, center, area, bypass_roll)
+        local other_sticker_check = not (card.ability.eternal or card.ability.bunc_scattering or card.ability.bunc_reactive)
+        local shop_check = (area == G.shop_jokers) or (area == G.pack_cards)
+        return default_check and other_sticker_check and shop_check
+    end,
     apply = function(self, card, val)
-        if card.ability.eternal or card.ability.bunc_scattering or card.ability.bunc_reactive then return end
+        -- if card.ability.eternal or card.ability.bunc_scattering or card.ability.bunc_reactive then return end
         card.ability[self.key] = val
         card.ability.bunc_hindered_sold = false
+        -- card.config.center.eternal_compat = false
     end,
     calculate = function(self, card, context)
         if context.end_of_round and not context.repetition and not context.individual then
@@ -8356,15 +8751,21 @@ SMODS.Sticker{ -- Hindered
 
     order = 6,
 
-    pos = coordinate(2),
+    pos = coordinate_from_atlas_index(2),
     atlas = 'bunco_stickers'
 }
 
 SMODS.Sticker{ -- Reactive
     key = 'reactive',
 
+    should_apply = function(self, card, center, area, bypass_roll)
+        local default_check = SMODS.Sticker.should_apply(self, card, center, area, bypass_roll)
+        local other_sticker_check = not (card.ability.bunc_hindered or card.ability.bunc_scattering)
+        local shop_check = (area == G.shop_jokers) or (area == G.pack_cards)
+        return default_check and other_sticker_check and shop_check
+    end,
     apply = function(self, card, val)
-        if card.ability.eternal or card.ability.bunc_scattering or card.ability.bunc_hindered then return end
+        -- if card.ability.bunc_scattering or card.ability.bunc_hindered then return end
         card.ability[self.key] = val
         if G.GAME and G.GAME.blind then G.GAME.blind:debuff_card(card) end
     end,
@@ -8378,7 +8779,7 @@ SMODS.Sticker{ -- Reactive
 
     order = 7,
 
-    pos = coordinate(3),
+    pos = coordinate_from_atlas_index(3),
     atlas = 'bunco_stickers'
 }
 
@@ -8396,13 +8797,24 @@ SMODS.Stake{ -- Cyan
     prefix_config = {above_stake = {mod = false}, applied_stakes = {mod = false}},
 
     modifiers = function()
-        G.GAME.modifiers.enable_scattering_in_shop = true
+        G.GAME.modifiers.enable_bunc_scattering = true
+    end,
+
+    loc_vars = function(self)
+        local sticker_desc = localize{type="raw_descriptions", key="bunc_scattering", set="Other", vars={}}
+        local sticker_desc_string = ""
+        for i, v in ipairs(sticker_desc) do
+            sticker_desc_string = sticker_desc_string .. v .. " "
+        end
+        sticker_desc_string = string.sub(sticker_desc_string, 1, -2)
+
+        return {vars = { sticker_desc_string } }
     end,
 
     colour = HEX('3cd0c8'),
 
-    pos = coordinate(1),
-    sticker_pos = coordinate(1),
+    pos = coordinate_from_atlas_index(1),
+    sticker_pos = coordinate_from_atlas_index(1),
     atlas = 'bunco_stakes',
     sticker_atlas = 'bunco_stake_stickers'
 }
@@ -8415,13 +8827,24 @@ SMODS.Stake{ -- Pink
     above_stake = 'bunc_cyan',
 
     modifiers = function()
-        G.GAME.modifiers.enable_hindered_in_shop = true
+        G.GAME.modifiers.enable_bunc_hindered = true
+    end,
+
+    loc_vars = function(self)
+        local sticker_desc = localize{type="raw_descriptions", key="bunc_hindered", set="Other", vars={}}
+        local sticker_desc_string = ""
+        for i, v in ipairs(sticker_desc) do
+            sticker_desc_string = sticker_desc_string .. v .. " "
+        end
+        sticker_desc_string = string.sub(sticker_desc_string, 1, -2)
+
+        return {vars = { sticker_desc_string } }
     end,
 
     colour = HEX('ff8ea4'),
 
-    pos = coordinate(2),
-    sticker_pos = coordinate(2),
+    pos = coordinate_from_atlas_index(2),
+    sticker_pos = coordinate_from_atlas_index(2),
     atlas = 'bunco_stakes',
     sticker_atlas = 'bunco_stake_stickers'
 }
@@ -8434,13 +8857,24 @@ SMODS.Stake{ -- Magenta
     above_stake = 'bunc_pink',
 
     modifiers = function()
-        G.GAME.modifiers.enable_reactive_in_shop = true
+        G.GAME.modifiers.enable_bunc_reactive = true
+    end,
+
+    loc_vars = function(self)
+        local sticker_desc = localize{type="raw_descriptions", key="bunc_reactive", set="Other", vars={}}
+        local sticker_desc_string = ""
+        for i, v in ipairs(sticker_desc) do
+            sticker_desc_string = sticker_desc_string .. v .. " "
+        end
+        sticker_desc_string = string.sub(sticker_desc_string, 1, -2)
+
+        return {vars = { sticker_desc_string } }
     end,
 
     colour = HEX('cd47ea'),
 
-    pos = coordinate(3),
-    sticker_pos = coordinate(3),
+    pos = coordinate_from_atlas_index(3),
+    sticker_pos = coordinate_from_atlas_index(3),
     atlas = 'bunco_stakes',
     sticker_atlas = 'bunco_stake_stickers'
 }

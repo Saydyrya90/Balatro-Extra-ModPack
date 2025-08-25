@@ -48,16 +48,17 @@ return {
             bunc_repeat = '¡Se repitió!',
             bunc_thoth_tarot = 'Tarot de Thoth',
             bunc_mysterious_tarot = '¿Tarot?',
-            bunc_mysterious_polymino = '¿Poliminó?',
+            bunc_mysterious_polymino = '¿Polimino?',
             bunc_most_played_rank = '(categoría mas jugada)',
             bunc_least_played_hand = '(mano menos jugada)',
             bunc_blade = '(1.5X puntuación de la ciega)',
             bunc_exceeded_score = '¡Excedió el límite!',
+            bunc_volume = 'Volumen',
 
             -- Consumable types
 
-            k_polymino = 'Poliminó',
-            b_polymino_cards = 'Cartas de poliminó',
+            k_polymino = 'Polimino',
+            b_polymino_cards = 'Cartas de polimino',
 
             -- Booster types
 
@@ -118,13 +119,21 @@ return {
 
             bunc_scattering = 'Dispersante',
             bunc_hindered = 'Estorbante',
-            bunc_reactive = 'Reactivo',
+            bunc_reactive = 'Reactiva',
         }
     },
     descriptions = {
         Other = {
             bunc_temporary_extra_chips = {['text'] = {[1] = '{C:chips}+#1#{} fichas extra esta ronda'}},
             bunc_linked_cards = {['text'] = {[1] = '{C:attention}Conectada{} en este grupo:'}},
+            bunc_linked_group = {
+                ['name'] = 'Grupo Conectado',
+                ['text'] = {
+                    [1] = 'Ls cartas conectadas en',
+                    [2] = 'Grupo se sacan, seleccionan',
+                    [3] = 'y destruyen {C:attention}juntas'
+                }
+            },
             bunc_drawn_linked_cards = {['text'] = {[1] = '{C:attention}Conectada{} en grupo en mano'}},
             bunc_exotic_cards = {
                 ['name'] = 'Cartas exoticas',
@@ -157,6 +166,23 @@ return {
                     [1] = 'Crea una {C:attention}etiqueta de ultrafichas'
                 }
             },
+            Enhanced = {
+                m_bunc_copper = {
+                    ['name'] = 'Carta de Cobre',
+                    ['text'] = {
+                        [1] = 'Anota de nuevo si',
+                        [2] = 'está al {C:attention}lado{} de',
+                        [3] = 'otra carta de cobre anotada'
+                    },
+                },
+                m_bunc_cracker = {
+                    ['name'] = 'Carta Galleta',
+                    ['text'] = {
+                        [1] = '{C:attention}Al descartarse{} la carta se',
+                        [2] = 'juega y luego se destruye',
+                    },
+                },
+            },
 
             -- Undiscovered
 
@@ -185,12 +211,12 @@ return {
                 ['text'] = {
                     [1] = 'Saca toda la baraja y',
                     [2] = 'elige {C:attention}#1#{} de hasta',
-                    [3] = '{C:attention}#2# cartas de{C:bunco_virtual_dark} poliminó{} para',
+                    [3] = '{C:attention}#2# cartas de{C:bunco_virtual_dark} polimino{} para',
                     [4] = 'usar de inmediato'
                 }
             },
             p_bunc_virtual_jumbo = {
-                ['name'] = 'Paquete virtual jumbo',
+                ['name'] = 'Paquete jumbo virtual',
                 ['text'] = {
                     [1] = 'Saca toda la baraja y',
                     [2] = 'elige {C:attention}#1#{} de hasta',
@@ -199,11 +225,11 @@ return {
                 }
             },
             p_bunc_virtual_mega = {
-                ['name'] = 'Paquete virtual mega',
+                ['name'] = 'Paquete mega virtual',
                 ['text'] = {
                     [1] = 'Saca toda la baraja y',
                     [2] = 'elige {C:attention}#1#{} de hasta',
-                    [3] = '{C:attention}#2# cartas de{C:bunco_virtual_dark} poliminó{} para',
+                    [3] = '{C:attention}#2# cartas de{C:bunco_virtual_dark} polimino{} para',
                     [4] = 'usar de inmediato'
                 }
             },
@@ -214,7 +240,7 @@ return {
                 ['name'] = 'Dispersante',
                 ['text'] = {
                     [1] = 'Destruye un',
-                    [2] = 'comodín al azar',
+                    [2] = 'comodín al cercano',
                     [3] = 'al venderse o destruirse'
                 }
             },
@@ -265,13 +291,53 @@ return {
         -- Consumables
 
         Tarot = {
+            -- Reworked Tarots
+    
+            c_bunc_wheel_of_fortune = {
+                ['name'] = 'Rueda de la Fortuna',
+                ['text'] = {
+                    [1] = '{C:green}#1# en #2#{} posibilidades de',
+                    [2] = 'añadir {C:dark_edition}Laminado{}, {C:dark_edition}Holográfica{},',
+                    [3] = '{C:dark_edition}Policroma{}, o {C:dark_edition}Brillantina{} a',
+                    [4] = 'un {C:attention}Comodín{} al azar'
+                }
+            },
+        
+            -- Main Tarots
+        
+            c_bunc_adjustment = {
+                ['name'] = 'Ajuste',
+                ['text'] = {
+                    [1] = 'Mejora hasta {C:attention}#1#{}',
+                    [2] = 'cartas seleccionadas a',
+                    [3] = '{C:attention}#2#s'
+                },
+            },
             c_bunc_art = {
                 ['name'] = 'El arte',
                 ['text'] = {
                     [1] = 'Mejora {C:attention}#1#{}',
                     [2] = 'cartas seleccionadas a',
                     [3] = '{C:attention}#2#'
-                }
+                },
+            },
+            c_bunc_universe = {
+                ['name'] = 'El Universo',
+                ['text'] = {
+                    [1] = '{C:attention}Cambia al azar{} el palo,',
+                    [2] = 'categoría, mejora, edición,',
+                    [3] = 'y sello de hasta {C:attention}#1#{}',
+                    [4] = 'cartas seleccionadas'
+                },
+            },
+            c_bunc_lust = {
+                ['name'] = 'Lujuría',
+                ['text'] = {
+                    [1] = 'Otorga {C:money}$#1#{} por cada',
+                    [2] = 'carta en mano',
+                    [3] = '{C:inactive}(Máximo de {C:money}$#2#{C:inactive})',
+                    [4] = '{C:inactive}(Actualmente {C:money}$#3#{C:inactive})'
+                },
             },
             c_bunc_sky = {
                 ['name'] = 'El cielo',
@@ -286,7 +352,7 @@ return {
                 ['text'] = {
                     [1] = 'Convierte hasta',
                     [2] = '{C:attention}#1#{} cartas seleccionadas',
-                    [3] = 'en {C:bunc_halberds}Alabardas{}',
+                    [3] = 'en {C:bunc_halberds}Alabardas{}'
                 }
             },
         },
@@ -305,6 +371,15 @@ return {
             },
         },
         Spectral = {
+
+            c_bunc_aura = {
+                ['name'] = 'Aura',
+                ['text'] = {
+                    [1] = 'Otorga edición {C:dark_edition}Laminada{}, {C:dark_edition}Holografica{},',
+                    [2] = '{C:dark_edition}Policromo{}, o {C:dark_edition}Brillantina{}',
+                    [3] = 'a {C:attention}1{} carta seleccionada'
+                }
+            },
             c_bunc_cleanse = {
                 ['name'] = 'Purificar',
                 ['text'] = {
@@ -402,12 +477,13 @@ return {
                 ['name'] = 'Luchador',
                 ['text'] = {
                     [1] = 'Vende esta carta',
-                    [2] = 'para crear 1 {C:attention}Etiqueta rompeciegas',
-                    [3] = 'gratis'
+                    [2] = 'para crear 1',
+                    [3] = '{C:attention}Etiqueta rompeciegas',
+                    [4] = 'gratis'
                 }
             },
             j_bunc_red_card = {
-                ['name'] = 'Carta roja',
+                ['name'] = 'Tarjeta roja',
                 ['text'] = {
                     [1] = 'Este comodín obtiene {C:red}+#1#{} multi',
                     [2] = 'por cada elección omitida',
@@ -418,16 +494,23 @@ return {
 
             -- Main Jokers
 
-            j_bunc_cassette = {
-                ['name'] = 'Casete',
+            j_bunc_cassette_a = {
+                ['name'] = 'Cassette (Lado A)',
                 ['text'] = {
-                    [1] = 'Al descartar, da vuelta al comodín al otro lado',
-                    [2] = '{C:attention}Lado A:{} Las cartas con palo claro',
-                    [3] = 'otorgan {C:chips}+#1#{} fichas cuando anotan',
-                    [4] = '{C:attention}Lado B:{} Las cartas con palo oscuro',
-                    [5] = 'otorgan {C:mult}+#2#{} multi cuando anotan'
-                    -- TODO would be good to have a line for the side
-                    -- or colorize the active side
+                    [1] = 'Las cartas de {C:attention}palo claro',
+                    [2] = 'otorgan {C:chips}+#1#{} fichas al anotar'
+                }
+            },
+            j_bunc_cassette_b = {
+                ['name'] = 'Cassette (Lado B)',
+                ['text'] = {
+                    [1] = 'Las cartas de {C:attention}palo oscuro',
+                    [2] = 'otorgan {C:mult}+#2#{} multi al anotar'
+                }
+            },
+            j_bunc_cassette_extra = {
+                ['text'] = {
+                    [1] = '{C:inactive}Al descartar, cambia de lado'
                 }
             },
             j_bunc_mosaic = {
@@ -489,9 +572,9 @@ return {
                 ['name'] = 'Terror',
                 ['text'] = {
                     [1] = 'Después de anotar tu {C:attention}última{} {C:blue}mano{},',
-                    [2] = 'mejórala por {C:attention}2 niveles{}',
-                    [3] = 'y {C:attention}destruye{} las cartas anotadas',
-                    [4] = '{C:red}Pierde{} todos los {C:attention}niveles ganados{} si remueves este comodín'
+                    [2] = 'mejórala por {C:attention}2 niveles{} y {C:attention}destruye{}',
+                    [3] = 'las cartas anotadas, {C:red}pierde{} todos los',
+                    [4] = '{C:attention}niveles ganados{} si remueves este comodín'
                 },
                 ['unlock'] = {
                     [1] = 'Reduce tu baraja',
@@ -503,7 +586,7 @@ return {
                 ['name'] = 'Comodín prehistorico',
                 ['text'] = {
                     [1] = 'Cartas jugadas que comparten',
-                    [2] = 'ambos {C:attention}categoría y palo{} con una',
+                    [2] = '{C:attention}categoría y palo{} con una',
                     [3] = '{C:attention}carta que ya anotó{} esta ronda',
                     [4] = 'otorgan {C:mult}+#1#{} multi'
                 },
@@ -515,8 +598,8 @@ return {
             j_bunc_linocut = {
                 ['name'] = 'Comodín linograbado',
                 ['text'] = {
-                    [1] = 'Cuando juegas exactamente {C:attention}2{} cartas',
-                    [2] = 'que forman un {C:attention}Par{},',
+                    [1] = 'Cuando juegas exactamente {C:attention}2{}',
+                    [2] = 'cartas que forman un {C:attention}Par{}',
                     [3] = "convierte el palo de la carta {C:attention}izquierda{}",
                     [4] = "en el palo de la carta {C:attention}derecha{}",
                     [5] = '{C:inactive}(Arrastra para acomodar)'
@@ -568,10 +651,11 @@ return {
             j_bunc_knight = {
                 ['name'] = 'Caballero comodín',
                 ['text'] = {
-                    [1] = 'Cuando la {C:attention}ciega{} es seleccionada, {C:attention}mezcla{} todos los comodines',
-                    [2] = 'y este comodín obtiene {C:mult}+#1#{} multi,',
-                    [3] = 'se {C:red}reinicia{} cuando cualquier comodín es reacomodado',
-                    [4] = '{C:inactive}(Actual {C:mult}+#2#{C:inactive} multi)'
+                    [1] = 'Al seleccionar la {C:attention}ciega{}, {C:attention}mezcla{} todos los',
+                    [2] = 'comodines y este comodín obtiene {C:mult}+#1#{} multi',
+                    [3] = 'se {C:red}reinicia{} cuando cualquier comodín',
+                    [4] = 'es reacomodado',
+                    [5] = '{C:inactive}(Actual {C:mult}+#2#{C:inactive} multi)'
                 },
                 ['unlock'] = {
                     [1] = 'Derrota a la {E:1,C:attention}Bellota Ambarina',
@@ -625,8 +709,8 @@ return {
                 ['name'] = 'Carnaval',
                 ['text'] = {
                     [1] = 'Después de derrotar a la {C:attention}ciega jefe{},',
-                    [2] = '{C:attention}destruye{} un comodín al azar para',
-                    [3] = 'regresar a una apuesta inicial anterior, la proxima vez',
+                    [2] = '{C:attention}destruye{} un comodín al azar para regresar',
+                    [3] = ' a una apuesta inicial anterior, la proxima vez',
                     [4] = 'solo funciona en una apuesta inicial mayor'
                     -- TODO needs a line for whether it's active / ante it will be active
                 },
@@ -638,8 +722,8 @@ return {
             j_bunc_sledgehammer = {
                 ['name'] = 'Martillo',
                 ['text'] = {
-                    [1] = 'Las {C:attention}cartas de vidrio{} otorgan +{X:mult,C:white}X#1#{} multi',
-                    [2] = 'pero siempre se rompen'
+                    [1] = 'Las {C:attention}cartas de vidrio{} otorgan {X:mult,C:white}X#1#{}',
+                    [2] = 'multi pero siempre se rompen'
                 },
                 ['unlock'] = {
                     [1] = 'Juega una mano de 5 cartas',
@@ -651,7 +735,7 @@ return {
                 ['name'] = 'Colgante de puerta',
                 ['text'] = {
                     [1] = 'Los comodines {C:blue}comunes{} no aparecen',
-                    [2] = '{s:0.8}Aparecen diferentes rarezas en vez'
+                    [2] = '{s:0.8}{C:inactive}Los otros comodines son más comunes{}'
                 },
                 ['unlock'] = {
                     [1] = 'Gana una partida sin',
@@ -662,20 +746,18 @@ return {
             j_bunc_fingerprints = {
                 ['name'] = 'Huellas dactilares',
                 ['text'] = {
-                    [1] = 'Las cartas anotadas en la {C:attention}mano ganadora{}',
-                    [2] = 'obtienen {C:chips}+#1#{} fichas solo',
+                    [1] = 'Las cartas anotadas en la {C:attention}mano{}',
+                    [2] = '{C:attention}ganadora{} obtienen {C:chips}+#1#{} fichas solo',
                     [3] = 'por la siguiente ronda',
                 }
             },
             j_bunc_zero_shapiro = {
-                ['name'] = 'El cero',
+                ['name'] = 'Cero Shapiro',
                 ['text'] = {
-                    [1] = 'Este comodín obtiene {C:attention}#1#X{} a',
-                    [2] = 'las {C:green,E:1,S:1.1}probabilidades{} {C:attention}esta ronda{} cuando una',
-                    [3] = 'carta con categoría {C:attention}ninguna{}, {C:attention}de cero{}, o {C:attention}no-contable{}',
-                    [4] = 'anota {C:inactive}(K, Q, J, 0, sin categoria)',
-                    [5] = '{C:inactive}(Actual {C:attention}X#2#{C:inactive} a las {C:green,E:1,S:1.1}probabilidades{C:inactive})'
-                    -- TODO not sure how to word non-countable
+                    [1] = 'Anotar {C:attention}Ks{}, {C:attention}Qs{}, {C:attention}Js{},',
+                    [2] = 'o {C:attention}cartas sin categoria',
+                    [3] = 'tiene {C:green}#1# en #2#{} posibilidades',
+                    [4] = 'de crear una {C:attention}Etiqueta D6',
                 }
             },
             j_bunc_nil_bill = {
@@ -696,7 +778,7 @@ return {
             j_bunc_registration_plate = {
                 ['name'] = 'Matrícula',
                 ['text'] = {
-                    [1] = '#1#',
+                    [1] = '#1#, #2#, #3#, #4# y #5#',
                     [2] = 'tiene las fichas y el multi de todas',
                     [3] = 'las {C:attention}manos de póker{} jugadas esta partida',
                     [4] = '{s:0.8}La combinación cambia cada ronda'
@@ -722,9 +804,9 @@ return {
             j_bunc_neon = {
                 ['name'] = 'Comodín de neón',
                 ['text'] = {
-                    [1] = 'Este comodín obtiene {X:mult,C:white}X#1#{} multi',
-                    [2] = 'por cada carta {C:attention}debilitada{} anotada',
-                    [3] = '{C:inactive}(Actual {X:mult,C:white}X#2#{C:inactive} multi)'
+                    [1] = 'Las cartas mejoradas',
+                    [2] = 'obtienen edición {C:dark_edition}Fluorescente{}',
+                    [3] = 'al {C:attention}anotar'
                 },
                 ['unlock'] = {
                     [1] = 'Juega una mano de 5 cartas',
@@ -735,8 +817,8 @@ return {
             j_bunc_gameplan = {
                 ['name'] = 'Plan de juego',
                 ['text'] = {
-                    [1] = 'Los {C:attention}comodines{} a los lados de este comodín',
-                    [2] = 'son {C:red}debilitados{} y',
+                    [1] = 'Los {C:attention}comodines{} a los lados de este',
+                    [2] = 'comodín son {C:red}debilitados{} y',
                     [3] = 'otorgan {C:mult}+#1#{} multi'
                 },
                 ['unlock'] = {
@@ -856,11 +938,10 @@ return {
             j_bunc_pawn = {
                 ['name'] = 'Peón',
                 ['text'] = {
-                    [1] = 'Cartas de la categoría',
-                    [2] = ' {C:attention}mas baja{} en tu baraja',
-                    [3] = '{C:attention}incrementan en categoría{} cuando anotan'
-                    -- TODO "when scored" is only accurate
-                    -- if the card's rank changes during scoring
+                    [1] = 'Las cartas de cartegoría',
+                    [2] = 'mas {C:attention}baja{} en un bajara',
+                    [3] = '{C:attention}aumentan un rango{} al anotar',
+                    [4] = '{C:inactive}(Rango más bajo: #1#)'
                 }
             },
             j_bunc_puzzle_board = {
@@ -869,8 +950,8 @@ return {
                     [1] = 'Cuando se usa una carta de {C:tarot}tarot{},',
                     [2] = '{C:green}#1# en #2#{} probabilidades de agregar',
                     [3] = 'edición {C:dark_edition}laminada{}, {C:dark_edition}holográfica{}, o',
-                    [4] = '{C:dark_edition}polícroma{} al azar',
-                    [5] = ' a una carta seleccionada'
+                    [4] = '{C:dark_edition}polícroma{} al azar a una',
+                    [5] = 'carta seleccionada'
                 }
             },
             j_bunc_vandalism = {
@@ -898,9 +979,10 @@ return {
             j_bunc_doodle = {
                 ['name'] = 'Garabato',
                 ['text'] = {
-                    [1] = '{C:attention}Copia{} el primer consumible',
-                    [2] = 'usado esta ronda',
-                    [3] = '{C:inactive}(Debe haber espacio)'
+                    [1] = '{C:attention}Copia{} la primera carta del',
+                    [2] = '{C:tarot}Tarot{} o {C:planet}Planetaria{} usada',
+                    [3] = 'esta ronda',
+                    [4] = '{C:inactive}(Debe haber espacio)'
                 },
                 ['unlock'] = {
                     [1] = 'Gana {C:attention,E:1}10{} partidas',
@@ -914,11 +996,11 @@ return {
                 }
             },
             j_bunc_running_joke = {
-                ['name'] = 'Chiste repetido',
+                ['name'] = 'Chiste recurrente',
                 ['text'] = {
                     [1] = 'Crea un "{C:attention}Comodín{}"',
-                    [2] = '{C:dark_edition}negativo{} al',
-                    [3] = 'principio de cada tienda'
+                    [2] = '{C:dark_edition}negativo{} al principio',
+                    [3] = 'de cada tienda'
                 }
             },
             j_bunc_on_broadway = {
@@ -932,8 +1014,8 @@ return {
             j_bunc_rasta = {
                 ['name'] = 'Rasta',
                 ['text'] = {
-                    [1] = '{C:mult}+#1#{} multi si',
-                    [2] = 'ninguna {C:attention}carta mejorada{}',
+                    [1] = '{C:mult}+#1#{} multi si ninguna',
+                    [2] = '{C:attention}carta mejorada{}',
                     [3] = 'anota'
                 },
                 ['unlock'] = {
@@ -969,9 +1051,11 @@ return {
             j_bunc_bounty_hunter = {
                 ['name'] = 'Cazarrecompensas',
                 ['text'] = {
-                    [1] = '{C:mult}+#1#{} multi por',
-                    [2] = 'cada {C:money}$1{} debajo de {C:money}$0',
-                    [3] = '{C:inactive}(Actual {C:mult}+#2#{C:inactive} multi)'
+                    [1] = 'Todas las fuentes de',
+                    [2] = 'dinero otorgan {C:money}#1#${} menos y este',
+                    [3] = 'comodín gana {C:mult}+#1#{} Mult por cada',
+                    [4] = 'fuente de dinero',
+                    [5] = '{C:inactive}(Actualmente {C:mult}+#2#{C:inactive} Mult)'
                 },
                 ['unlock'] = {
                     [1] = 'Ten menos de {E:1,C:attention}$#1#',
@@ -1018,9 +1102,9 @@ return {
             j_bunc_glue_gun = {
                 ['name'] = 'Pistola de pegamento',
                 ['text'] = {
-                    [1] = 'Vende esta carta para',
-                    [2] = '{C:attention}conectar{} #1# cartas',
-                    [3] = 'seleccionadas'
+                    [1] = 'Vende esta carta',
+                    [2] = 'para {C:attention}unir{} hasta #1#',
+                    [3] = 'cartas seleccionadas'
                 }
             },
             j_bunc_taped = {
@@ -1043,7 +1127,7 @@ return {
             j_bunc_headache = {
                 ['name'] = 'Dolor de cabeza',
                 ['text'] = {
-                    [1] = 'Crea una carta de {C:bunco_virtual_dark}poliminó{}',
+                    [1] = 'Crea una etiqueta de {C:bunco_virtual_dark}Arcade{}',
                     [2] = 'por cada {C:attention}#1#{} cartas de juego',
                     [3] = 'destruidas {C:inactive}(Debe haber espacio)',
                     [4] = '{C:inactive}({C:attention}#2#{C:inactive}/#1# cartas destruidas)'
@@ -1092,6 +1176,22 @@ return {
                     [4] = '{C:inactive}(Actual {C:mult}+#2#{C:inactive} multi)'
                 }
             },
+            j_bunc_hardtack = {
+                ['name'] = 'Galleta Dura',
+                ['text'] = {
+                    [1] = 'Las{C:attention} cartas galleta{}',
+                    [2] = 'no se destruyen',
+                    [3] = 'al descartarse'
+                }
+            },
+            j_bunc_pica = {
+                ['name'] = 'Comodín Picador',
+                ['text'] = {
+                    [1] = 'Cuando una {C:attention}carta galleta{}',
+                    [2] = 'se descarta, juega',
+                    [3] = 'todas las cartas descartadas'
+                }
+            },
 
             -- Exotic Jokers
 
@@ -1128,21 +1228,20 @@ return {
                 }
             },
             j_bunc_wishalloy = {
-                ['name'] = 'Metál de los deseos',
+                ['name'] = 'Deseoaleación',
                 ['text'] = {
-                    [1] = '{C:green}#1# en #2#{} probabilidades para',
-                    [2] = 'los {C:bunc_fleurons}Florones{} jugados de',
-                    [3] = 'ganar {C:money}${} igual a las',
-                    [4] = "fichas anotadas de la carta"
+                    [1] = '{C:green}#1# en #2#{} probabilidades de que',
+                    [2] = 'los {C:bunc_fleurons}Florones{} jugados',
+                    [3] = 'otorguen su valor en',
+                    [4] = "{C:money}Dinero{} al anotar"
                 }
             },
             j_bunc_unobtanium = {
-                ['name'] = 'Inobtanio',
+                ['name'] = 'Unobtainio',
                 ['text'] = {
-                    [1] = 'Las cartas jugadas de',
-                    [2] = '{C:bunc_halberds}Alabarda{} otorgan',
-                    [3] = '{C:chips}+#1#{} fichas y {C:mult}+#2#{} multi',
-                    [4] = "cuando anotan"
+                    [1] = 'Las cartas de {C:bunc_halberds}Alabarda{}',
+                    [2] = 'otorgan {C:chips}+#1#{} fichas y {C:mult}+#2#{} multi',
+                    [3] = 'cuando anotan'
                 }
             },
             j_bunc_dynasty = {
@@ -1156,27 +1255,25 @@ return {
             j_bunc_magic_wand = {
                 ['name'] = 'Varita mágica',
                 ['text'] = {
-                    [1] = 'Este comodín obtiene {X:mult,C:white}X#1#{} multi',
-                    [2] = 'por cada mano {C:attention}consecutiva{} jugada',
-                    [3] = 'que contiene un {C:attention}Espectro{}',
-                    [4] = '{C:inactive}(Actual {X:mult,C:white}X#2#{C:inactive} multi)'
+                    [1] = 'Este comodín obtiene {C:mult}+#1#{} multi',
+                    [2] = 'por cada mano de {C:attention}Espectro{} jugada',
+                    [3] = '{C:inactive}(Actual {X:mult,C:white}X#2#{C:inactive} multi)'
                 }
             },
             j_bunc_starfruit = {
                 ['name'] = 'Carambola',
                 ['text'] = {
-                    [1] = '{C:green}#1# en #2#{} probabilidades de mejorar el nivel de la',
-                    [2] = '{C:attention}mano de póker{} jugada si contiene un {C:attention}Espectro',
-                    [3] = '{C:green}#1# en #3#{} probabilidades de destruir este comodín al final de la ronda',
-                    [4] = 'si se jugó una mano que contiene un {C:attention}Espectro{} esta ronda'
-                    -- TODO this joker is way too long
+                    [1] = 'Mejora la mano jugada si',
+                    [2] = 'contiene un {C:attention}Espectro',
+                    [3] = '{C:green}#1# en #2#{} probabilidades de',
+                    [4] = 'destruirse al final de la ronda'
                 }
             },
             j_bunc_fondue = {
                 ['name'] = 'Fondue',
                 ['text'] = {
                     [1] = 'Las cartas anotadas en la',
-                    [2] = '{C:attention}primera mano{} de la ronda son',
+                    [2] = '{C:attention}primera mano{} son',
                     [3] = 'convertidas a {C:bunc_fleurons}Florones'
                 }
             },
@@ -1197,8 +1294,8 @@ return {
             j_bunc_roygbiv = {
                 ['name'] = 'Roy G. Biv',
                 ['text'] = {
-                    [1] = '{C:green}#1# en #2#{} probabilidades de agregar',
-                    [2] = 'edición {C:dark_edition}polícroma{}',
+                    [1] = '{C:green}#1# en #2#{} probabilidades de',
+                    [2] = 'agregar edición {C:dark_edition}polícroma{}',
                     [3] = 'a una carta anotada al azar si',
                     [4] = 'la mano contiene un {C:attention}Espectro'
                 }
@@ -1206,8 +1303,8 @@ return {
             j_bunc_rigoletto = {
                 ['name'] = 'Rigoletto',
                 ['text'] = {
-                    [1] = '{X:mult,C:white}X#1#{} multi por cada {C:bunco_exotic}carta exotica{}',
-                    [2] = 'en tu {C:attention}baraja',
+                    [1] = '{X:mult,C:white}X#1#{} multi por cada {C:bunco_exotic}carta{}',
+                    [2] = '{C:bunco_exotic}exotica{} en tu {C:attention}baraja',
                     [3] = '{C:inactive}(Actual {X:mult,C:white}X#2#{C:inactive} multi)'
                 },
                 ['unlock'] = {
@@ -1219,8 +1316,8 @@ return {
             bl_bunc_paling = {
                 ['name'] = 'La cerca',
                 ['text'] = {
-                    [1] = 'Jugar o descartar cuesta',
-                    [2] = 'ambos mano y descarte'
+                    [1] = 'Pierde $1 por',
+                    [2] = 'carta descartada'
                 }
             },
             bl_bunc_umbrella = {
@@ -1233,7 +1330,8 @@ return {
             bl_bunc_tine = {
                 ['name'] = 'La punta',
                 ['text'] = {
-                [1] = 'Cada #1# es debilitado'
+                [1] = 'Cada #1#',
+                [2] = 'es debilitada'
                 }
             },
             bl_bunc_swing = {
@@ -1324,14 +1422,15 @@ return {
             bl_bunc_cadaver = {
                 ['name'] = 'El cadáver',
                 ['text'] = {
-                    [1] = 'No se deben jugar cartas de figuras'
+                    [1] = 'Se debe jugar al menos una',
+                    [2] = 'carta de figura para anotar'
                 }
             },
             bl_bunc_wind = {
                 ['name'] = 'El viento',
                 ['text'] = {
-                    [1] = 'El comodín más izquierdo',
-                    [2] = 'se debilita'
+                    [1] = 'El comodín más a la',
+                    [2] = 'izquierda se debilita'
                 }
             },
             bl_bunc_prince = {
@@ -1359,44 +1458,46 @@ return {
             -- Final
 
             bl_bunc_final_crown = {
-                ['name'] = 'Corona cartujo',
+                ['name'] = 'Corona Cartuja',
                 ['text'] = {
-                    [1] = 'Todas las cartas de palo base',
-                    [2] = 'de Espadas, Corazón, Trébol y Diamante',
+                    [1] = 'Todas las cartas de los palos',
+                    [2] = 'Espada, Corazón, Trébol y Diamante',
                     [3] = 'se debilitan'
                 }
             },
             bl_bunc_final_trident = {
-                ['name'] = 'Tridente bermellón',
+                ['name'] = 'Tridente Bermellón',
                 ['text'] = {
-                    [1] = 'Sin tiendas esta apuesta inicial'
+                    [1] = '+1X a la puntuación por',
+                    [2] = 'cada compra antes de esta ciega'
                 }
             },
             bl_bunc_final_tower = {
-                ['name'] = 'Torre índigo',
+                ['name'] = 'Torre de Índigo',
                 ['text'] = {
-                    [1] = 'Las cartas no jugadas previamente',
-                    [2] = 'esta apuesta inicial se debilitan'
+                    [1] = 'Las cartas no jugadas',
+                    [2] = 'esta apuesta se debilitan'
                 }
             },
             bl_bunc_final_dagger = {
-                ['name'] = 'Daga magenta',
+                ['name'] = 'Daga Magenta',
                 ['text'] = {
                     [1] = 'Descartar cartas las juega',
-                    [2] = 'y subtrae el valor de la puntuación'
+                    [2] = 'y subtrae el valor a la puntuación'
                 }
             },
             bl_bunc_final_shield = {
-                ['name'] = 'Escudo turquesa',
+                ['name'] = 'Escudo Turquesa',
                 ['text'] = {
-                    [1] = 'La puntuación excediente en esta apuesta inicial',
-                    [2] = "se agrega a la puntuación requerida de esta ciega"
+                    [1] = 'La puntuación excedente en esta',
+                    [2] = "apuesta inicial se agrega a la",
+                    [3] = "puntuación requerida de esta ciega"
                 }
             }
         },
         Back = {
             b_bunc_fairy = {
-                ['name'] = 'Baraja hada',
+                ['name'] = 'Baraja de hadas',
                 ['text'] = {
                     [1] = 'Despues de derrotar cada',
                     [2] = '{C:attention}ciega jefe{}, agrega #1#',
@@ -1411,9 +1512,9 @@ return {
             b_bunc_digital = {
                 ['name'] = 'Baraja digital',
                 ['text'] = {
-                    [1] = 'Las cartas de {C:bunco_virtual_dark}poliminó{} pueden',
+                    [1] = 'Las cartas de {C:bunco_virtual_dark}polimino{} pueden',
                     [2] = 'aparecer en la tienda,',
-                    [3] = "comienza con {C:bunco_virtual_dark,T:c_bunc_the_i}La I{}"
+                    [3] = "comienza con la{C:bunco_virtual_dark,T:c_bunc_the_i} I{}"
                 }
             }
         },
@@ -1432,8 +1533,15 @@ return {
                 ['name'] = 'Etiqueta doble',
                 ['text'] = {
                     [1] = 'Otorga una copia de',
-                    [2] = 'la {C:attention}etiqueta{} siguiente seleccionada',
+                    [2] = 'la siguiente {C:attention}etiqueta{} seleccionada',
                     [3] = 'a excepción de {s:0.6,C:attention}Etiquetas doble y triple{s:0.8}'
+                }
+            },
+            tag_bunc_d_six = {
+                ['name'] = 'Etiqueta D6',
+                ['text'] = {
+                    [1] = 'Agrega un {C:green}Cambio{} gratis',
+                    [2] = 'en la siguiente tienda'
                 }
             },
 
@@ -1468,15 +1576,15 @@ return {
                 ['name'] = 'Etiqueta brillantina',
                 ['text'] = {
                     [1] = 'El próximo comodín de la',
-                    [2] = 'tienda de la edición base es gratis y',
-                    [3] = 'se vuelve {C:dark_edition}brillantino'
+                    [2] = 'tienda es gratis y tiene',
+                    [3] = 'edición {C:dark_edition}brillantina'
                 }
             },
             tag_bunc_fluorescent = {
                 ['name'] = 'Etiqueta fluorescente',
                 ['text'] = {
                     [1] = 'El próximo comodín de la',
-                    [2] = 'tienda de la edición base es gratis y',
+                    [2] = 'tienda es gratis y',
                     [3] = 'se vuelve {C:dark_edition}fluorescente'
                 }
             },
@@ -1623,7 +1731,7 @@ return {
             v_bunc_cups_n_balls = {
                 ['name'] = "Vasos y bolas",
                 ['text'] = {
-                    [1] = '{C:attention}+1{} ranura de paquete potenciador',
+                    [1] = '{C:attention}+1{} paquete potenciador',
                     [2] = 'disponible en la tienda'
                 }
             },
@@ -1632,7 +1740,7 @@ return {
                 ['text'] = {
                     [1] = 'Renueva los {C:attention}contenidos',
                     [2] = 'de los paquetes potenciadores',
-                    [3] = '{C:attention}1{} vez por paquete'
+                    [3] = '{C:attention}1{} vez'
                 },
                 ['unlock'] = {
                     [1] = 'Abre {E:1,C:attention}#1#',
@@ -1691,7 +1799,7 @@ return {
             v_bunc_polybius = {
                 ['name'] = 'Polybius',
                 ['text'] = {
-                    [1] = 'Las cartas de {C:bunco_virtual_dark}poliminó{} permiten',
+                    [1] = 'Las cartas de {C:bunco_virtual_dark}polimino{} permiten',
                     [2] = 'conectar {C:attention}una carta{} más',
                     [3] = '{s:0.6,C:inactive}La carta extra puede ser de cualquier propiedad'
                 },
@@ -1711,27 +1819,34 @@ return {
                     [3] = 'carta de cobre anotada'
                 },
             },
+            m_bunc_cracker = {
+                ['name'] = 'Carta Galleta',
+                ['text'] = {
+                    [1] = '{C:attention}Al descartarse{} la carta se',
+                    [2] = 'juega y luego se destruye',
+                },
+            },
         },
         Stake = {
             stake_bunc_cyan = {
                 ['name'] = 'Pozo cian',
                 ['text'] = {
                     [1] = 'La tienda puede tener comodines {C:attention}dispersantes{}',
-                    [2] = '{C:inactive,s:0.8}(Destruye un comodín al azar al venderse o destruirse)'
+                    [2] = '{C:inactive,s:0.8}(#1#)',
                 }
             },
             stake_bunc_pink = {
                 ['name'] = 'Pozo rosa',
                 ['text'] = {
                     [1] = 'La tienda puede tener comodines {C:attention}estorbantes{}',
-                    [2] = '{C:inactive,s:0.8}(Se queda en su lugar hasta el fin de la ronda despues de ser vendido)'
+                    [2] = '{C:inactive,s:0.8}(#1#)',
                 }
             },
             stake_bunc_magenta = {
                 ['name'] = 'Pozo magenta',
                 ['text'] = {
                     [1] = 'La tienda puede tener comodines {C:attention}reactivos{}',
-                    [2] = '{C:inactive,s:0.8}(Se debilita si no se omite ninguna ciega esta apuesta inicial)'
+                    [2] = '{C:inactive,s:0.8}(#1#)',
                 }
             }
         }

@@ -8,7 +8,7 @@
 	"main_file": "ReduxArcanum.lua",
 	"badge_colour": "C09D75",
 	"badge_text_colour": "FFFFFF",
-	"version": "2.0.2b",
+	"version": "2.0.3",
 	"dependencies": [
 		"Steamodded (>=1.0.0~BETA-0711a)",
 		"Lovely (>=0.7.1)"

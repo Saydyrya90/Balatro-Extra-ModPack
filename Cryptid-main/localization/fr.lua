@@ -111,8 +111,8 @@ return {
 				name = "Jeu Critique",
 				text = {
 					"Après chaque main jouée,",
-					"{C:green}#1# chance#<s>1# sur 4{} d'obtenir {X:dark_edition,C:white} ^2 {} Multi",
-					"{C:green}#1# chance#<s>1# sur 8{} d'obtenir {X:dark_edition,C:white} ^0.5 {} Multi",
+					"{C:green}#1# chance#<s>1# sur #2#{} d'obtenir {X:dark_edition,C:white} ^2 {} Multi",
+					"{C:green}#1# chance#<s>1# sur #3#{} d'obtenir {X:dark_edition,C:white} ^0.5 {} Multi",
 				},
 				unlock = {
 					"Obtenir un {C:attention}Joker Truqué",
@@ -285,7 +285,7 @@ return {
 				name = "Jeu Légendaire",
 				text = {
 					"Démarre avec un Joker {C:legendary}Légendaire{C:legendary}",
-					"{C:green}1 chance sur 5{} d'en créer un autre",
+					"{C:green}#1# chance sur #2#{} d'en créer un autre",
 					"lorsque la Blinde de Boss est battue",
 					"{C:inactive}(selon la place disponible)",
 				},
@@ -4391,6 +4391,15 @@ return {
 			},
 		},
 		Other = {
+			alt_wheel_of_fortune = {
+				name = "La Roue de Fortune",
+				text = {
+					"{C:green}#1# chance(s) sur #2#{} d'ajouter une édition",
+					"{C:dark_edition}Brillantes{}, {C:dark_edition}Holographique{} ou",
+					"{C:dark_edition}Polychrome{}",
+					"à un {C:attention}Joker au hasard",
+				},
+			},
 			disabled = {
 				name = "Désactivé",
 				text = {
@@ -5093,6 +5102,7 @@ return {
 			cry_joke_placeholder = "(multiple de 8)",
 
 			k_code = "Code",
+			k_chips = "Jetons",
 			k_content_set = "Set à thème",
 			b_content_sets = "Sets à thème",
 			--Why aren't these in vanilla?

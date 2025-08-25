@@ -1,0 +1,12 @@
+{
+	"id": "BALXBAL",
+	"name": "Balatro Collab",
+	"author": ["Kitty (Kittyknight. on discord)"],
+	"description": "Finally, Balatro is collaborating with the hit indie game Balatro.",
+	"prefix": "balx",
+	"main_file": "balatro.lua",
+	"version": "1.0.1a",
+	"dependencies": [
+		"Steamodded (>=1.0.0~ALPHA-1403a)"
+	]
+}

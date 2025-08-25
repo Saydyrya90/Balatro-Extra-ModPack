@@ -241,22 +241,22 @@ payload = '''
 if v == 'polychrome_alchemical' then v = 'polychrome' end
 '''
 
-# # generate_card_ui()
-# [[patches]]
-# [patches.pattern]
-# target = 'functions/common_events.lua'
-# pattern = '''v = (v == 'holographic' and 'holo' or v)'''
-# position = 'after'
-# match_indent = true
-# times = 1
-# payload = '''
-# if v == 'polychrome_alchemical' then info_queue[#info_queue+1] = {key = 'e_polychrome_alchemical', set = 'Edition', config = {extra = 1.5}} end
-# '''
-
+# Give polychrome alchemicals correct description
+# Pre v0817c
 [[patches]]
 [patches.pattern]
 target = "card.lua"
 pattern = "badges[#badges + 1] = 'negative_consumable'"
+position = "after"
+payload = """
+elseif self.edition.type == 'polychrome' and (self.ability.set == 'Alchemical') then
+    badges[#badges + 1] = 'polychrome_alchemical'"""
+match_indent = true
+# Post v0817c
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "badges[#badges + 1] = G.P_CENTERS[self.edition.key]:card_limit_key(self)"
 position = "after"
 payload = """
 elseif self.edition.type == 'polychrome' and (self.ability.set == 'Alchemical') then
@@ -280,7 +280,6 @@ end
 '''
 
 # Remove polychrome alchemical from debug
-
 # G.FUNCS.use_card()
 [[patches]]
 [patches.pattern]
@@ -288,7 +287,7 @@ target = "engine/controller.lua"
 pattern = '''if found_index > #G.P_CENTER_POOLS.Edition then found_index = found_index - #G.P_CENTER_POOLS.Edition end'''
 position = "before"
 payload = '''
-if G.P_CENTER_POOLS.Edition[found_index] and G.P_CENTER_POOLS.Edition[found_index].key == "e_polychrome_alchemical" then
+while G.P_CENTER_POOLS.Edition[found_index] and G.P_CENTER_POOLS.Edition[found_index].skip_debug do
   found_index = found_index + 1
 end
 '''

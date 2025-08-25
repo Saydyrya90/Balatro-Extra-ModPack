@@ -942,27 +942,40 @@ local candy_basket = {
 			card.ability.immutable.current_win_count = card.ability.immutable.current_win_count + 1
 
 			if G.GAME.blind.boss then
-				card.ability.extra.candies = lenient_bignum(
-					card.ability.extra.candies
-						+ to_big(card.ability.extra.candy_mod) * card.ability.extra.candy_boss_mod
-				)
+				SMODS.scale_card(card, {
+					ref_table = card.ability.extra,
+					ref_value = "candies",
+					scalar_value = "candy_boss_mod",
+					operation = function(ref_table, ref_value, initial, change)
+						ref_table[ref_value] = initial + change * card.ability.extra.candy_boss_mod
+					end,
+					no_message = true,
+				})
 			end
 			if card.ability.immutable.current_win_count >= card.ability.immutable.wins_needed then
 				card.ability.immutable.current_win_count = 0
-				card.ability.extra.candies =
-					lenient_bignum(to_big(card.ability.extra.candies) + card.ability.extra.candy_mod)
-				card_eval_status_text(card, "extra", nil, nil, nil, { message = localize("k_upgrade_ex") })
+				SMODS.scale_card(card, {
+					ref_table = card.ability.extra,
+					ref_value = "candies",
+					scalar_value = "candy_mod",
+				})
 			end
 		end
 		if context.forcetrigger then
-			card.ability.immutable.current_win_count = card.ability.immutable.current_win_count + 1
-
-			card.ability.extra.candies = lenient_bignum(
-				card.ability.extra.candies + to_big(card.ability.extra.candy_mod) * card.ability.extra.candy_boss_mod
-			)
-			card.ability.extra.candies =
-				lenient_bignum(to_big(card.ability.extra.candies) + card.ability.extra.candy_mod)
-			card_eval_status_text(card, "extra", nil, nil, nil, { message = localize("k_upgrade_ex") })
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "candies",
+				scalar_value = "candy_boss_mod",
+				operation = function(ref_table, ref_value, initial, change)
+					ref_table[ref_value] = initial + change * card.ability.extra.candy_boss_mod
+				end,
+				no_message = true,
+			})
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "candies",
+				scalar_value = "candy_mod",
+			})
 			for i = 1, math.floor(math.min(card.ability.immutable.max_spawn, card.ability.extra.candies)) do
 				local card = create_card("Joker", G.jokers, nil, "cry_candy", nil, nil, nil, "cry_candy_basket")
 				card:add_to_deck()
@@ -1225,14 +1238,18 @@ local rotten_egg = {
 	no_dbl = true,
 	add_to_deck = function(self, card, from_debuff)
 		G.GAME.cry_rotten_amount = card.ability.extra.starting_money
-		for i, v in pairs(G.jokers.cards) do
-			v:set_cost()
+		for k, v in pairs(G.I.CARD) do
+			if v.set_cost then
+				v:set_cost()
+			end
 		end
 	end,
 	remove_from_deck = function()
 		G.GAME.cry_rotten_amount = nil
-		for i, v in pairs(G.jokers.cards) do
-			v:set_cost()
+		for k, v in pairs(G.I.CARD) do
+			if v.set_cost then
+				v:set_cost()
+			end
 		end
 	end,
 	calculate = function(self, card, context)

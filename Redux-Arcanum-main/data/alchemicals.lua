@@ -177,6 +177,13 @@ terra = { -- Terra
                 chips_UI:juice_up()
 
                 if not silent then play_sound('chips2') end
+                
+                if G.GAME.chips - G.GAME.blind.chips >= 0 then
+                    G.STATE = G.STATES.HAND_PLAYED
+                    G.STATE_COMPLETE = true
+                    end_round()
+                end
+                
                 return true
             end
         }))

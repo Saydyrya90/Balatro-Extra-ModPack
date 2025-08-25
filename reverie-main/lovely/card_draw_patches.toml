@@ -3,6 +3,8 @@ version = "1.0.0"
 dump_lua = true
 priority = 0
 
+## Pre v0819
+
 # Disable edition shaders for cine cards (they mess up purchase animation)
 [[patches]]
 [patches.regex]
@@ -14,12 +16,39 @@ payload = '''
     if self.edition and not Reverie.is_cine_or_reverie(self)$cond
         $post
 '''
+# Disable edition shaders for cine cards (they mess up purchase animation)
+# Disables negative shine
+[[patches]]
+[patches.regex]
+target = '=[SMODS _ "src/card_draw.lua"]'
+pattern = '''(?<indent>[\t ]*)if \(self\.edition and self\.edition\.negative\)(?<post>.*)'''
+position = "at"
+line_prepend = "$indent"
+payload = '''
+if (self.edition and self.edition.negative and not Reverie.is_cine_or_reverie(self))$post
+'''
+
+
+
+## Post v0819a
 
 # Disable edition shaders for cine cards (they mess up purchase animation)
 [[patches]]
 [patches.regex]
 target = '=[SMODS _ "src/card_draw.lua"]'
-pattern = '''(?<indent>[\t ]*)if \(self\.edition and self\.edition\.negative\)(?<post>.*)'''
+pattern = '''(?<indent>[\t ]*)if edition(?<cond>.* then)(?<post>\n[\t ]*for k, v in pairs\(G\.P_CENTER_POOLS\.Edition\) do\n[\t ]*if edition\[v\.key:sub\(3\)\] and v\.shader then)'''
+position = "at"
+line_prepend = "$indent"
+payload = '''
+if self.edition and not Reverie.is_cine_or_reverie(self)$cond
+$indent$post
+'''
+# Disable edition shaders for cine cards (they mess up purchase animation)
+# Disables negative shine
+[[patches]]
+[patches.regex]
+target = '=[SMODS _ "src/card_draw.lua"]'
+pattern = '''(?<indent>[\t ]*)if \(edition and edition\.negative\)(?<post>.*)'''
 position = "at"
 line_prepend = "$indent"
 payload = '''

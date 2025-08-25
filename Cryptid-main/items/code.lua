@@ -1030,6 +1030,28 @@ local exploit = {
 	order = 403,
 	config = { cry_multiuse = 2, extra = { enteredhand = "" } }, -- i don't think this ever uses config...?
 	loc_vars = function(self, info_queue, card)
+		if G.STAGE == G.STAGES.RUN and Cryptid.enabled("set_cry_poker_hand_stuff") == true then
+			local modest = Cryptid.gameset(G.P_CENTERS.c_cry_sunplanet) == "modest"
+			local current_power = Cryptid.safe_get(G, "GAME", "current_round", "current_hand", "cry_asc_num")
+				or Cryptid.calculate_ascension_power(
+					nil,
+					nil,
+					nil,
+					G.GAME.used_vouchers.v_cry_hyperspacetether,
+					G.GAME.bonus_asc_power
+				)
+			local multiplier = modest and 1 + ((0.25 + G.GAME.sunnumber.modest) * current_power)
+				or (1.25 + G.GAME.sunnumber.not_modest) ^ current_power
+			info_queue[#info_queue + 1] = {
+				key = "asc_misc" .. (modest and 2 or ""),
+				set = "Other",
+				specific_vars = {
+					current_power,
+					multiplier,
+					modest and (G.GAME.sunnumber.modest + 0.25) or (G.GAME.sunnumber.not_modest + 1.25),
+				},
+			}
+		end
 		return { vars = { Cryptid.safe_get(card, "ability", "cry_multiuse") or self.config.cry_multiuse } }
 	end,
 	can_use = function(self, card)
@@ -3512,17 +3534,6 @@ local log = {
 				return get_voucherref(vouchers)
 			end
 		end
-		local get_bossref = get_new_boss
-		function get_new_boss(...)
-			if G.GAME.LOG_BOSS then
-				local v = "" .. G.GAME.LOG_BOSS
-				if not G.GAME.USING_LOG then
-					G.GAME.LOG_BOSS = nil
-				end
-				return v
-			end
-			return get_bossref(...)
-		end
 		function Cryptid.predict_joker(seed)
 			local _pool, _pool_key = get_current_pool("Joker", nil, nil, seed)
 			center = pseudorandom_element(_pool, pseudoseed(_pool_key))
@@ -4140,9 +4151,6 @@ local delete = {
 			)
 	end,
 	use = function(self, card, area, copier)
-		if not G.GAME.banned_keys then
-			G.GAME.banned_keys = {}
-		end -- i have no idea if this is always initialised already tbh
 		if not G.GAME.cry_banned_pcards then
 			G.GAME.cry_banned_pcards = {}
 		end
@@ -5048,8 +5056,13 @@ local cut = {
 
 			if codecard_to_destroy then
 				codecard_to_destroy.getting_sliced = true
-				card.ability.extra.Xmult =
-					lenient_bignum(to_big(card.ability.extra.Xmult) + card.ability.extra.Xmult_mod)
+				SMODS.scale_card(card, {
+					ref_table = card.ability.extra,
+					ref_value = "Xmult",
+					scalar_value = "Xmult_mod",
+					message_key = "a_xmult",
+					colour = G.C.RED,
+				})
 				G.E_MANAGER:add_event(Event({
 					func = function()
 						(context.blueprint_card or card):juice_up(0.8, 0.8)
@@ -5057,9 +5070,9 @@ local cut = {
 						return true
 					end,
 				}))
-				if not (context.blueprint_card or self).getting_sliced then
+				if not (context.blueprint_card or self).getting_sliced and (not msg or type(msg) == "string") then
 					card_eval_status_text((context.blueprint_card or card), "extra", nil, nil, nil, {
-						message = localize({
+						message = msg or localize({
 							type = "variable",
 							key = "a_xmult",
 							vars = { number_format(to_big(card.ability.extra.Xmult)) },
@@ -5083,15 +5096,14 @@ local cut = {
 			}
 		end
 		if context.forcetrigger then
-			card.ability.extra.Xmult = lenient_bignum(to_big(card.ability.extra.Xmult) + card.ability.extra.Xmult_mod)
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "Xmult",
+				scalar_value = "Xmult_mod",
+				message_key = "a_xmult",
+				colour = G.C.RED,
+			})
 			return {
-				message = localize({
-					type = "variable",
-					key = "a_xmult",
-					vars = {
-						number_format(card.ability.extra.Xmult),
-					},
-				}),
 				Xmult_mod = card.ability.extra.Xmult,
 				colour = G.C.MULT,
 			}

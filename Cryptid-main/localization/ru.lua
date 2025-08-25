@@ -85,8 +85,8 @@ return {
 				name = "Критическая колода",
 				text = {
 					"После каждой сыгранной руки,",
-					"{C:green}#1# к 4{} шанс для {X:dark_edition,C:white} ^2 {} Множ",
-					"{C:green}#1# к 8{} шанс для {X:dark_edition,C:white} ^0.5 {} Множ",
+					"{C:green}#1# к #2#{} шанс для {X:dark_edition,C:white} ^2 {} Множ",
+					"{C:green}#1# к #3#{} шанс для {X:dark_edition,C:white} ^0.5 {} Множ",
 				},
 			},
 			b_cry_encoded = {
@@ -2750,6 +2750,15 @@ return {
 			},
 		},
 		Other = {
+			alt_wheel_of_fortune = {
+				name = "Колесо Фортуны",
+				text = {
+					"Шанс {C:green}#1# из #2#{} добавить",
+					"{C:dark_edition}фольговый{}, {C:dark_edition}голографический{} или",
+					"{C:dark_edition}полихромный{} выпуск",
+					"к случайному {C:attention}джокеру",
+				},
+			},
 			banana = {
 				name = "Banana",
 				text = {
@@ -3074,6 +3083,7 @@ return {
 			cry_debuff_obsidian_orb = "Applies abilities of all defeated bosses",
 
 			k_code = "Code",
+			k_chips = "шт. фишек",
 			b_code_cards = "Code Cards",
 			b_pull = "PULL",
 			cry_hooked_ex = "Hooked!",

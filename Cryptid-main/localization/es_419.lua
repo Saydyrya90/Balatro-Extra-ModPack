@@ -52,8 +52,8 @@ return {
 				name = "Baraja crítica",
 				text = {
 					"Después de cada mano jugada,",
-					"{C:green}#1# en 4{} probabilidades para {X:dark_edition,C:white} ^2 {} multi",
-					"{C:green}#1# en 8{} probabilidades para {X:dark_edition,C:white} ^0.5 {} multi",
+					"{C:green}#1# en #2#{} probabilidades para {X:dark_edition,C:white} ^2 {} multi",
+					"{C:green}#1# en #3#{} probabilidades para {X:dark_edition,C:white} ^0.5 {} multi",
 				},
 			},
 			b_cry_encoded = {
@@ -136,7 +136,7 @@ return {
 				name = "Baraja legendaria",
 				text = {
 					"Comienza con un comodín {C:legendary}legendario{C:legendary}",
-					"{C:green}1 en 5{} probabilidades para crear otro",
+					"{C:green}#1# en #2#{} probabilidades para crear otro",
 					"cuando se derrota a la ciega jefe",
 					"{C:inactive}(debe haber espacio){}",
 				},
@@ -3085,6 +3085,15 @@ return {
 			},
 		},
 		Other = {
+			alt_wheel_of_fortune = {
+				name = "La rueda de la fortuna",
+				text = {
+					"{C:green}#1# en #2#{} probabilidades de agregar",
+					"que sean {C:dark_edition}laminadas{}, {C:dark_edition}holográficas{} o",
+					"{C:dark_edition}polícromas{}",
+					"a un {C:attention}comodín al azar",
+				},
+			},
 			banana = {
 				name = "Banana",
 				text = {
@@ -3564,6 +3573,7 @@ return {
 			cry_debuff_obsidian_orb = "Aplica las habilidades de todos los jefes derrotados",
 
 			k_code = "Código",
+			k_chips = "fichas",
 			k_unique = "Único",
 			b_code_cards = "Cartas de código",
 			b_unique_cards = "Cartas únicas",

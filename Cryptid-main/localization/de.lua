@@ -91,8 +91,8 @@ return {
 				name = "Kritisches Deck",
 				text = {
 					"Nach jeder gespielten Hand,",
-					"Chance von {C:green}#1# zu 4{} für {X:dark_edition,C:white} ^2 {} Mult",
-					"Chance von {C:green}#1# zu 8{} für {X:dark_edition,C:white} ^0.5 {} Mult",
+					"Chance von {C:green}#1# zu #2#{} für {X:dark_edition,C:white} ^2 {} Mult",
+					"Chance von {C:green}#1# zu #3#{} für {X:dark_edition,C:white} ^0.5 {} Mult",
 				},
 				unlock = {
 					"Erhalte einen {C:attention}Manipulierten Joker",
@@ -265,7 +265,7 @@ return {
 				name = "Legendäres Deck",
 				text = {
 					"Beginne mit einem {C:legendary}Legendären{C:legendary} Joker",
-					"Chance von {C:green}1 in 5{}, einen Weiteren zu erstellen",
+					"Chance von {C:green}#1# in #2#{}, einen Weiteren zu erstellen",
 					"wenn Boss Blind besiegt wurde",
 					"{C:inactive}(Muss Platz haben){}",
 				},
@@ -4339,6 +4339,15 @@ return {
 			},
 		},
 		Other = {
+			alt_wheel_of_fortune = {
+				name = "Das Rad des Schicksals",
+				text = {
+					"{C:green}#1#-zu-#2#{}-Chance, die",
+					"{C:dark_edition}Foil{}, {C:dark_edition}holographische{} oder",
+					"{C:dark_edition}Polychrom{}-Edition",
+					"zu einem zufälligen {C:attention}Joker{} hinzuzufügen",
+				},
+			},
 			disabled = {
 				name = "Deaktiviert",
 				text = {
@@ -5026,6 +5035,7 @@ return {
 			cry_blind_baneful_pack = "Öffne ein Unheilvolles Clownspaket am Ende der Runde",
 
 			k_code = "Code",
+			k_chips = "Chips",
 			k_content_set = "Thematisches Set",
 			b_content_sets = "Thematische Sets",
 			--Why aren't these in vanilla?

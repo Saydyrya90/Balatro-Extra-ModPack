@@ -60,6 +60,7 @@ return { -- Translation by Shinosan
             bunc_exceeded_score = 'Đã vượt quá giới hạn!',
             bunc_min_ante = 'Ante tối thiểu:',
             bunc_final_blind = 'Blind cuối cùng',
+            bunc_volume = "Âm lượng",
 
             -- Consumable types
 
@@ -354,11 +355,6 @@ return { -- Translation by Shinosan
                     [2] = 'lá được chọn trở thành',
                     [3] = '{C:attention}#2#'
                 },
-                ['unlock'] = {
-                    [1] = 'Khám phá ít nhất',
-                    [2] = '{C:attention}#1#{} vật phẩm trong',
-                    [3] = 'bộ sưu tập của bạn'
-                }
             },
             c_bunc_art = {
                 ['name'] = 'Nghệ thuật',
@@ -367,11 +363,6 @@ return { -- Translation by Shinosan
                     [2] = 'lá được chọn trở thành',
                     [3] = '{C:attention}#2#'
                 },
-                ['unlock'] = {
-                    [1] = 'Khám phá ít nhất',
-                    [2] = '{C:attention}#1#{} vật phẩm trong',
-                    [3] = 'bộ sưu tập của bạn'
-                }
             },
             c_bunc_universe = {
                 ['name'] = 'Vũ Trụ',
@@ -381,11 +372,6 @@ return { -- Translation by Shinosan
                     [3] = 'và dấu lên tới',
                     [4] = '{C:attention}#1#{} lá được chọn'
                 },
-                ['unlock'] = {
-                    [1] = 'Khám phá ít nhất',
-                    [2] = '{C:attention}#1#{} vật phẩm trong',
-                    [3] = 'bộ sưu tập của bạn'
-                }
             },
             c_bunc_lust = {
                 ['name'] = 'Ham Muốn',
@@ -395,11 +381,6 @@ return { -- Translation by Shinosan
                     [3] = '{C:inactive}(Tối đa là {C:money}$#2#{C:inactive})',
                     [4] = '{C:inactive}(Hiện tại là {C:money}$#3#{C:inactive})'
                 },
-                ['unlock'] = {
-                    [1] = 'Khám phá ít nhất',
-                    [2] = '{C:attention}#1#{} vật phẩm trong',
-                    [3] = 'bộ sưu tập của bạn'
-                }
             },
             c_bunc_sky = {
                 ['name'] = 'Bầu trời',
@@ -848,7 +829,7 @@ return { -- Translation by Shinosan
             j_bunc_registration_plate = {
                 ['name'] = 'Biển Số Xe',
                 ['text'] = {
-                    [1] = '#1#',
+                    [1] = '#1#, #2#, #3#, #4# và #5#',
                     [2] = 'có Chip và Nhân của mọi',
                     [3] = '{C:attention}tay poker{} đã chơi trong vòng đấu này',
                     [4] = '{s:0.8}Kết hợp sẽ thay đổi sau mỗi vòng'
@@ -871,19 +852,19 @@ return { -- Translation by Shinosan
                     [3] = 'lá {C:attention,E:1}Tùy Chất{}'
                 }
             },
-            j_bunc_neon = {
-                ['name'] = 'Neon Joker',
-                ['text'] = {
-                    [1] = 'Lá Joker này nhận {X:mult,C:white}X#1#{} Nhân',
-                    [2] = 'mỗi lá {C:attention}suy yếu{} được tính điểm',
-                    [3] = '{C:inactive}(Hiện tại là {X:mult,C:white}X#2#{C:inactive} Nhân)'
-                },
-                ['unlock'] = {
-                    [1] = 'Chơi một tay bài 5 lá',
-                    [2] = 'mà chỉ chứa',
-                    [3] = 'lá {C:attention,E:1}Suy yếu{}'
-                }
-            },
+            -- j_bunc_neon = {
+            --     ['name'] = 'Neon Joker',
+            --     ['text'] = {
+            --         [1] = 'Lá Joker này nhận {X:mult,C:white}X#1#{} Nhân',
+            --         [2] = 'mỗi lá {C:attention}suy yếu{} được tính điểm',
+            --         [3] = '{C:inactive}(Hiện tại là {X:mult,C:white}X#2#{C:inactive} Nhân)'
+            --     },
+            --     ['unlock'] = {
+            --         [1] = 'Chơi một tay bài 5 lá',
+            --         [2] = 'mà chỉ chứa',
+            --         [3] = 'lá {C:attention,E:1}Suy yếu{}'
+            --     }
+            -- },
             j_bunc_gameplan = {
                 ['name'] = 'Chiến Thuật',
                 ['text'] = {
@@ -1123,7 +1104,7 @@ return { -- Translation by Shinosan
                 ['name'] = 'Thợ Săn Tiền Thưởng',
                 ['text'] = {
                     [1] = 'Mọi nguồn tiền',
-                    [2] = 'cho ít {C:money}1${} và Joker này',
+                    [2] = 'cho ít {C:money}#1#${} và Joker này',
                     [3] = 'tăng thêm {C:mult}+#1#{} Nhân mỗi lần',
                     [4] = 'bạn kiếm được tiền',
                     [5] = '{C:inactive}(Hiện tại {C:mult}+#2#{C:inactive} Nhân)'
@@ -1327,10 +1308,10 @@ return { -- Translation by Shinosan
             j_bunc_magic_wand = {
                 ['name'] = 'Đũa Phép Thuật',
                 ['text'] = {
-                    [1] = 'Lá Joker này {X:mult,C:white}X#1#{} Nhân',
+                    [1] = 'Lá Joker này {C:mult}+#1#{} Nhân',
                     [2] = 'mỗi tay bài chơi {C:attention}liên tiếp{}',
                     [3] = 'có chứa {C:attention}Phổ{}',
-                    [4] = '{C:inactive}(Hiện tại là {X:mult,C:white}X#2#{C:inactive} Nhân)'
+                    [4] = '{C:inactive}(Hiện tại là {C:mult}+#2#{C:inactive} Nhân)'
                 }
             },
             j_bunc_starfruit = {
@@ -1369,7 +1350,7 @@ return { -- Translation by Shinosan
                 ['text'] = {
                     [1] = '{C:green}#1# trên #2#{} khả năng thêm',
                     [2] = 'ấn bản {C:dark_edition}Đa Sắc{} cho',
-                    [3] = 'lá bài ngẫu nhiên được tính điểm',
+                    [3] = 'tất cả lá bài được tính điểm',
                     [4] = 'nếu trên tay có {C:attention}Phổ'
                 }
             },
@@ -1908,7 +1889,7 @@ return { -- Translation by Shinosan
                 ['name'] = 'Cược lục lam',
                 ['text'] = {
                     [1] = 'Shop có thể có Joker {C:attention}Tán Xạ{}',
-                    [2] = '{C:inactive,s:0.8}(Tiêu diệt Joker liền kề ngẫu nhiên khi bị loại bỏ)',
+                    [2] = '{C:inactive,s:0.8}(#1#)',
                     [3] = '{s:0.8}Áp dụng toàn bộ Cược trước'
                 }
             },
@@ -1916,7 +1897,7 @@ return { -- Translation by Shinosan
                 ['name'] = 'Cược Hồng',
                 ['text'] = {
                     [1] = 'Shop có thể có Joker {C:attention}Cản Trở{}',
-                    [2] = '{C:inactive,s:0.8}(Giữ nguyên vị trí cho đến hết vòng sau khi được bán)',
+                    [2] = '{C:inactive,s:0.8}(#1#)',
                     [3] = '{s:0.8}Áp dụng toàn bộ Cược trước'
                 }
             },
@@ -1924,7 +1905,7 @@ return { -- Translation by Shinosan
                 ['name'] = 'Cược Đỏ Tươi',
                 ['text'] = {
                     [1] = 'Shop có thể có Joker {C:attention}Phản Ứng{}',
-                    [2] = '{C:inactive,s:0.8}(Bị suy yếu nếu không có một Blind nào được loại bỏ trong ante)',
+                    [2] = '{C:inactive,s:0.8}(#1#)',
                     [3] = '{s:0.8}Áp dụng toàn bộ Cược trước'
                 }
             }

@@ -65,8 +65,8 @@ return {
 				name = "Baralho Crítico",
 				text = {
 					"Após cada mão jogada,",
-					"{C:green}#1# em 4{} de chance para {X:dark_edition,C:white} ^2 {} Mult",
-					"{C:green}#1# em 8{} de chance para {X:dark_edition,C:white} ^0.5 {} Mult",
+					"{C:green}#1# em #2#{} de chance para {X:dark_edition,C:white} ^2 {} Mult",
+					"{C:green}#1# em #3#{} de chance para {X:dark_edition,C:white} ^0.5 {} Mult",
 				},
 			},
 			b_cry_e_deck = {
@@ -188,7 +188,7 @@ return {
 				name = "Baralho Lendário",
 				text = {
 					"Começe com um Curinga {C:legendary}Lendário{C:legendary}",
-					"{C:green}1 em 5{} de chance para criar outro",
+					"{C:green}#1# em #2#{} de chance para criar outro",
 					"quando o Blind Chefe é derrotado",
 					"{C:inactive}(precisa ter espaço){}",
 				},
@@ -3861,6 +3861,15 @@ return {
 			},
 		},
 		Other = {
+			alt_wheel_of_fortune = {
+				name = "A Roda da Fortuna",
+				text = {
+					"Chance de {C:green}#1# em #2#{} de adicionar",
+					"edição {C:dark_edition}Laminada{}, {C:dark_edition}Holográfica{} ou",
+					"{C:dark_edition}Policromática{}",
+					"a um {C:attention}Curinga aleatório",
+				},
+			},
 			disabled = {
 				name = "Desativado",
 				text = {
@@ -4483,6 +4492,7 @@ return {
 			cry_joke_placeholder = "(multiple of 8)",
 
 			k_code = "Code",
+			k_chips = "fichas",
 			k_content_set = "Thematic Set",
 			b_content_sets = "Thematic Sets",
 			--Why aren't these in vanilla?

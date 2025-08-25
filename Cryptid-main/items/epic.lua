@@ -134,6 +134,14 @@ local membershipcardtwo = {
 	demicoloncompat = true,
 	atlas = "atlasepic",
 	loc_vars = function(self, info_queue, card)
+		local aaa
+		if not Cryptid_config.HTTPS then
+			if G.localization.descriptions.Other.cry_https_disabled then
+				aaa = {}
+				localize({ type = "other", key = "cry_https_disabled", nodes = aaa, vars = {} })
+				aaa = aaa[1]
+			end
+		end
 		return {
 			key = Cryptid.gameset_loc(self, { modest = "balanced" }),
 			vars = {
@@ -145,6 +153,7 @@ local membershipcardtwo = {
 					)
 				),
 			},
+			main_end = aaa,
 		}
 	end,
 	calculate = function(self, card, context)
@@ -762,29 +771,24 @@ local m = {
 			}
 		end
 		if context.selling_card and context.card:is_jolly() and not context.blueprint then
-			card.ability.extra.x_mult = lenient_bignum(to_big(card.ability.extra.x_mult) + card.ability.extra.extra)
-			if not context.retrigger_joker then
-				--This doesn't display the correct amount of mult if retriggered it display the amount from the first retrigger instead of the final one
-				--But I would rather have this than constant card_eval_status_text spam
-				--If anyone knows a solution feel free to do a pr xd
-				card_eval_status_text(card, "extra", nil, nil, nil, {
-					message = localize({
-						type = "variable",
-						key = "a_xmult",
-						vars = { number_format(card.ability.extra.x_mult) },
-					}),
-				})
-			end
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "x_mult",
+				scalar_value = "extra",
+				message_key = "a_xmult",
+				message_colour = G.C.RED,
+			})
 			return nil, true
 		end
 		if context.forcetrigger then
-			card.ability.extra.x_mult = lenient_bignum(to_big(card.ability.extra.x_mult) + card.ability.extra.extra)
+			SMODS.scale_card(card, {
+				ref_table = card.ability.extra,
+				ref_value = "x_mult",
+				scalar_value = "extra",
+				message_key = "a_xmult",
+				message_colour = G.C.RED,
+			})
 			return {
-				message = localize({
-					type = "variable",
-					key = "a_xmult",
-					vars = { number_format(card.ability.extra.x_mult) },
-				}),
 				Xmult_mod = card.ability.extra.x_mult,
 			}
 		end
@@ -976,9 +980,11 @@ local number_blocks = {
 					card = card,
 				}
 			else
-				card.ability.extra.money =
-					lenient_bignum(to_big(card.ability.extra.money) + card.ability.extra.money_mod)
-				card_eval_status_text(card, "extra", nil, nil, nil, { message = localize("k_upgrade_ex") })
+				SMODS.scale_card(card, {
+					ref_table = card.ability.extra,
+					ref_value = "money",
+					scalar_value = "money_mod",
+				})
 				return nil, true
 			end
 		end
@@ -1030,11 +1036,28 @@ local double_scale = {
 	cost = 18,
 	immutable = true,
 	atlas = "atlasepic",
-	cry_scale_mod = function(self, card, joker, orig_scale_scale, true_base, orig_scale_base, new_scale_base)
-		if Cryptid.gameset(self) == "exp_modest" then
-			return lenient_bignum(to_big(true_base) * 2)
+	calc_scaling = function(self, card, other, current_scaling, current_scalar, args)
+		if not G.GAME.cryptid_base_scales then
+			G.GAME.cryptid_base_scales = {}
 		end
-		return lenient_bignum(orig_scale_scale + to_big(true_base))
+		if not G.GAME.cryptid_base_scales[other.config.center.key] then
+			G.GAME.cryptid_base_scales[other.config.center.key] = {}
+		end
+		if not G.GAME.cryptid_base_scales[other.config.center.key][args.scalar_value] then
+			G.GAME.cryptid_base_scales[other.config.center.key][args.scalar_value] = current_scalar
+		end
+		local true_base = G.GAME.cryptid_base_scales[other.config.center.key][args.scalar_value]
+		local orig_scale_scale = current_scaling
+		if Cryptid.gameset(self) == "exp_modest" then
+			return {
+				scalar_value = lenient_bignum(to_big(true_base) * 2),
+				message = localize("k_upgrade_ex"),
+			}
+		end
+		args.scalar_table[args.scalar_value] = new_scale
+		return {
+			message = localize("k_upgrade_ex"),
+		}
 	end,
 	cry_credits = {
 		idea = {
@@ -1700,24 +1723,20 @@ local goldjoker = {
 	calculate = function(self, card, context)
 		if context.cardarea == G.play and context.individual and not context.blueprint then
 			if SMODS.has_enhancement(context.other_card, "m_gold") then
-				card.ability.extra.percent =
-					lenient_bignum(to_big(card.ability.extra.percent) + card.ability.extra.percent_mod)
-				return {
-					extra = { focus = card, message = localize("k_upgrade_ex") },
-					card = card,
-					colour = G.C.MONEY,
-				}
+				SMODS.scale_card(card, {
+					ref_table = card.ability.extra,
+					ref_value = "percent",
+					scalar_value = "percent_mod",
+				})
 			end
 		end
 		if context.individual and context.cardarea == G.play then
 			if SMODS.has_enhancement(context.other_card, "m_gold") then
-				card.ability.extra.percent =
-					lenient_bignum(to_big(card.ability.extra.percent) + card.ability.extra.percent_mod)
-				return {
-					message = localize("k_upgrade_ex"),
-					card = card,
-					colour = G.C.CHIPS,
-				}
+				SMODS.scale_card(card, {
+					ref_table = card.ability.extra,
+					ref_value = "percent",
+					scalar_value = "percent_mod",
+				})
 			end
 		end
 	end,
@@ -2507,7 +2526,13 @@ local starfruit = {
 			}
 		end
 		if context.reroll_shop or context.forcetrigger then
-			card.ability.emult = card.ability.emult - card.ability.emult_mod
+			SMODS.scale_card(card, {
+				ref_table = card.ability,
+				ref_value = "emult",
+				scalar_value = "emult_mod",
+				operation = "-",
+				no_message = true,
+			})
 			--floating point precision can kiss my ass istg
 			if to_number(card.ability.emult) <= 1.00000001 then
 				G.E_MANAGER:add_event(Event({
@@ -2536,10 +2561,18 @@ local starfruit = {
 					colour = G.C.RARITY.cry_epic,
 				}
 			else
-				return {
-					message = "-^" .. number_format(card.ability.emult_mod) .. " Mult",
-					colour = G.C.RARITY.cry_epic,
-				}
+				if not msg or type(msg) == "string" then
+					return {
+						message = msg or localize({
+							type = "variable",
+							key = "a_powmult_minus",
+							vars = {
+								number_format(card.ability.emult_mod),
+							},
+						}),
+						colour = G.C.RARITY.cry_epic,
+					}
+				end
 			end
 		end
 	end,

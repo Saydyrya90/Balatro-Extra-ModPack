@@ -53,6 +53,7 @@ return {
 			bunc_least_played_hand = '(mão menos jogada)',
 			bunc_blade = '(1.5X pontuação de blind)',
 			bunc_exceeded_score = 'Limite excedido!',
+            bunc_volume = 'Volume',
 
             -- Consumable types
 
@@ -215,7 +216,7 @@ return {
                 ['text'] = {
                     [1] = 'Destrói um Curinga',
                     [2] = 'aleatório quando',
-                    [3] = 'vendido ou destruído'
+                    [3] = 'removido'
                 }
             },
             bunc_hindered = {
@@ -420,16 +421,23 @@ return {
 
             -- Main Jokers
 
-            j_bunc_cassette = {
-                ['name'] = 'Cassete',
+            j_bunc_cassette_a = {
+                ['name'] = 'Cassete (Lado A)',
+                ['text'] = {
+                    [1] = 'Cartas com naipe claro dão',
+                    [2] = '{C:chips}+#1#{} Fichas quando pontuadas',
+                }
+            },
+            j_bunc_cassette_b = {
+                ['name'] = 'Cassete (Lado B)',
+                ['text'] = {
+                    [1] = 'Cartas com naipe escuro dão',
+                    [2] = '{C:mult}+#2#{} Multi quando pontuadas'
+                }
+            },
+            j_bunc_cassette_extra = {
                 ['text'] = {
                     [1] = 'Ao descartar, vire o Curinga para o outro lado',
-                    [2] = '{C:attention}Lado A:{} Cartas com naipe claro',
-                    [3] = 'dão {C:chips}+#1#{} Fichas quando pontuadas',
-                    [4] = '{C:attention}Lado B:{} Cartas com naipe escuro',
-                    [5] = 'dão {C:mult}+#2#{} Multi quando pontuadas'
-                    -- TODO would be good to have a line for the side
-                    -- or colorize the active side
                 }
             },
             j_bunc_mosaic = {
@@ -670,17 +678,17 @@ return {
                     [3] = 'na próxima rodada apenas',
                 }
             },
-            j_bunc_zero_shapiro = {
-                ['name'] = 'Zé Zero',
-                ['text'] = {
-                    [1] = 'Este Curinga aumenta em {C:attention}#1#X{} as',
-                    [2] = '{C:green,E:1,S:1.1}probabilidades{} {C:attention}nesta rodada{} quando uma',
-                    [3] = 'carta com classe {C:attention}nula{}, {C:attention}zero{}, or {C:attention}incontável{}',
-                    [4] = 'pontua {C:inactive}(K, Q, J, 0, Sem classe)',
-                    [5] = '{C:inactive}(No momento, {C:attention}X#2#{C:inactive} {C:green,E:1,S:1.1}probabilidades{C:inactive})'
-                    -- TODO not sure how to word non-countable
-                }
-            },
+            -- j_bunc_zero_shapiro = {
+            --     ['name'] = 'Zé Zero',
+            --     ['text'] = {
+            --         [1] = 'Este Curinga aumenta em {C:attention}#1#X{} as',
+            --         [2] = '{C:green,E:1,S:1.1}probabilidades{} {C:attention}nesta rodada{} quando uma',
+            --         [3] = 'carta com classe {C:attention}nula{}, {C:attention}zero{}, or {C:attention}incontável{}',
+            --         [4] = 'pontua {C:inactive}(K, Q, J, 0, Sem classe)',
+            --         [5] = '{C:inactive}(No momento, {C:attention}X#2#{C:inactive} {C:green,E:1,S:1.1}probabilidades{C:inactive})'
+            --         -- TODO not sure how to word non-countable
+            --     }
+            -- },
             j_bunc_nil_bill = {
                 ['name'] = 'Nil Bill',
                 ['text'] = {
@@ -699,7 +707,7 @@ return {
             j_bunc_registration_plate = {
                 ['name'] = 'Placa de Carro',
                 ['text'] = {
-                    [1] = '#1#',
+                    [1] = '#1#, #2#, #3#, #4# e #5#',
                     [2] = 'tem as Fichas e Multi de todas as',
                     [3] = '{C:attention}mãos de pôquer{} jogadas nesta tentativa',
                     [4] = '{s:0.8}A combinação muda a cada rodada'
@@ -722,19 +730,19 @@ return {
                     [3] = '{C:attention,E:1}Cartas Naipe Curinga{}'
                 }
             },
-            j_bunc_neon = {
-                ['name'] = 'Curinga Neon',
-                ['text'] = {
-                    [1] = 'Este Curinga Ganha {X:mult,C:white}X#1#{} Multi',
-                    [2] = 'por carta com {C:attention}desvantagem{} pontuada',
-                    [3] = '{C:inactive}(No momento, {X:mult,C:white}X#2#{C:inactive} Multi)'
-                },
-                ['unlock'] = {
-                    [1] = 'Jogue uma mão de 5 cartas',
-                    [2] = 'que contém apenas',
-                    [3] = '{C:attention,E:1}Cartas com desvantagem{}'
-                }
-            },
+            -- j_bunc_neon = {
+            --     ['name'] = 'Curinga Neon',
+            --     ['text'] = {
+            --         [1] = 'Este Curinga Ganha {X:mult,C:white}X#1#{} Multi',
+            --         [2] = 'por carta com {C:attention}desvantagem{} pontuada',
+            --         [3] = '{C:inactive}(No momento, {X:mult,C:white}X#2#{C:inactive} Multi)'
+            --     },
+            --     ['unlock'] = {
+            --         [1] = 'Jogue uma mão de 5 cartas',
+            --         [2] = 'que contém apenas',
+            --         [3] = '{C:attention,E:1}Cartas com desvantagem{}'
+            --     }
+            -- },
             j_bunc_gameplan = {
                 ['name'] = 'Plano de Jogo',
                 ['text'] = {
@@ -861,7 +869,8 @@ return {
                 ['text'] = {
                     [1] = 'Cartas com a {C:attention}menor{}',
                     [2] = 'classe do seu baralho completo',
-                    [3] = '{C:attention}aumentam a classe{} quando pontuadas'
+                    [3] = '{C:attention}aumentam a classe{} quando pontuadas',
+                    [4] = '{C:inactive}(Current lowest rank: #1#)'
                     -- TODO "when scored" is only accurate
                     -- if the card's rank changes during scoring
                 }
@@ -901,8 +910,8 @@ return {
             j_bunc_doodle = {
                 ['name'] = 'Rabisco',
                 ['text'] = {
-                    [1] = '{C:attention}Copie{} o primeiro consumível',
-                    [2] = 'usado nesta rodada',
+                    [1] = '{C:attention}Copie{} o primeiro carta de',
+                    [2] = '{C:tarot}Tarô{} ou {C:planet}Planeta{} usado nesta rodada',
                     [3] = '{C:inactive}(Deve ter espaço)'
                 },
                 ['unlock'] = {
@@ -969,18 +978,18 @@ return {
                     [3] = 'dão {C:chips}+#1#{} Fichas quando pontuadas'
                 }
             },
-            j_bunc_bounty_hunter = {
-                ['name'] = 'Caçador de Recompensa',
-                ['text'] = {
-                    [1] = '{C:mult}+#1#{} Multi por',
-                    [2] = 'cada {C:money}$1{} abaixo de {C:money}$0',
-                    [3] = '{C:inactive}(No momento, {C:mult}+#2#{C:inactive} Multi)'
-                },
-                ['unlock'] = {
-                    [1] = 'Tenha menos que {E:1,C:attention}$#1#',
-                    [2] = 'durante uma única tentativa'
-                }
-            },
+            -- j_bunc_bounty_hunter = {
+            --     ['name'] = 'Caçador de Recompensa',
+            --     ['text'] = {
+            --         [1] = '{C:mult}+#1#{} Multi por',
+            --         [2] = 'cada {C:money}$#1#{} abaixo de {C:money}$0',
+            --         [3] = '{C:inactive}(No momento, {C:mult}+#2#{C:inactive} Multi)'
+            --     },
+            --     ['unlock'] = {
+            --         [1] = 'Tenha menos que {E:1,C:attention}$#1#',
+            --         [2] = 'durante uma única tentativa'
+            --     }
+            -- },
             j_bunc_mousetrap = {
                 ['name'] = 'Ratoeira',
                 ['text'] = {
@@ -1022,7 +1031,7 @@ return {
                 ['name'] = 'Pistola de Cola',
                 ['text'] = {
                     [1] = 'Venda esta carta para',
-                    [2] = '{C:attention}Vincular{} #1# cartas',
+                    [2] = '{C:attention}Vincular{} até #1# cartas',
                     [3] = 'de Jogo selecionadas'
                 }
             },
@@ -1046,9 +1055,9 @@ return {
             j_bunc_headache = {
                 ['name'] = 'Dor de Cabeça',
                 ['text'] = {
-                    [1] = 'Crie uma carta de {C:bunco_virtual_dark}Polymino{}',
+                    [1] = 'Crie uma carta de {C:bunco_virtual_dark}Marca de Fliper{}',
                     [2] = 'por cada {C:attention}#1#{} cartas de Jogo',
-                    [3] = 'destruídas {C:inactive}(Deve ter espaço)',
+                    [3] = 'destruídas',
                     [4] = '{C:inactive}({C:attention}#2#{C:inactive}/#1# cartas destruídas)'
                 }
             },
@@ -1168,11 +1177,10 @@ return {
             j_bunc_starfruit = {
                 ['name'] = 'Carambola',
                 ['text'] = {
-                    [1] = '{C:green}#1# de #2#{} chance de aprimorar a',
-                    [2] = '{C:attention}mão de pôquer{} se ela contém um {C:attention}Espectro',
-                    [3] = '{C:green}#1# de #3#{} chance de destruir este Curinga ao fim da rodada',
-                    [4] = 'se uma mão que contém {C:attention}Espectro{} foi jogada'
-                    -- TODO this joker is way too long
+                    [1] = 'Aprimorar a {C:attention}mão de pôquer{}',
+                    [2] = 'se ela contém um {C:attention}Espectro',
+                    [3] = '{C:green}#1# de #2#{} chance de destruir',
+                    [4] = 'este Curinga ao fim da rodada'
                 }
             },
             j_bunc_fondue = {
@@ -1201,8 +1209,8 @@ return {
                 ['name'] = 'Roy G. Biv',
                 ['text'] = {
                     [1] = '{C:green}#1# de #2#{} chance de adicionar',
-                    [2] = '{C:dark_edition}Policromático{} a uma',
-                    [3] = 'carta pontuada aleatória se a',
+                    [2] = '{C:dark_edition}Policromático{} a todas',
+                    [3] = 'as carta pontuadas se a',
                     [4] = 'mão contém um {C:attention}Espectro'
                 }
             },
@@ -1222,8 +1230,8 @@ return {
             bl_bunc_paling = {
                 ['name'] = 'A Palidez',
                 ['text'] = {
-                    [1] = 'Jogar ou Descartar custa',
-                    [2] = 'ambos mão e descarte'
+                    [1] = 'Perde $1 por',
+                    [2] = 'carta descartar'
                 }
             },
             bl_bunc_umbrella = {
@@ -1323,12 +1331,12 @@ return {
                     [2] = 'são viradas de cabeça para baixo'
                 }
             },
-            bl_bunc_cadaver = {
-                ['name'] = 'O Cadáver',
-                ['text'] = {
-                    [1] = 'Não deve jogar cartas de realeza'
-                }
-            },
+            -- bl_bunc_cadaver = {
+            --     ['name'] = 'O Cadáver',
+            --     ['text'] = {
+            --         [1] = 'Não deve jogar cartas de realeza'
+            --     }
+            -- },
             bl_bunc_wind = {
                 ['name'] = 'O Vento',
                 ['text'] = {
@@ -1367,12 +1375,12 @@ return {
                     [2] = 'Copas, Paus e Ouros recebem desvantagem'
                 }
             },
-            bl_bunc_final_trident = {
-                ['name'] = 'Tridente Carmesim',
-                ['text'] = {
-                    [1] = 'Sem lojas nesta Aposta'
-                }
-            },
+            -- bl_bunc_final_trident = {
+            --     ['name'] = 'Tridente Carmesim',
+            --     ['text'] = {
+            --         [1] = 'Sem lojas nesta Aposta'
+            --     }
+            -- },
             bl_bunc_final_tower = {
                 ['name'] = 'Torre Índigo',
                 ['text'] = {
@@ -1718,21 +1726,21 @@ return {
                 ['name'] = 'Aposta Ciana',
                 ['text'] = {
                     [1] = 'A loja pode ter Curingas {C:attention}Dispersivos{}',
-                    [2] = '{C:inactive,s:0.8}(Destrói um Curinga aleatório quando vendido ou destruído)'
+                    [2] = '{C:inactive,s:0.8}(#1#)',
                 }
             },
             stake_bunc_pink = {
                 ['name'] = 'Aposta Rosa',
                 ['text'] = {
                     [1] = 'A loja pode ter Curingas {C:attention}Travados{}',
-                    [2] = '{C:inactive,s:0.8}(Fica travado no lugar até o fim da rodada após ser vendido)'
+                    [2] = '{C:inactive,s:0.8}(#1#)',
                 }
             },
             stake_bunc_magenta = {
                 ['name'] = 'Aposta Magenta',
                 ['text'] = {
                     [1] = 'A loja pode ter Curingas {C:attention}Reativos{}',
-                    [2] = '{C:inactive,s:0.8}(Recebe desvantagem se nenhum Blind for pulado nesta Aposta)'
+                    [2] = '{C:inactive,s:0.8}(#1#)',
                 }
             }
         }

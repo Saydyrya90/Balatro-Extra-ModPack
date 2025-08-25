@@ -4,7 +4,8 @@ SMODS.Joker {
   config = {
     extra = {
       Xmult_mod = 0.25,
-      x_mult = 1
+      x_mult = 1,
+      active = false,
     }
   },
   pos = { x = 14, y = 5 },
@@ -26,27 +27,23 @@ SMODS.Joker {
   calculate = function(self, card, context)
     --Increase mult counter if card is a face
     if not context.blueprint and context.before and #context.full_hand == 1 then
-      if G.GAME.current_round.hands_played == 0 then
-        if context.scoring_hand[1]:is_face() then
-          card.ability.extra.x_mult = card.ability.extra.x_mult + card.ability.extra.Xmult_mod
+      if G.GAME.current_round.hands_played == 0 and context.scoring_hand[1]:is_face() then
+        card.ability.extra.x_mult = card.ability.extra.x_mult + card.ability.extra.Xmult_mod
+        card.ability.extra.active = true
 
-          return {
-            message = localize('k_upgrade_ex'),
-          }
-        end
+        return {
+          message = localize('k_upgrade_ex'),
+        }
       end
     end
 
     --Destroy Face card
-    if not context.blueprint and context.after and #context.full_hand == 1 then
-      if G.GAME.current_round.hands_played == 0 then
-        if context.scoring_hand[1]:is_face() then
-          SMODS.destroy_cards(G.play.cards)
-          return {
-            message = localize('paperback_destroyed_ex'),
-          }
-        end
-      end
+    if context.destroy_card and card.ability.extra.active and not context.blueprint then
+      card.ability.extra.active = false
+
+      return {
+        remove = true
+      }
     end
 
     --Play Xmult

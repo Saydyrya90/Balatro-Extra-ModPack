@@ -5,13 +5,9 @@ priority = 11 # Go after Bunco
 
 
 [[patches]]
-[patches.regex]
+[patches.pattern]
 target = 'card.lua'
-pattern = "(?<code>add_tag\\(Tag\\('tag_bunc_xmult'\\)\\)\n(?<indent>[ |\t]*?)play_sound\\('generic1'\\))"
+pattern = "elseif used_tarot.edition.polychrome then"
 position = 'at'
-# line_prepend = "$indent"
-payload = '''
-if used_tarot.ability.set ~= "Alchemical" then
-    $indent$code
-$indent end
-'''
+match_indent = true
+payload = 'elseif used_tarot.edition.polychrome and used_tarot.ability.set ~= "Alchemical" then'

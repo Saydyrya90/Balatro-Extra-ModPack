@@ -4,7 +4,7 @@
     "author": ["DVRP"],
     "description": "A movie-themed expansion that focuses on providing special shops and various contents around it",
     "badge_colour": "9db95f",
-    "version": "1.5.4",
+    "version": "1.5.4b",
     "prefix": "dvrprv",
     "main_file": "Reverie.lua",
     "priority": 1,
